@@ -6,6 +6,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         Title="MainWindow" Height="497" Width="922">
+    <Window.Resources>
+        <Style x:Key="ComboBoxCellStyle" TargetType="ComboBox">
+            <Setter Property="IsEditable" Value="True" />
+            <Setter Property="TextSearch.TextPath" Value="Category" />
+        </Style>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

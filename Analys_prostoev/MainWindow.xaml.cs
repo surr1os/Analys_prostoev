@@ -33,8 +33,72 @@ namespace Analys_prostoev
         }
         //DataGridTable.ItemsSource
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private List<string> GetCategories()
         {
+            List<string> categories = new List<string>();
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string queryString = "SELECT category_name FROM Category";
+
+                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
+                {
+                    NpgsqlDataReader reader = command.ExecuteReader();
+
+                    while (reader.Read())
+                    {
+                        string category = reader["category_name"].ToString();
+                        categories.Add(category);
+                    }
+
+                    reader.Close();
+                }
+            }
+
+            return categories;
+        }
+
+        private void InitializeDataGrid(DataTable dataTable)
+        {
+            // Добавьте остальной код инициализации таблицы (если нужно)
+
+            // Удаляем столбец "category", если он уже существует
+           
+
+            // Создаем столбец с выпадающим списком "Категория" (если он еще не был создан)
+            if (!dataTable.Columns.Contains("Категория"))
+            {
+                DataColumn categoryColumn = new DataColumn("Категория", typeof(string));
+                dataTable.Columns.Add(categoryColumn);
+            }
+
+            // Заполняем столбец "Категория" данными из GetCategories()
+            foreach (DataRow row in dataTable.Rows)
+            {
+                row["Категория"] = GetCategoryForRow(row); // Здесь используйте ваш метод GetCategoryForRow
+            }
+            if (dataTable.Columns.Contains("category"))
+            {
+                dataTable.Columns.Remove("category");
+            }
+        }
+        private string GetCategoryForRow(DataRow row)
+        {
+            string categoryName = string.Empty;
+
+            // Здесь вам нужно определить логику получения категории для строки (например, из столбца "Категория" в строке)
+            // Для примера, предположим, что категория находится в столбце с индексом 2
+            categoryName = row[9].ToString();
+
+            return categoryName;
+        }
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+
+        {
+
+
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
@@ -52,7 +116,6 @@ namespace Analys_prostoev
                 }
             }
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -76,14 +139,14 @@ namespace Analys_prostoev
                     parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
                 }
 
-                if(selectComboBox.SelectedItem != null)
+                if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
                     queryString += $" AND region = @selectedRegion";
                     parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion));
                 }
 
-               
+
 
                 using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
                 {
@@ -93,6 +156,8 @@ namespace Analys_prostoev
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
 
+                    InitializeDataGrid(dataTable); // Передаем dataTable в метод InitializeDataGrid
+
                     DataGridTable.ItemsSource = dataTable.DefaultView;
                 }
             }
@@ -100,8 +165,6 @@ namespace Analys_prostoev
     }
 
 
-     
 
-
-    }
+}
 
