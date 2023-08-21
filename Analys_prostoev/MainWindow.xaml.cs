@@ -17,6 +17,7 @@ namespace Analys_prostoev
         private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
 
 
+       
         public MainWindow()
         {
             InitializeComponent();
@@ -97,8 +98,16 @@ namespace Analys_prostoev
             // Проверяем, что столбец имеет заголовок "category"
             if (column.Header.ToString() == "category")
             {
-                // Открываем новое окно
-                var newWindow = new CategoryHierarchy();
+                // Получаем объект данных
+                DataRowView rowView = (DataRowView)cellInfo.Item;
+                // Получаем значение свойства Category;
+                string selectedData = rowView.Row["category"].ToString();
+
+                
+
+
+                // Открываем новое окно и передаем значение ячейки
+                var newWindow = new CategoryHierarchy(selectedData);
                 newWindow.Show();
             }
         }

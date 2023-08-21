@@ -22,10 +22,10 @@ namespace Analys_prostoev
     public partial class CategoryHierarchy : Window
     {
         private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        public CategoryHierarchy()
+        public CategoryHierarchy(string cellValue)
         {
             InitializeComponent();
-
+            categoryText.Text = cellValue;
 
             // Создаем модель представления
            
@@ -75,12 +75,9 @@ namespace Analys_prostoev
         
 
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
+       
 
-           
-
-        }
+        
     }
 }     
                     
