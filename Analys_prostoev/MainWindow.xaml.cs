@@ -6,6 +6,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Documents;
+using System;
 
 namespace Analys_prostoev
 {
@@ -129,6 +130,33 @@ namespace Analys_prostoev
                 selectedItem["category_one"] = categoryOneValue;
                 selectedItem["category_two"] = categoryTwoValue;
                 selectedItem["category_third"] = categoryThirdValue;
+
+                // Обновляем строку в базе данных
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                {
+                    connection.Open();
+
+                    string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo, category_third = @categoryThird WHERE \"Id\" = @Id";
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                    {
+                        updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
+                        updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
+                        updateCommand.Parameters.AddWithValue("categoryThird", categoryThirdValue);
+
+                        int id = Convert.ToInt32(selectedItem["Id"]);
+                        updateCommand.Parameters.AddWithValue("Id", id);
+
+                        int rowsAffected = updateCommand.ExecuteNonQuery();
+                        if (rowsAffected > 0)
+                        {
+                            Console.WriteLine("Обновление значения выполнено успешно");
+                        }
+                        else
+                        {
+                            Console.WriteLine("Ошибка при обновлении значения");
+                        }
+                    }
+                }
             }
         }
 
