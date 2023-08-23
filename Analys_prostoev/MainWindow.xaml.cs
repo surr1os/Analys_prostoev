@@ -102,10 +102,6 @@ namespace Analys_prostoev
                 DataRowView rowView = (DataRowView)cellInfo.Item;
                 // Получаем значение свойства Category;
                 string selectedData = rowView.Row["category"].ToString();
-
-                
-
-
                 // Открываем новое окно и передаем значение ячейки
                 var newWindow = new CategoryHierarchy(selectedData);
                 newWindow.Show();

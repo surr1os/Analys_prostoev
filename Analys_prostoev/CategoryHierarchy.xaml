@@ -7,7 +7,23 @@
         mc:Ignorable="d"
         Title="CategoryHierarchy" Height="450" Width="800">
     <Grid>
-        <TextBox Name="categoryText" HorizontalAlignment="Left" Height="50" Margin="213,108,0,0" TextWrapping="Wrap" Text="TextBox" VerticalAlignment="Top" Width="304"/>
+        <TreeView x:Name="TreeViewCategories">
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesOne}">
+                    <TextBlock Text="{Binding CategoryName}" />
+                    <HierarchicalDataTemplate.ItemTemplate>
+                        <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesSecond}">
+                            <TextBlock Text="{Binding SubcategoryOneName}" />
+                            <HierarchicalDataTemplate.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding SubcategorySecondName}" />
+                                </DataTemplate>
+                            </HierarchicalDataTemplate.ItemTemplate>
+                        </HierarchicalDataTemplate>
+                    </HierarchicalDataTemplate.ItemTemplate>
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+            </TreeView>
 
     </Grid>
 </Window>

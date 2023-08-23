@@ -1,18 +1,10 @@
 ﻿using Npgsql;
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+
+
+using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
 {
@@ -21,66 +13,150 @@ namespace Analys_prostoev
     /// </summary>
     public partial class CategoryHierarchy : Window
     {
-        private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
+
+        private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
         public CategoryHierarchy(string cellValue)
         {
             InitializeComponent();
-            categoryText.Text = cellValue;
+            //   categoryText.Text = cellValue;
+            List<Category> categories = GetCategories(connectionString);
+            
 
-            // Создаем модель представления
-           
+            // Установка источника данных для TreeView
+            TreeViewCategories.ItemsSource = categories;
 
         }
-
-        // Реализация иерархического списка категорий и возвращение значения в ячейку
+        //Создаем модель представления
 
         public class Category
         {
             public string CategoryName { get; set; }
-            public ObservableCollection<SubcategoryOne> SubcategoriesOne { get; set; }
-
-            public Category()
-            {
-                SubcategoriesOne = new ObservableCollection<SubcategoryOne>();
-            }
+            public List<SubcategoryOne> SubcategoriesOne { get; set; }
         }
 
         public class SubcategoryOne
         {
             public string SubcategoryOneName { get; set; }
-            public ObservableCollection<SubcategoryScnd> SubcategoriesScnd { get; set; }
-
-            public SubcategoryOne()
-            {
-                SubcategoriesScnd = new ObservableCollection<SubcategoryScnd>();
-            }
+            public List<SubcategorySecond> SubcategoriesSecond { get; set; }
         }
 
-        public class SubcategoryScnd
+        public class SubcategorySecond
         {
-            public string SubcategoryScndName { get; set; }
-            public ObservableCollection<SubcategoryThird> SubcategoriesThird { get; set; }
-
-            public SubcategoryScnd()
-            {
-                SubcategoriesThird = new ObservableCollection<SubcategoryThird>();
-            }
+            public string SubcategorySecondName { get; set; }
         }
-
-        public class SubcategoryThird
+        private List<Category> GetCategories(string connectionString)
         {
-            public string SubcategoryThirdName { get; set; }
+            List<Category> categories = new List<Category>();
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // Запрос для получения данных из таблицы Category
+                string categoryQuery = "SELECT category_name FROM Category";
+
+                using (NpgsqlCommand categoryCommand = new NpgsqlCommand(categoryQuery, connection))
+                {
+                    using (NpgsqlDataReader categoryReader = categoryCommand.ExecuteReader())
+                    {
+                        while (categoryReader.Read())
+                        {
+                            string categoryName = categoryReader["category_name"].ToString();
+
+                            Category category = new Category
+                            {
+                                CategoryName = categoryName,
+                                SubcategoriesOne = GetSubcategoriesOne(connectionString, categoryName)
+                            };
+
+                            categories.Add(category);
+                        }
+                    }
+                }
+            }
+
+            return categories;
         }
 
-        
+        private List<SubcategoryOne> GetSubcategoriesOne(string connectionString, string categoryName)
+        {
+            List<SubcategoryOne> subcategoriesOne = new List<SubcategoryOne>();
 
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
 
-       
+                // Запрос для получения данных из таблицы Subcategory_one по заданной категории
 
-        
+                string subcategoryOneQuery = "SELECT subcategory_one_name FROM Subcategory_one WHERE category_name = @CategoryName";
+
+                using (NpgsqlCommand subcategoryOneCommand = new NpgsqlCommand(subcategoryOneQuery, connection))
+                {
+                    subcategoryOneCommand.Parameters.AddWithValue("@CategoryName", categoryName);
+                    using (NpgsqlDataReader subcategoryOneReader = subcategoryOneCommand.ExecuteReader())
+                    {
+                        while (subcategoryOneReader.Read())
+                        {
+                            string subcategoryOneName = subcategoryOneReader["subcategory_one_name"].ToString();
+
+                            SubcategoryOne subcategoryOne = new SubcategoryOne
+                            {
+                                SubcategoryOneName = subcategoryOneName,
+                                SubcategoriesSecond = GetSubcategoriesSecond(connectionString, subcategoryOneName, categoryName) // в аргумент добавить categoryName 
+                            };
+
+                            subcategoriesOne.Add(subcategoryOne);
+                        }
+                    }
+                }
+            }
+
+            return subcategoriesOne;
+        }
+        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName) // ,string categoryName
+        {
+            List<SubcategorySecond> subcategoriesSecond = new List<SubcategorySecond>();
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                // Запрос для получения данных из таблицы Subcategory_scnd по заданной подкатегории
+                string subcategorySecondQuery = "SELECT subcategory_scnd_name FROM Subcategory_scnd WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName"; // здесь сделай проверку на равеноство                                                                                                                                               
+                                                                                                                                                       // categoryName и category_name из subcategory_scnd 
+                                                                                                                                                       // нужно добавить поле category_name в таблицу subcategory_scnd 
+
+                using (NpgsqlCommand subcategorySecondCommand = new NpgsqlCommand(subcategorySecondQuery, connection))
+                {
+                    subcategorySecondCommand.Parameters.AddWithValue("@SubcategoryOneName", subcategoryOneName);
+                    subcategorySecondCommand.Parameters.AddWithValue("@CategoryName", categoryName);
+
+                    using (NpgsqlDataReader subcategorySecondReader = subcategorySecondCommand.ExecuteReader())
+                    {
+                        while (subcategorySecondReader.Read())
+                        {
+                            string subcategorySecondName = subcategorySecondReader["subcategory_scnd_name"].ToString();
+
+                            SubcategorySecond subcategorySecond = new SubcategorySecond
+                            {
+                                SubcategorySecondName = subcategorySecondName
+                            };
+
+                            subcategoriesSecond.Add(subcategorySecond);
+                        }
+                    }
+                }
+            }
+
+            return subcategoriesSecond;
+        }
     }
-}     
-                    
+
+
+
+}
+
+                
                 
             
         
