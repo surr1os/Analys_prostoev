@@ -5,6 +5,7 @@ using System.Data;
     using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Documents;
 
 namespace Analys_prostoev
 {
@@ -100,12 +101,34 @@ namespace Analys_prostoev
             if (columnValue == "category_one" || columnValue == "category_two" || columnValue == "category_third")
             {
                 // Получаем объект данных
-                // DataRowView rowView = (DataRowView)cellInfo.Item;
-                // Получаем значение свойства Category;
-                //string selectedData = rowView.Row["category"].ToString();
-                // Открываем новое окно и передаем значение ячейки
-                var newWindow = new CategoryHierarchy(); // selectedData
+                DataRowView rowView = (DataRowView)cellInfo.Item;
+                // Получаем значения ячеек выбранной строки
+                string categoryOneValue = rowView["category_one"].ToString();
+                string categoryTwoValue = rowView["category_two"].ToString();
+                string categoryThirdValue = rowView["category_third"].ToString();
+
+                // Создаем экземпляр окна CategoryHierarchy
+                var newWindow = new CategoryHierarchy();
+                newWindow.categoryOneTextB.Text = categoryOneValue;
+                newWindow.categoryTwoTextB.Text = categoryTwoValue;
+                newWindow.categoryThirdTextB.Text = categoryThirdValue;
+
+                // Устанавливаем родительское окно
+                newWindow.ParentWindow = this;
+
                 newWindow.Show();
+            }
+        }
+        public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue)
+        {
+            // Получаем выделенную строку в таблице
+            DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
+            if (selectedItem != null)
+            {
+                // Обновляем значения ячеек выбранной строки
+                selectedItem["category_one"] = categoryOneValue;
+                selectedItem["category_two"] = categoryTwoValue;
+                selectedItem["category_third"] = categoryThirdValue;
             }
         }
 

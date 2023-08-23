@@ -13,7 +13,7 @@ namespace Analys_prostoev
     /// </summary>
     public partial class CategoryHierarchy : Window
     {
-
+        public MainWindow ParentWindow { get; set; }
         private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
         public CategoryHierarchy()
         {
@@ -160,7 +160,8 @@ namespace Analys_prostoev
             if (selectedItem != null)
             {
                 // Помещаем значение SubcategorySecondName в categoryOneTextB
-                categoryOneTextB.Text = selectedItem.SubcategorySecondName;
+                categoryThirdTextB.Text = selectedItem.SubcategorySecondName;
+
 
                 // Находим родителя SubcategorySecondName и помещаем его значение в categoryTwoTextB
                 var parentSubcategoryOne = FindParentSubcategoryOne(selectedItem);
@@ -172,7 +173,8 @@ namespace Analys_prostoev
                     var parentCategory = FindParentCategory(parentSubcategoryOne);
                     if (parentCategory != null)
                     {
-                        categoryThirdTextB.Text = parentCategory.CategoryName;
+                        categoryOneTextB.Text = parentCategory.CategoryName;
+                        
                     }
                 }
             }
@@ -204,7 +206,20 @@ namespace Analys_prostoev
 
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            
+            // Проверяем, что родительское окно является экземпляром класса MainWindow
+            if (ParentWindow is MainWindow mainWindow)
+            {
+                // Получаем значения из текстовых полей
+                string categoryOneValue = categoryOneTextB.Text;
+                string categoryTwoValue = categoryTwoTextB.Text;
+                string categoryThirdValue = categoryThirdTextB.Text;
+
+                // Закрываем текущее окно
+                this.Close();
+
+                // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
+                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue);
+            }
         }
     }
 
