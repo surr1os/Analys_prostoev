@@ -1,9 +1,9 @@
 ﻿using Npgsql;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows;
-
-
+using System.Windows.Controls;
 using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
@@ -15,7 +15,7 @@ namespace Analys_prostoev
     {
 
         private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        public CategoryHierarchy(string cellValue)
+        public CategoryHierarchy()
         {
             InitializeComponent();
             //   categoryText.Text = cellValue;
@@ -149,6 +149,62 @@ namespace Analys_prostoev
             }
 
             return subcategoriesSecond;
+        }
+
+
+        private void TreeViewCategories_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            // Получаем выбранный элемент TreeView
+            var selectedItem = TreeViewCategories.SelectedItem as SubcategorySecond;
+
+            if (selectedItem != null)
+            {
+                // Помещаем значение SubcategorySecondName в categoryOneTextB
+                categoryOneTextB.Text = selectedItem.SubcategorySecondName;
+
+                // Находим родителя SubcategorySecondName и помещаем его значение в categoryTwoTextB
+                var parentSubcategoryOne = FindParentSubcategoryOne(selectedItem);
+                if (parentSubcategoryOne != null)
+                {
+                    categoryTwoTextB.Text = parentSubcategoryOne.SubcategoryOneName;
+
+                    // Находим родителя SubcategoryOneName и помещаем его значение в categoryThirdTextB
+                    var parentCategory = FindParentCategory(parentSubcategoryOne);
+                    if (parentCategory != null)
+                    {
+                        categoryThirdTextB.Text = parentCategory.CategoryName;
+                    }
+                }
+            }
+        }
+
+        private Category FindParentCategory(SubcategoryOne subcategoryOne)
+        {
+            // Находим родительскую категорию, перебирая коллекцию элементов TreeView
+            var categories = TreeViewCategories.ItemsSource as IEnumerable<Category>;
+            return categories?.FirstOrDefault(category => category.SubcategoriesOne.Contains(subcategoryOne));
+        }
+
+        private SubcategoryOne FindParentSubcategoryOne(SubcategorySecond subcategorySecond)
+        {
+            // Находим родительскую SubcategoryOne, перебирая коллекцию элементов TreeView
+            var categories = TreeViewCategories.ItemsSource as IEnumerable<Category>;
+            foreach (var category in categories)
+            {
+                foreach (var subcategoryOne in category.SubcategoriesOne)
+                {
+                    if (subcategoryOne.SubcategoriesSecond.Contains(subcategorySecond))
+                    {
+                        return subcategoryOne;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            
         }
     }
 

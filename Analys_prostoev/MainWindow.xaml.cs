@@ -17,7 +17,7 @@ namespace Analys_prostoev
         private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
 
 
-       
+
         public MainWindow()
         {
             InitializeComponent();
@@ -67,14 +67,14 @@ namespace Analys_prostoev
                     parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
                 }
 
-                if(selectComboBox.SelectedItem != null)
+                if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
                     queryString += $" AND region = @selectedRegion";
                     parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion));
                 }
 
-               
+
 
                 using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
                 {
@@ -94,16 +94,17 @@ namespace Analys_prostoev
 
             // Получаем столбец текущей ячейки
             DataGridColumn column = cellInfo.Column;
+            var columnValue = column.Header.ToString();
 
             // Проверяем, что столбец имеет заголовок "category"
-            if (column.Header.ToString() == "category")
+            if (columnValue == "category_one" || columnValue == "category_two" || columnValue == "category_third")
             {
                 // Получаем объект данных
-                DataRowView rowView = (DataRowView)cellInfo.Item;
+                // DataRowView rowView = (DataRowView)cellInfo.Item;
                 // Получаем значение свойства Category;
-                string selectedData = rowView.Row["category"].ToString();
+                //string selectedData = rowView.Row["category"].ToString();
                 // Открываем новое окно и передаем значение ячейки
-                var newWindow = new CategoryHierarchy(selectedData);
+                var newWindow = new CategoryHierarchy(); // selectedData
                 newWindow.Show();
             }
         }

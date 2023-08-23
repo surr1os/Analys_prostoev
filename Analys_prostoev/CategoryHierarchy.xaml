@@ -7,7 +7,7 @@
         mc:Ignorable="d"
         Title="CategoryHierarchy" Height="450" Width="800">
     <Grid>
-        <TreeView x:Name="TreeViewCategories">
+        <TreeView x:Name="TreeViewCategories" SelectedItemChanged="TreeViewCategories_SelectedItemChanged">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesOne}">
                     <TextBlock Text="{Binding CategoryName}" />
@@ -16,14 +16,18 @@
                             <TextBlock Text="{Binding SubcategoryOneName}" />
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding SubcategorySecondName}" />
+                                    <TextBlock Text="{Binding SubcategorySecondName}"/>
                                 </DataTemplate>
                             </HierarchicalDataTemplate.ItemTemplate>
                         </HierarchicalDataTemplate>
                     </HierarchicalDataTemplate.ItemTemplate>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
-            </TreeView>
+        </TreeView>
 
+        <TextBox Name="categoryOneTextB" TextWrapping="Wrap" Text="category_one" Margin="152,63,-142,302" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox Name="categoryTwoTextB" TextWrapping="Wrap" Text="category_two" Margin="157,106,-137,237" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <TextBox Name="categoryThirdTextB" TextWrapping="Wrap" Text="category_third" Margin="150,164,-144,164" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Button Content="Сохранить" Margin="154,242,-140,77" Click="SaveButton_Click" MinWidth="200" MinHeight="50" MaxWidth="200" MaxHeight="50"/>
     </Grid>
 </Window>
