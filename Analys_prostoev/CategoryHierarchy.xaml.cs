@@ -10,14 +10,18 @@ namespace Analys_prostoev
 {
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
-    /// </summary>
+    /// </summary
+    
     public partial class CategoryHierarchy : Window
     {
+       
         public MainWindow ParentWindow { get; set; }
+       
         private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        public CategoryHierarchy()
+        public CategoryHierarchy(string regionValue)
         {
-            InitializeComponent();
+            RegionValue = regionValue;
+        InitializeComponent();
             //   categoryText.Text = cellValue;
             List<Category> categories = GetCategories(connectionString);
             
@@ -27,7 +31,7 @@ namespace Analys_prostoev
 
         }
         //Создаем модель представления
-
+        public string RegionValue { get; set; }
         public class Category
         {
             public string CategoryName { get; set; }
@@ -120,13 +124,16 @@ namespace Analys_prostoev
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
-
+                string subcategorySecondNameColumn = "subcategory_scnd_name";
+                string regionValue = RegionValue ?? string.Empty; // Добавьте проверку на null и присвойте пустую строку, если переменная regionValue равна null
+                if (regionValue.StartsWith("ХПТР"))
+                {
+                    subcategorySecondNameColumn = "subcategory_scnd_namehptr";
+                }
                 // Запрос для получения данных из таблицы Subcategory_scnd по заданной подкатегории
-                string subcategorySecondQuery = "SELECT subcategory_scnd_name FROM Subcategory_scnd WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName"; // здесь сделай проверку на равеноство                                                                                                                                               
-                                                                                                                                                       // categoryName и category_name из subcategory_scnd 
-                                                                                                                                                       // нужно добавить поле category_name в таблицу subcategory_scnd 
-
+                string subcategorySecondQuery = $"SELECT {subcategorySecondNameColumn} FROM Subcategory_scnd WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND {subcategorySecondNameColumn} IS NOT NULL";                                                                                                                           // здесь сделай проверку на равеноство                                                                                                                                               
                 using (NpgsqlCommand subcategorySecondCommand = new NpgsqlCommand(subcategorySecondQuery, connection))
+
                 {
                     subcategorySecondCommand.Parameters.AddWithValue("@SubcategoryOneName", subcategoryOneName);
                     subcategorySecondCommand.Parameters.AddWithValue("@CategoryName", categoryName);
@@ -135,13 +142,12 @@ namespace Analys_prostoev
                     {
                         while (subcategorySecondReader.Read())
                         {
-                            string subcategorySecondName = subcategorySecondReader["subcategory_scnd_name"].ToString();
+                            string subcategorySecondName = subcategorySecondReader[subcategorySecondNameColumn].ToString();
 
                             SubcategorySecond subcategorySecond = new SubcategorySecond
                             {
                                 SubcategorySecondName = subcategorySecondName
                             };
-
                             subcategoriesSecond.Add(subcategorySecond);
                         }
                     }

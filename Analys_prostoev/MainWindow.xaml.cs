@@ -7,6 +7,8 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Documents;
 using System;
+using System.Windows.Controls.Primitives;
+using System.Linq;
 
 namespace Analys_prostoev
 {
@@ -72,8 +74,8 @@ namespace Analys_prostoev
                 if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    queryString += $" AND region = @selectedRegion";
-                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion));
+                    queryString += $" AND region LIKE @selectedRegion";
+                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + "%"));
                 }
 
 
@@ -87,38 +89,69 @@ namespace Analys_prostoev
                     adapter.Fill(dataTable);
 
                     DataGridTable.ItemsSource = dataTable.DefaultView;
+                    DataGridTextColumn columnOne = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
+                    if (columnOne != null)
+                    {
+                        columnOne.Width = new DataGridLength(300); // Введите нужную вам ширину
+                    }
+
+                    DataGridTextColumn columnTwo = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
+                    if (columnTwo != null)
+                    {
+                        columnTwo.Width = new DataGridLength(300); // Введите нужную вам ширину
+                    }
+                    DataGridTextColumn columnThird = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
+                    if (columnThird != null)
+                    {
+                        columnThird.Width = new DataGridLength(300); // Введите нужную вам ширину
+                    }
                 }
             }
         }
+     
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
-
-            // Получаем столбец текущей ячейки
-            DataGridColumn column = cellInfo.Column;
-            var columnValue = column.Header.ToString();
-
-            // Проверяем, что столбец имеет заголовок "category"
-            if (columnValue == "category_one" || columnValue == "category_two" || columnValue == "category_third")
+            DataGridCellInfo cellInfo = DataGridTable.CurrentCell;                    
+                DataGridColumn column = cellInfo.Column;
+                if(cellInfo.Column == null )
             {
-                // Получаем объект данных
-                DataRowView rowView = (DataRowView)cellInfo.Item;
-                // Получаем значения ячеек выбранной строки
-                string categoryOneValue = rowView["category_one"].ToString();
-                string categoryTwoValue = rowView["category_two"].ToString();
-                string categoryThirdValue = rowView["category_third"].ToString();
-
-                // Создаем экземпляр окна CategoryHierarchy
-                var newWindow = new CategoryHierarchy();
-                newWindow.categoryOneTextB.Text = categoryOneValue;
-                newWindow.categoryTwoTextB.Text = categoryTwoValue;
-                newWindow.categoryThirdTextB.Text = categoryThirdValue;
-
-                // Устанавливаем родительское окно
-                newWindow.ParentWindow = this;
-
-                newWindow.Show();
+                return;
             }
+            else
+            {
+                var columnValue = column.Header.ToString();
+                
+                // Проверяем, что столбец имеет заголовок "category"
+                if (columnValue == "category_one" || columnValue == "category_two" || columnValue == "category_third")
+                {
+                    // Получаем объект данных
+                    DataRowView rowView = (DataRowView)cellInfo.Item;
+                    // Получаем значения ячеек выбранной строки
+
+                    string regionValue = rowView["region"].ToString();
+                    string categoryOneValue = rowView["category_one"].ToString();
+                    string categoryTwoValue = rowView["category_two"].ToString();
+                    string categoryThirdValue = rowView["category_third"].ToString();
+
+                    // Создаем экземпляр окна CategoryHierarchy
+                    var newWindow = new CategoryHierarchy(regionValue);
+                    newWindow.ParentWindow = this;
+                    // Открываем окно CategoryHierarchy
+                    newWindow.Show();
+
+                    // Установка значений других полей в окне CategoryHierarchy
+                    newWindow.categoryOneTextB.Text = categoryOneValue;
+                    newWindow.categoryTwoTextB.Text = categoryTwoValue;
+                    newWindow.categoryThirdTextB.Text = categoryThirdValue;
+
+                   
+                   
+                    // Устанавливаем родительское окно
+                    
+                
+                }
+            }
+
         }
         public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue)
         {
@@ -149,11 +182,11 @@ namespace Analys_prostoev
                         int rowsAffected = updateCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            Console.WriteLine("Обновление значения выполнено успешно");
+                           MessageBox.Show("Обновление значения выполнено успешно");
                         }
                         else
                         {
-                            Console.WriteLine("Ошибка при обновлении значения");
+                            MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
