@@ -117,7 +117,7 @@ namespace Analys_prostoev
 
             return subcategoriesOne;
         }
-        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName) // ,string categoryName
+        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName)
         {
             List<SubcategorySecond> subcategoriesSecond = new List<SubcategorySecond>();
 
@@ -219,12 +219,12 @@ namespace Analys_prostoev
                 string categoryOneValue = categoryOneTextB.Text;
                 string categoryTwoValue = categoryTwoTextB.Text;
                 string categoryThirdValue = categoryThirdTextB.Text;
-
+                string reasonValue = reasonTextB.Text;
                 // Закрываем текущее окно
                 this.Close();
 
                 // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
-                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue);
+                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue,reasonValue);
             }
         }
     }
