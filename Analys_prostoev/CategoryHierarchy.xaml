@@ -5,25 +5,40 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Analys_prostoev"
         mc:Ignorable="d"
-        Title="CategoryHierarchy" Height="450" Width="800">
+        Title="CategoryHierarchy" Height="450" Width="800" MinWidth="1200" MinHeight="500" MaxWidth="1200" MaxHeight="500">
     <Grid>
-        <TreeView x:Name="TreeViewCategories">
+        <TreeView x:Name="TreeViewCategories" SelectedItemChanged="TreeViewCategories_SelectedItemChanged" FontSize="16px" Margin="0,0,0,20">
             <TreeView.ItemTemplate>
                 <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesOne}">
                     <TextBlock Text="{Binding CategoryName}" />
                     <HierarchicalDataTemplate.ItemTemplate>
                         <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesSecond}">
-                            <TextBlock Text="{Binding SubcategoryOneName}" />
+                            <TextBlock Text="{Binding SubcategoryOneName}" Margin="5"/>
                             <HierarchicalDataTemplate.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock Text="{Binding SubcategorySecondName}" />
+                                    <TextBlock Text="{Binding SubcategorySecondName}" Margin="5"/>
                                 </DataTemplate>
                             </HierarchicalDataTemplate.ItemTemplate>
                         </HierarchicalDataTemplate>
                     </HierarchicalDataTemplate.ItemTemplate>
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
-            </TreeView>
+        </TreeView>
 
+        <TextBox Name="categoryOneTextB" TextWrapping="Wrap" Text="" Margin="454,-20,-144,166" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
+        <Label Content="Уровень 1" Margin="657,129,390,-99"/>
+
+        <TextBox Name="categoryTwoTextB" TextWrapping="Wrap" Text="" Margin="309,76,-289,147" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" RenderTransformOrigin="0.5,0.5">
+        </TextBox>
+        <Label Content="Уровень 2" Margin="657,189,391,-159"/>
+
+        <TextBox Name="categoryThirdTextB" TextWrapping="Wrap" Text="" Margin="309,32,-289,-12" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True"/>
+        <Label Content="Уровень 3" Margin="659,244,390,-224"/>
+        <TextBox Name="reasonTextB" TextWrapping="Wrap" Text="" Margin="309,88,-289,-68" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
+        <Label Content="Причина" Margin="659,302,390,-282"/>
+            
+        <Button Background="#FFF046" Content="Сохранить" Grid.Column="0" Margin="553,215,-45,-83" Click="SaveButton_Click" MinWidth="200" MinHeight="50" MaxWidth="200" MaxHeight="50" RenderTransformOrigin="0.499,0.509">
+
+        </Button>
     </Grid>
 </Window>

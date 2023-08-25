@@ -1,23 +1,27 @@
 ﻿using Npgsql;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using System.Windows;
-
-
+using System.Windows.Controls;
 using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
 {
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
-    /// </summary>
+    /// </summary
+    
     public partial class CategoryHierarchy : Window
     {
-
+       
+        public MainWindow ParentWindow { get; set; }
+       
         private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        public CategoryHierarchy(string cellValue)
+        public CategoryHierarchy(string regionValue)
         {
-            InitializeComponent();
+            RegionValue = regionValue;
+        InitializeComponent();
             //   categoryText.Text = cellValue;
             List<Category> categories = GetCategories(connectionString);
             
@@ -27,7 +31,7 @@ namespace Analys_prostoev
 
         }
         //Создаем модель представления
-
+        public string RegionValue { get; set; }
         public class Category
         {
             public string CategoryName { get; set; }
@@ -113,20 +117,23 @@ namespace Analys_prostoev
 
             return subcategoriesOne;
         }
-        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName) // ,string categoryName
+        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName)
         {
             List<SubcategorySecond> subcategoriesSecond = new List<SubcategorySecond>();
 
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
-
+                string subcategorySecondNameColumn = "subcategory_scnd_name";
+                string regionValue = RegionValue ?? string.Empty; // Добавьте проверку на null и присвойте пустую строку, если переменная regionValue равна null
+                if (regionValue.StartsWith("ХПТР"))
+                {
+                    subcategorySecondNameColumn = "subcategory_scnd_namehptr";
+                }
                 // Запрос для получения данных из таблицы Subcategory_scnd по заданной подкатегории
-                string subcategorySecondQuery = "SELECT subcategory_scnd_name FROM Subcategory_scnd WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName"; // здесь сделай проверку на равеноство                                                                                                                                               
-                                                                                                                                                       // categoryName и category_name из subcategory_scnd 
-                                                                                                                                                       // нужно добавить поле category_name в таблицу subcategory_scnd 
-
+                string subcategorySecondQuery = $"SELECT {subcategorySecondNameColumn} FROM Subcategory_scnd WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND {subcategorySecondNameColumn} IS NOT NULL";                                                                                                                           // здесь сделай проверку на равеноство                                                                                                                                               
                 using (NpgsqlCommand subcategorySecondCommand = new NpgsqlCommand(subcategorySecondQuery, connection))
+
                 {
                     subcategorySecondCommand.Parameters.AddWithValue("@SubcategoryOneName", subcategoryOneName);
                     subcategorySecondCommand.Parameters.AddWithValue("@CategoryName", categoryName);
@@ -135,13 +142,12 @@ namespace Analys_prostoev
                     {
                         while (subcategorySecondReader.Read())
                         {
-                            string subcategorySecondName = subcategorySecondReader["subcategory_scnd_name"].ToString();
+                            string subcategorySecondName = subcategorySecondReader[subcategorySecondNameColumn].ToString();
 
                             SubcategorySecond subcategorySecond = new SubcategorySecond
                             {
                                 SubcategorySecondName = subcategorySecondName
                             };
-
                             subcategoriesSecond.Add(subcategorySecond);
                         }
                     }
@@ -149,6 +155,77 @@ namespace Analys_prostoev
             }
 
             return subcategoriesSecond;
+        }
+
+
+        private void TreeViewCategories_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
+        {
+            // Получаем выбранный элемент TreeView
+            var selectedItem = TreeViewCategories.SelectedItem as SubcategorySecond;
+
+            if (selectedItem != null)
+            {
+                // Помещаем значение SubcategorySecondName в categoryOneTextB
+                categoryThirdTextB.Text = selectedItem.SubcategorySecondName;
+
+
+                // Находим родителя SubcategorySecondName и помещаем его значение в categoryTwoTextB
+                var parentSubcategoryOne = FindParentSubcategoryOne(selectedItem);
+                if (parentSubcategoryOne != null)
+                {
+                    categoryTwoTextB.Text = parentSubcategoryOne.SubcategoryOneName;
+
+                    // Находим родителя SubcategoryOneName и помещаем его значение в categoryThirdTextB
+                    var parentCategory = FindParentCategory(parentSubcategoryOne);
+                    if (parentCategory != null)
+                    {
+                        categoryOneTextB.Text = parentCategory.CategoryName;
+                        
+                    }
+                }
+            }
+        }
+
+        private Category FindParentCategory(SubcategoryOne subcategoryOne)
+        {
+            // Находим родительскую категорию, перебирая коллекцию элементов TreeView
+            var categories = TreeViewCategories.ItemsSource as IEnumerable<Category>;
+            return categories?.FirstOrDefault(category => category.SubcategoriesOne.Contains(subcategoryOne));
+        }
+
+        private SubcategoryOne FindParentSubcategoryOne(SubcategorySecond subcategorySecond)
+        {
+            // Находим родительскую SubcategoryOne, перебирая коллекцию элементов TreeView
+            var categories = TreeViewCategories.ItemsSource as IEnumerable<Category>;
+            foreach (var category in categories)
+            {
+                foreach (var subcategoryOne in category.SubcategoriesOne)
+                {
+                    if (subcategoryOne.SubcategoriesSecond.Contains(subcategorySecond))
+                    {
+                        return subcategoryOne;
+                    }
+                }
+            }
+            return null;
+        }
+
+        private void SaveButton_Click(object sender, RoutedEventArgs e)
+        {
+            // Проверяем, что родительское окно является экземпляром класса MainWindow
+            if (ParentWindow is MainWindow mainWindow)
+            {
+                // Получаем значения из текстовых полей
+                string categoryOneValue = categoryOneTextB.Text;
+                string categoryTwoValue = categoryTwoTextB.Text;
+                string categoryThirdValue = categoryThirdTextB.Text;
+                string reasonValue = reasonTextB.Text;
+                // Закрываем текущее окно
+                this.Close();
+
+                // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
+                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue,reasonValue);
+            }
         }
     }
 
