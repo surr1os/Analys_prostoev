@@ -23,9 +23,15 @@
         <DatePicker x:Name="endDatePicker" Grid.Row="1" Margin="146,10,-198,10" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Grid.Column="1"/>
         <ComboBox x:Name="selectComboBox" Grid.Row="1" Margin="3,10,485,10" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
  IsReadOnly="True"
- Text="Выберите участок" Grid.ColumnSpan="2"/>
-        <Button Content="Загрузить" Click="Button_Click" Grid.Row="2" Margin="10,10,10,10" MaxWidth="252" MaxHeight="44" Grid.ColumnSpan="2"/>
-        <DataGrid x:Name="DataGridTable" Grid.Row="3" Margin="10,10,10,10" AutoGenerateColumns="True" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Grid.ColumnSpan="2" RowBackground="#FFF046" AlternatingRowBackground="#C0C0C0">
+ Text="Выберите участок" Grid.ColumnSpan="2">
+
+        </ComboBox>
+        <ComboBox x:Name="selectRowComboBox" Grid.Row="1" Margin="-256,10,744,10" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
+IsReadOnly="True"
+Text="Все строки" Grid.ColumnSpan="2">
+        </ComboBox>
+        <Button Background="#FFF046" Content="Загрузить" Click="Button_Click" Grid.Row="1" Margin="396,12,-433,12" MaxWidth="252" MaxHeight="44" Grid.Column="1"/>
+        <DataGrid Height="auto" x:Name="DataGridTable" Grid.Row="2" Margin="10,0,10,0" AutoGenerateColumns="True" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Grid.ColumnSpan="2" RowBackground="#FFF046" AlternatingRowBackground="#C0C0C0" Grid.RowSpan="2">
 
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">

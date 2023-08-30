@@ -46,6 +46,14 @@ namespace Analys_prostoev
                     }
                 }
             }
+            CreateSelectRowCB();
+        }
+
+        private void CreateSelectRowCB()
+        {
+            selectRowComboBox.Items.Add("Все строки");
+            selectRowComboBox.Items.Add("Классифицированные строки");
+            selectRowComboBox.Items.Add("Неклассифицированные строки");
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -73,11 +81,40 @@ namespace Analys_prostoev
 
                 if (selectComboBox.SelectedItem != null)
                 {
+
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    queryString += $" AND region LIKE @selectedRegion";
-                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + "%"));
+
+                 
+                   
+
+                    if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
+                    {
+                        queryString += $" AND region ILIKE @selectedRegion";
+                    }   
+                    else
+                    {
+                        queryString += $" AND region = @selectedRegionCurrent";
+                        parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
+                    }
+                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
                 }
 
+                if (selectRowComboBox.SelectedItem != null)
+                {
+                    string rowSelect = selectRowComboBox.SelectedItem.ToString();
+                    if (rowSelect == "Все строки")
+                    {
+                        queryString += "";
+                    }
+                    else if (rowSelect == "Классифицированные строки")
+                    {
+                        queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                    }
+                    else if (rowSelect == "Неклассифицированные строки")
+                    {
+                        queryString += " AND (category_one IS NULL OR category_one = '') OR (category_two IS NULL OR category_two = '') OR (category_third IS NULL OR category_third = '')";
+                    }
+                }
 
 
                 using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
@@ -89,92 +126,97 @@ namespace Analys_prostoev
                     adapter.Fill(dataTable);
 
                     DataGridTable.ItemsSource = dataTable.DefaultView;
-                    DataGridTextColumn category_level_one = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
-                    if (category_level_one != null)
-                    {
-                        category_level_one.Width = new DataGridLength(300); // Введите нужную вам ширину
-                        category_level_one.Header = "Категория Уровень 1";
+                    SetNewColumnNames();
+                }
+            }
+        }
 
-                    }
+        private void SetNewColumnNames()
+        {
+            DataGridTextColumn category_level_one = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
+            if (category_level_one != null)
+            {
+                category_level_one.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_one.Header = "Категория Уровень 1";
 
-                    DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
-                    if (category_level_two != null)
-                    {
-                        category_level_two.Width = new DataGridLength(300); // Введите нужную вам ширину
-                        category_level_two.Header = "Категория Уровень 2";
-                    }
-                    DataGridTextColumn category_level_third = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
-                    if (category_level_third != null)
-                    {
-                        category_level_third.Width = new DataGridLength(300); // Введите нужную вам ширину
-                        category_level_third.Header = "Категория Уровень 3";
-                    }
-                    DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
-                    if (reason != null)
-                    {
-                        reason.Header = "Причина";
-                    }
+            }
 
-                    DataGridTextColumn date_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_start");
-                    if (date_start != null)
-                    {
-                        date_start.Header = "Дата Начала";
-                    }
-                    DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_finish");
-                    if (date_finish != null)
-                    {
-                        date_finish.Header = "Дата Финиша";
-                    }
-                    DataGridTextColumn period = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "period");
-                    if (period != null)
-                    {
-                        period.Header = "Период";
-                    }
-                    DataGridTextColumn change_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_start");
-                    if (change_start != null)
-                    {
-                        change_start.Header = "Измененный Старт";
-                    }
-                    DataGridTextColumn change_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_finish");
-                    if (change_finish != null)
-                    {
-                        change_finish.Header = "Измененный Финиш";
-                    }
-                    DataGridTextColumn condition = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "condition");
-                    if (condition != null)
-                    {
-                        condition.Header = "Состояние";
-                    }
-                    DataGridTextColumn device = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "device");
-                    if (period != null)
-                    {
-                        period.Header = "Устройство";
-                    }
-                    DataGridTextColumn coefficient = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "coefficient");
-                    if (coefficient != null)
-                    {
-                        coefficient.Header = "Коэффициент";
-                    }
-                    DataGridTextColumn note = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "note");
-                    if (note != null)
-                    {
-                        note.Header = "Комментарий";
+            DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
+            if (category_level_two != null)
+            {
+                category_level_two.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_two.Header = "Категория Уровень 2";
+            }
+            DataGridTextColumn category_level_third = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
+            if (category_level_third != null)
+            {
+                category_level_third.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_third.Header = "Категория Уровень 3";
+            }
+            DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
+            if (reason != null)
+            {
+                reason.Header = "Причина";
+            }
 
-                        DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
-                        if (region != null)
-                        {
-                            region.Header = "Участок";
-                        }
-                    }
-                    foreach (DataGridColumn column in DataGridTable.Columns)
-                    {
-                        DataGridTextColumn textColumn = column as DataGridTextColumn;
-                        if (textColumn != null)
-                        {
-                            textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
-                            textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
-                        }
-                    }
+            DataGridTextColumn date_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_start");
+            if (date_start != null)
+            {
+                date_start.Header = "Дата Начала";
+            }
+            DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_finish");
+            if (date_finish != null)
+            {
+                date_finish.Header = "Дата Финиша";
+            }
+            DataGridTextColumn period = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "period");
+            if (period != null)
+            {
+                period.Header = "Период";
+            }
+            DataGridTextColumn change_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_start");
+            if (change_start != null)
+            {
+                change_start.Header = "Измененный Старт";
+            }
+            DataGridTextColumn change_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_finish");
+            if (change_finish != null)
+            {
+                change_finish.Header = "Измененный Финиш";
+            }
+            DataGridTextColumn condition = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "condition");
+            if (condition != null)
+            {
+                condition.Header = "Состояние";
+            }
+            DataGridTextColumn device = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "device");
+            if (period != null)
+            {
+                period.Header = "Устройство";
+            }
+            DataGridTextColumn coefficient = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "coefficient");
+            if (coefficient != null)
+            {
+                coefficient.Header = "Коэффициент";
+            }
+            DataGridTextColumn note = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "note");
+            if (note != null)
+            {
+                note.Header = "Комментарий";
+
+                DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
+                if (region != null)
+                {
+                    region.Header = "Участок";
+                }
+            }
+            foreach (DataGridColumn column in DataGridTable.Columns)
+            {
+                DataGridTextColumn textColumn = column as DataGridTextColumn;
+                if (textColumn != null)
+                {
+                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
                 }
             }
         }
