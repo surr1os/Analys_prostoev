@@ -12,15 +12,11 @@ using System.Linq;
 
 namespace Analys_prostoev
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
+ 
     public partial class MainWindow : Window
     {
         // private string connectionString = "Host=10.241.224.71;Port=5432;Database=planning_dept_db;Username=postgres_10_241_224_71;Password=feDoz5Xreh";
         private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-
-
 
         public MainWindow()
         {
@@ -48,14 +44,12 @@ namespace Analys_prostoev
             }
             CreateSelectRowCB();
         }
-
         private void CreateSelectRowCB()
         {
             selectRowComboBox.Items.Add("Все строки");
             selectRowComboBox.Items.Add("Классифицированные строки");
             selectRowComboBox.Items.Add("Неклассифицированные строки");
         }
-
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
@@ -81,12 +75,7 @@ namespace Analys_prostoev
 
                 if (selectComboBox.SelectedItem != null)
                 {
-
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-
-                 
-                   
-
                     if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                     {
                         queryString += $" AND region ILIKE @selectedRegion";
@@ -190,9 +179,9 @@ namespace Analys_prostoev
                 condition.Header = "Состояние";
             }
             DataGridTextColumn device = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "device");
-            if (period != null)
+            if (device != null)
             {
-                period.Header = "Устройство";
+                device.Header = "Устройство";
             }
             DataGridTextColumn coefficient = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "coefficient");
             if (coefficient != null)
@@ -220,7 +209,6 @@ namespace Analys_prostoev
                 }
             }
         }
-
             private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
             {
                 DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
@@ -257,13 +245,8 @@ namespace Analys_prostoev
                         newWindow.categoryThirdTextB.Text = categoryThirdValue;
                         newWindow.reasonTextB.Text = reason;
 
-
-                        // Устанавливаем родительское окно
-
-
                     }
                 }
-
             }
             public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
             {
