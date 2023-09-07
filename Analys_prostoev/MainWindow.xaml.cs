@@ -9,10 +9,12 @@ using System.Windows.Documents;
 using System;
 using System.Windows.Controls.Primitives;
 using System.Linq;
+using System.Data.SqlClient;
+using NpgsqlTypes;
 
 namespace Analys_prostoev
 {
- 
+
     public partial class MainWindow : Window
     {
         // private string connectionString = "Host=10.241.224.71;Port=5432;Database=planning_dept_db;Username=postgres_10_241_224_71;Password=feDoz5Xreh";
@@ -42,71 +44,83 @@ namespace Analys_prostoev
                     }
                 }
             }
-            selectDataFromTrends();
+            SelectDataFromTrends();
             CreateSelectRowCB();
         }
 
-        private void selectDataFromTrends()
+        public class AnalysisTest
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
-            {
-                connection.Open();
-                // Получаем значения из таблицы trends
-                using (var cmd = new NpgsqlCommand("SELECT t, v FROM trends ORDER BY t", connection))
-                using (var reader = cmd.ExecuteReader())
-                {
-                    DateTime dateStart = DateTime.MinValue;
-                    DateTime dateFinish = DateTime.MinValue;
-                    double v1 = 1;
-
-                    while (reader.Read())
-                    {
-                        DateTime t = reader.GetDateTime(0);
-                        double v2 = reader.GetDouble(1);
-
-                        if (v1 == 0 && v2 == 1 && t.Millisecond == dateStart.Millisecond)
-                        {
-                            dateFinish = t;
-                            break;
-                        }
-
-                        if (v1 == 1 && v2 == 0)
-                        {
-                            dateStart = t;
-                        }
-
-                        v1 = v2;
-                    }
-
-                    // Закрываем предыдущий DataReader перед выполнением следующего запроса
-                    reader.Close();
-
-                    // Вытаскиваем значение из hpt_select_trends
-                    int id = 2; // Идентификатор для сравнения
-                    string region = "";
-                    using (var cmd2 = new NpgsqlCommand("SELECT region FROM hpt_select_trends WHERE id = @id", connection))
-                    {
-                        cmd2.Parameters.AddWithValue("id", id);
-                        region = (string)cmd2.ExecuteScalar();
-
-                    }
-
-                    // Вставляем значения в таблицу analysistest
-                    using (var cmd3 = new NpgsqlCommand("INSERT INTO analysistest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)", connection))
-                    {
-                        cmd3.Parameters.AddWithValue("@date_start", dateStart);
-                        cmd3.Parameters.AddWithValue("@date_finish", dateFinish);
-                        cmd3.Parameters.AddWithValue("@region", NpgsqlTypes.NpgsqlDbType.Text, region); // Устанавливаем тип параметра 'region'
-                        cmd3.ExecuteNonQuery();
-                    }
-                }
-            }
+            public DateTime date_start { get; set; }
+            public DateTime date_finish { get; set; }
+            public int id { get; set; }
+            public string region { get; set; }
         }
 
 
+        private void SelectDataFromTrends()
+        {
+            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0";
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+                NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
+                NpgsqlDataReader reader = command.ExecuteReader();
 
+                // Список для хранения строк analysisTest
+                List<AnalysisTest> analysisTests = new List<AnalysisTest>();
 
+                // Чтение данных из таблицы trends
+                while (reader.Read())
+                {
+                    // Чтение значений полей t и v
+                    int id = reader.GetInt32(0);
+                    DateTime t = reader.GetDateTime(1);
+                    double v = reader.GetDouble(2);
 
+                    // Проверка значения поля v 
+                    if (v == 1)
+                    {
+                        // Записываем значение поля t в date_start
+                        analysisTests.Add(new AnalysisTest { id = id, date_start = t });
+                    }
+                    else if (v == 0 && analysisTests.Count > 0)
+                    {
+                        // Записываем значение поля t в date_finish и добавляем строку analysisTest в таблицу
+                        analysisTests[analysisTests.Count - 1].date_finish = t;
+                    }
+                }
+
+                reader.Close();
+
+                // Получение значения из таблицы hpt_select_trends и добавление в каждую строку analysisTest
+                foreach (AnalysisTest analysisTest in analysisTests)
+                {
+                    string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
+
+                    NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connection);
+                    hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
+
+                    NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
+
+                    if (hptReader.Read())
+                    {
+                        // Чтение значения поля region
+                        analysisTest.region = hptReader.GetString(0);
+                    }
+
+                    hptReader.Close();
+
+                    // Вставка строки в таблицу analysisTest
+                    string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)";
+
+                    NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection);
+                    insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+                    insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
+                    insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+                    insertCommand.ExecuteNonQuery();
+                }
+            }
+        }
 
         private void CreateSelectRowCB()
         {
