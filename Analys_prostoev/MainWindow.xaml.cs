@@ -42,8 +42,72 @@ namespace Analys_prostoev
                     }
                 }
             }
+            selectDataFromTrends();
             CreateSelectRowCB();
         }
+
+        private void selectDataFromTrends()
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+                // Получаем значения из таблицы trends
+                using (var cmd = new NpgsqlCommand("SELECT t, v FROM trends ORDER BY t", connection))
+                using (var reader = cmd.ExecuteReader())
+                {
+                    DateTime dateStart = DateTime.MinValue;
+                    DateTime dateFinish = DateTime.MinValue;
+                    double v1 = 1;
+
+                    while (reader.Read())
+                    {
+                        DateTime t = reader.GetDateTime(0);
+                        double v2 = reader.GetDouble(1);
+
+                        if (v1 == 0 && v2 == 1 && t.Millisecond == dateStart.Millisecond)
+                        {
+                            dateFinish = t;
+                            break;
+                        }
+
+                        if (v1 == 1 && v2 == 0)
+                        {
+                            dateStart = t;
+                        }
+
+                        v1 = v2;
+                    }
+
+                    // Закрываем предыдущий DataReader перед выполнением следующего запроса
+                    reader.Close();
+
+                    // Вытаскиваем значение из hpt_select_trends
+                    int id = 2; // Идентификатор для сравнения
+                    string region = "";
+                    using (var cmd2 = new NpgsqlCommand("SELECT region FROM hpt_select_trends WHERE id = @id", connection))
+                    {
+                        cmd2.Parameters.AddWithValue("id", id);
+                        region = (string)cmd2.ExecuteScalar();
+
+                    }
+
+                    // Вставляем значения в таблицу analysistest
+                    using (var cmd3 = new NpgsqlCommand("INSERT INTO analysistest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)", connection))
+                    {
+                        cmd3.Parameters.AddWithValue("@date_start", dateStart);
+                        cmd3.Parameters.AddWithValue("@date_finish", dateFinish);
+                        cmd3.Parameters.AddWithValue("@region", NpgsqlTypes.NpgsqlDbType.Text, region); // Устанавливаем тип параметра 'region'
+                        cmd3.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+
+
+
+
+
         private void CreateSelectRowCB()
         {
             selectRowComboBox.Items.Add("Все строки");
@@ -56,7 +120,7 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                string queryString = "SELECT * FROM analysis WHERE 1=1";
+                string queryString = "SELECT * FROM analysistest WHERE 1=1";
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                 if (startDatePicker.SelectedDate != null)
@@ -148,12 +212,12 @@ namespace Analys_prostoev
                 reason.Header = "Причина";
             }
 
-            DataGridTextColumn date_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_start");
+            DataGridTextColumn date_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_start");
             if (date_start != null)
             {
                 date_start.Header = "Дата Начала";
             }
-            DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Date_finish");
+            DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_finish");
             if (date_finish != null)
             {
                 date_finish.Header = "Дата Финиша";
@@ -162,43 +226,13 @@ namespace Analys_prostoev
             if (period != null)
             {
                 period.Header = "Период";
-            }
-            DataGridTextColumn change_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_start");
-            if (change_start != null)
-            {
-                change_start.Header = "Измененный Старт";
-            }
-            DataGridTextColumn change_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Change_finish");
-            if (change_finish != null)
-            {
-                change_finish.Header = "Измененный Финиш";
-            }
-            DataGridTextColumn condition = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "condition");
-            if (condition != null)
-            {
-                condition.Header = "Состояние";
-            }
-            DataGridTextColumn device = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "device");
-            if (device != null)
-            {
-                device.Header = "Устройство";
-            }
-            DataGridTextColumn coefficient = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "coefficient");
-            if (coefficient != null)
-            {
-                coefficient.Header = "Коэффициент";
-            }
-            DataGridTextColumn note = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "note");
-            if (note != null)
-            {
-                note.Header = "Комментарий";
-
+            }      
                 DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
                 if (region != null)
                 {
                     region.Header = "Участок";
                 }
-            }
+            
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
                 DataGridTextColumn textColumn = column as DataGridTextColumn;
@@ -265,7 +299,7 @@ namespace Analys_prostoev
                     {
                         connection.Open();
 
-                        string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
+                        string updateQuery = "UPDATE analysistest SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
                         using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
                         {
                             updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
