@@ -131,7 +131,6 @@ namespace Analys_prostoev
                             if(count == 0)
                             {
                                 string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)";
-
                                 NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection);
                                 insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
                                 insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);

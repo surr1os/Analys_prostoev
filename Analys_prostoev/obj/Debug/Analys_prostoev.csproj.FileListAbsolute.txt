@@ -133,8 +133,6 @@ C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\System.Val
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.AssemblyReference.cache
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.SuggestedBindingRedirects.cache
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.exe.config
-C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\MainWindow.baml
-C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\MainWindow.g.cs
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\CategoryHierarchy.g.cs
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\ReasonHierarchy.g.cs
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\App.g.cs
@@ -201,3 +199,5 @@ C:\Users\Kostya\source\Repos\surr1os\Analys_prostoev\Analys_prostoev\obj\Debug\A
 C:\Users\Kostya\source\Repos\surr1os\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.CopyComplete
 C:\Users\Kostya\source\Repos\surr1os\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.exe
 C:\Users\Kostya\source\Repos\surr1os\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.pdb
+C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\MainWindow.baml
+C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\MainWindow.g.cs

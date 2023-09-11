@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Analys_prostoev"
         mc:Ignorable="d"
-        Title="CategoryHierarchy" Height="450" Width="800" MinWidth="1200" MinHeight="500" MaxWidth="1200" MaxHeight="500">
+        Title="Выбор категории простоя" Height="450" Width="800" MinWidth="1200" MinHeight="500" MaxWidth="1200" MaxHeight="500">
     <Grid>
         <TreeView x:Name="TreeViewCategories" SelectedItemChanged="TreeViewCategories_SelectedItemChanged" FontSize="16px" Margin="0,0,0,20">
             <TreeView.ItemTemplate>
