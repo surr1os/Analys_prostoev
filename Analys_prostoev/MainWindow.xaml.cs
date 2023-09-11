@@ -65,61 +65,86 @@ namespace Analys_prostoev
                 connection.Open();
                 NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
                 NpgsqlDataReader reader = command.ExecuteReader();
-
+                DateTime previousT = DateTime.MinValue;
                 // Список для хранения строк analysisTest
                 List<AnalysisTest> analysisTests = new List<AnalysisTest>();
-
-                // Чтение данных из таблицы trends
+                int previousMilliseconds = -1; // Предыдущее значение миллисекунд                                           
                 while (reader.Read())
                 {
                     // Чтение значений полей t и v
                     int id = reader.GetInt32(0);
                     DateTime t = reader.GetDateTime(1);
                     double v = reader.GetDouble(2);
-
-                    // Проверка значения поля v 
+                    int milliseconds = t.Millisecond;
+                    // Проверка значения поля v
                     if (v == 1)
                     {
-                        // Записываем значение поля t в date_start
+                        previousMilliseconds = milliseconds;
                         analysisTests.Add(new AnalysisTest { id = id, date_start = t });
+                        previousT = t;
+                        
                     }
-                    else if (v == 0 && analysisTests.Count > 0)
+                    else if (v == 0 && analysisTests.Count > 0 && milliseconds == previousMilliseconds)
                     {
-                        // Записываем значение поля t в date_finish и добавляем строку analysisTest в таблицу
+
+                        // Записываем значение поля t в datefinish и добавляем строку analysisTest в таблицу
                         analysisTests[analysisTests.Count - 1].date_finish = t;
+                        previousT = DateTime.MinValue;
+                        previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
                     }
+                    else
+                    {
+                        continue;
+                    }
+                    
                 }
 
-                reader.Close();
 
+                reader.Close();
+                int addRowsCount = 0;
                 // Получение значения из таблицы hpt_select_trends и добавление в каждую строку analysisTest
                 foreach (AnalysisTest analysisTest in analysisTests)
                 {
-                    string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
-
-                    NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connection);
-                    hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
-
-                    NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
-
-                    if (hptReader.Read())
+                    if (analysisTest.date_finish != DateTime.MinValue)
                     {
-                        // Чтение значения поля region
-                        analysisTest.region = hptReader.GetString(0);
-                    }
+                        // Проверка на уже обработанные строки
 
-                    hptReader.Close();
+                            string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
 
-                    // Вставка строки в таблицу analysisTest
-                    string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)";
+                            NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connection);
+                            hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
 
-                    NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection);
-                    insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-                    insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
-                    insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
-                    insertCommand.ExecuteNonQuery();
+                            NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
+
+                            if (hptReader.Read())
+                            {
+                                // Чтение значения поля region
+                                analysisTest.region = hptReader.GetString(0);
+                            }
+
+                            hptReader.Close();
+                            NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connection);
+                            selectCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+                            selectCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+
+                            int count = Convert.ToInt32(selectCommand.ExecuteScalar());
+                            if(count == 0)
+                            {
+                                string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)";
+
+                                NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection);
+                                insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+                                insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
+                                insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+                                insertCommand.ExecuteNonQuery();
+                                addRowsCount++;
+                            }            
+                    }               
                 }
+                MessageBox.Show("Добавлено строк " + addRowsCount);
+
             }
+            
         }
 
         private void CreateSelectRowCB()
@@ -139,14 +164,14 @@ namespace Analys_prostoev
 
                 if (startDatePicker.SelectedDate != null)
                 {
-                    queryString += " AND TO_DATE(\"Date_start\", 'DD-MM-YYYY') >= @startDate";
+                    queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') >= @startDate";
                     parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Date));
                     parameters[parameters.Count - 1].Value = startDatePicker.SelectedDate;
                 }
 
                 if (endDatePicker.SelectedDate != null)
                 {
-                    queryString += " AND TO_DATE(\"Date_start\", 'DD-MM-YYYY') <= @endDate";
+                    queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') <= @endDate";
                     parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Date));
                     parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
                 }
@@ -223,6 +248,7 @@ namespace Analys_prostoev
             DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
             if (reason != null)
             {
+                reason.Width = new DataGridLength(300);
                 reason.Header = "Причина";
             }
 
