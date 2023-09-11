@@ -11,20 +11,20 @@ namespace Analys_prostoev
     /// <summary>
     /// Логика взаимодействия для Window1.xaml
     /// </summary
-    
+
     public partial class CategoryHierarchy : Window
     {
-       
+
         public MainWindow ParentWindow { get; set; }
-       
+
         private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
         public CategoryHierarchy(string regionValue)
         {
             RegionValue = regionValue;
-        InitializeComponent();
+            InitializeComponent();
             //   categoryText.Text = cellValue;
             List<Category> categories = GetCategories(connectionString);
-            
+
 
             // Установка источника данных для TreeView
             TreeViewCategories.ItemsSource = categories;
@@ -117,7 +117,7 @@ namespace Analys_prostoev
 
             return subcategoriesOne;
         }
-        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName,string categoryName)
+        private List<SubcategorySecond> GetSubcategoriesSecond(string connectionString, string subcategoryOneName, string categoryName)
         {
             List<SubcategorySecond> subcategoriesSecond = new List<SubcategorySecond>();
 
@@ -180,7 +180,7 @@ namespace Analys_prostoev
                     if (parentCategory != null)
                     {
                         categoryOneTextB.Text = parentCategory.CategoryName;
-                        
+
                     }
                 }
             }
@@ -224,7 +224,7 @@ namespace Analys_prostoev
                 this.Close();
 
                 // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
-                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue,reasonValue);
+                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue, reasonValue);
             }
         }
     }
@@ -233,9 +233,9 @@ namespace Analys_prostoev
 
 }
 
-                
-                
-            
-        
-    
+
+
+
+
+
 

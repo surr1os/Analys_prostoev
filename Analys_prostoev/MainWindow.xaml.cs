@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 //using pree
-    using System.Windows.Controls;
+using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Documents;
@@ -59,7 +59,7 @@ namespace Analys_prostoev
 
         private void SelectDataFromTrends()
         {
-            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 8";
+            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 2";
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionStringSecond))
             {
                 connection.Open();
@@ -71,19 +71,20 @@ namespace Analys_prostoev
                 int previousMilliseconds = -1; // Предыдущее значение миллисекунд                                           
                 while (reader.Read())
                 {
-                    // Чтение значений полей t и v
+                    // Чтение значений полей id t и v
                     int id = reader.GetInt32(0);
                     DateTime t = reader.GetDateTime(1);
                     double v = reader.GetDouble(2);
                     int milliseconds = t.Millisecond;
-                    // Проверка значения поля v
+
                     if (v == 1)
                     {
                         previousMilliseconds = milliseconds;
                         analysisTests.Add(new AnalysisTest { id = id, date_start = t });
                         previousT = t;
-                        
+
                     }
+
                     else if (v == 0 && analysisTests.Count > 0 && milliseconds == previousMilliseconds)
                     {
 
@@ -93,28 +94,30 @@ namespace Analys_prostoev
 
                         previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
                     }
+
                     else
                     {
                         continue;
                     }
-                    
+
                 }
 
 
                 reader.Close();
                 int addRowsCount = 0;
-                // Получение значения из таблицы hpt_select_trends и добавление в каждую строку analysisTest
+                int sameRowsCount = 0;
+                int minutesRowsCount = 0;
                 foreach (AnalysisTest analysisTest in analysisTests)
                 {
                     using (NpgsqlConnection connectionSecond = new NpgsqlConnection(connectionString))
                     {
-                       
+
                         if (analysisTest.date_finish != DateTime.MinValue)
                         {
                             // Проверка на уже обработанные строки
 
                             connectionSecond.Open();
-                           
+
                             string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
 
                             NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
@@ -138,7 +141,7 @@ namespace Analys_prostoev
                             {
                                 TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
                                 int minutes = (int)period.TotalMinutes;
-                                if(minutes >= 5)
+                                if (minutes >= 5)
                                 {
                                     string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
                                     NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
@@ -148,16 +151,24 @@ namespace Analys_prostoev
                                     insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
                                     insertCommand.ExecuteNonQuery();
                                     addRowsCount++;
-                                }                            
+                                }
+                                else
+                                {
+                                    minutesRowsCount++;
+                                }
+                            }
+                            else
+                            {
+                                sameRowsCount++;
                             }
                         }
                     }
-                
+
                 }
-                MessageBox.Show("Добавлено строк " + addRowsCount);
+                MessageBox.Show($"Добавлено строк: {addRowsCount}\nНе добавлено:\nПохожих строк: {sameRowsCount}\nС периодом < 5 минут: {minutesRowsCount}"); ;
 
             }
-            
+
         }
 
         private void CreateSelectRowCB()
@@ -195,7 +206,7 @@ namespace Analys_prostoev
                     if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                     {
                         queryString += $" AND region ILIKE @selectedRegion";
-                    }   
+                    }
                     else
                     {
                         queryString += $" AND region = @selectedRegionCurrent";
@@ -217,7 +228,7 @@ namespace Analys_prostoev
                     }
                     else if (rowSelect == "Неклассифицированные строки")
                     {
-                        queryString += " AND (category_one IS NULL OR category_one = '') OR (category_two IS NULL OR category_two = '') OR (category_third IS NULL OR category_third = '')";
+                        queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
                     }
                 }
 
@@ -279,13 +290,13 @@ namespace Analys_prostoev
             if (period != null)
             {
                 period.Header = "Период";
-            }      
-                DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
-                if (region != null)
-                {
-                    region.Header = "Участок";
-                }
-            
+            }
+            DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
+            if (region != null)
+            {
+                region.Header = "Участок";
+            }
+
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
                 DataGridTextColumn textColumn = column as DataGridTextColumn;
@@ -296,89 +307,89 @@ namespace Analys_prostoev
                 }
             }
         }
-            private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
+            DataGridColumn column = cellInfo.Column;
+            if (cellInfo.Column == null)
             {
-                DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
-                DataGridColumn column = cellInfo.Column;
-                if (cellInfo.Column == null)
+                return;
+            }
+            else
+            {
+                var columnValue = column.Header.ToString();
+
+                // Проверяем, что столбец имеет заголовок "category"
+                if (columnValue == "Категория Уровень 1" || columnValue == "Категория Уровень 2" || columnValue == "Категория Уровень 3" || columnValue == "Причина")
                 {
-                    return;
-                }
-                else
-                {
-                    var columnValue = column.Header.ToString();
+                    // Получаем объект данных
+                    DataRowView rowView = (DataRowView)cellInfo.Item;
+                    // Получаем значения ячеек выбранной строки
+                    string reason = rowView["reason"].ToString();
+                    string regionValue = rowView["region"].ToString();
+                    string categoryOneValue = rowView["category_one"].ToString();
+                    string categoryTwoValue = rowView["category_two"].ToString();
+                    string categoryThirdValue = rowView["category_third"].ToString();
 
-                    // Проверяем, что столбец имеет заголовок "category"
-                    if (columnValue == "Категория Уровень 1" || columnValue == "Категория Уровень 2" || columnValue == "Категория Уровень 3" || columnValue == "Причина")
-                    {
-                        // Получаем объект данных
-                        DataRowView rowView = (DataRowView)cellInfo.Item;
-                        // Получаем значения ячеек выбранной строки
-                        string reason = rowView["reason"].ToString();
-                        string regionValue = rowView["region"].ToString();
-                        string categoryOneValue = rowView["category_one"].ToString();
-                        string categoryTwoValue = rowView["category_two"].ToString();
-                        string categoryThirdValue = rowView["category_third"].ToString();
+                    // Создаем экземпляр окна CategoryHierarchy
+                    var newWindow = new CategoryHierarchy(regionValue);
+                    newWindow.ParentWindow = this;
+                    // Открываем окно CategoryHierarchy
+                    newWindow.Show();
 
-                        // Создаем экземпляр окна CategoryHierarchy
-                        var newWindow = new CategoryHierarchy(regionValue);
-                        newWindow.ParentWindow = this;
-                        // Открываем окно CategoryHierarchy
-                        newWindow.Show();
+                    // Установка значений других полей в окне CategoryHierarchy
+                    newWindow.categoryOneTextB.Text = categoryOneValue;
+                    newWindow.categoryTwoTextB.Text = categoryTwoValue;
+                    newWindow.categoryThirdTextB.Text = categoryThirdValue;
+                    newWindow.reasonTextB.Text = reason;
 
-                        // Установка значений других полей в окне CategoryHierarchy
-                        newWindow.categoryOneTextB.Text = categoryOneValue;
-                        newWindow.categoryTwoTextB.Text = categoryTwoValue;
-                        newWindow.categoryThirdTextB.Text = categoryThirdValue;
-                        newWindow.reasonTextB.Text = reason;
-
-                    }
                 }
             }
-            public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
+        }
+        public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
+        {
+            // Получаем выделенную строку в таблице
+            DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
+            if (selectedItem != null)
             {
-                // Получаем выделенную строку в таблице
-                DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
-                if (selectedItem != null)
+                // Обновляем значения ячеек выбранной строки
+
+                selectedItem["category_one"] = categoryOneValue;
+                selectedItem["category_two"] = categoryTwoValue;
+                selectedItem["category_third"] = categoryThirdValue;
+                selectedItem["reason"] = reasonValue;
+                // Обновляем строку в базе данных
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    // Обновляем значения ячеек выбранной строки
+                    connection.Open();
 
-                    selectedItem["category_one"] = categoryOneValue;
-                    selectedItem["category_two"] = categoryTwoValue;
-                    selectedItem["category_third"] = categoryThirdValue;
-                    selectedItem["reason"] = reasonValue;
-                    // Обновляем строку в базе данных
-                    using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                    string updateQuery = "UPDATE analysistest SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
                     {
-                        connection.Open();
+                        updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
+                        updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
+                        updateCommand.Parameters.AddWithValue("categoryThird", categoryThirdValue);
+                        updateCommand.Parameters.AddWithValue("reason_new", reasonValue);
 
-                        string updateQuery = "UPDATE analysistest SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
-                        using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                        int id = Convert.ToInt32(selectedItem["Id"]);
+                        updateCommand.Parameters.AddWithValue("Id", id);
+
+                        int rowsAffected = updateCommand.ExecuteNonQuery();
+                        if (rowsAffected > 0)
                         {
-                            updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
-                            updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
-                            updateCommand.Parameters.AddWithValue("categoryThird", categoryThirdValue);
-                            updateCommand.Parameters.AddWithValue("reason_new", reasonValue);
-
-                            int id = Convert.ToInt32(selectedItem["Id"]);
-                            updateCommand.Parameters.AddWithValue("Id", id);
-
-                            int rowsAffected = updateCommand.ExecuteNonQuery();
-                            if (rowsAffected > 0)
-                            {
-                                MessageBox.Show("Обновление значения выполнено успешно");
-                            }
-                            else
-                            {
-                                MessageBox.Show("Ошибка при обновлении значения");
-                            }
+                            MessageBox.Show("Обновление значения выполнено успешно");
+                        }
+                        else
+                        {
+                            MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
             }
-
         }
+
     }
+}
 
 
 

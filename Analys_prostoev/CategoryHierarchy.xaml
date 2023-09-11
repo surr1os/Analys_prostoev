@@ -36,7 +36,7 @@
         <Label Content="Уровень 3" Margin="659,244,390,-224"/>
         <TextBox Name="reasonTextB" TextWrapping="Wrap" Text="" Margin="309,88,-289,-68" MinWidth="250" MinHeight="40" MaxWidth="250" MaxHeight="40" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Label Content="Причина" Margin="659,302,390,-282"/>
-            
+
         <Button Background="#FFF046" Content="Сохранить" Grid.Column="0" Margin="553,215,-45,-83" Click="SaveButton_Click" MinWidth="200" MinHeight="50" MaxWidth="200" MaxHeight="50" RenderTransformOrigin="0.499,0.509">
 
         </Button>
