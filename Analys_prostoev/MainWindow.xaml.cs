@@ -19,7 +19,7 @@ namespace Analys_prostoev
     {
         // private string connectionString = "Host=10.241.224.71;Port=5432;Database=planning_dept_db;Username=postgres_10_241_224_71;Password=feDoz5Xreh";
         private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-
+        private string connectionStringSecond = "Host=10.241.16.9:5432;Database=ParamASU;Username=postgres;Password=asutp2023";
         public MainWindow()
         {
             InitializeComponent();
@@ -59,8 +59,8 @@ namespace Analys_prostoev
 
         private void SelectDataFromTrends()
         {
-            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0";
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 8";
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionStringSecond))
             {
                 connection.Open();
                 NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
@@ -105,13 +105,16 @@ namespace Analys_prostoev
                 // Получение значения из таблицы hpt_select_trends и добавление в каждую строку analysisTest
                 foreach (AnalysisTest analysisTest in analysisTests)
                 {
-                    if (analysisTest.date_finish != DateTime.MinValue)
+                    using (NpgsqlConnection connectionSecond = new NpgsqlConnection(connectionString))
                     {
-                        // Проверка на уже обработанные строки
-
+                       
+                        if (analysisTest.date_finish != DateTime.MinValue)
+                        {
+                            // Проверка на уже обработанные строки
+                            connectionSecond.Open();
                             string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
 
-                            NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connection);
+                            NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
                             hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
 
                             NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
@@ -123,22 +126,27 @@ namespace Analys_prostoev
                             }
 
                             hptReader.Close();
-                            NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connection);
+                            NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connectionSecond);
                             selectCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
                             selectCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
 
                             int count = Convert.ToInt32(selectCommand.ExecuteScalar());
-                            if(count == 0)
+                            if (count == 0)
                             {
-                                string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region) VALUES (@date_start, @date_finish, @region)";
-                                NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection);
+                                TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
+                                int minutes = (int)period.TotalMinutes;
+                                string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
+                                NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
                                 insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
                                 insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
                                 insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+                                insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
                                 insertCommand.ExecuteNonQuery();
                                 addRowsCount++;
-                            }            
-                    }               
+                            }
+                        }
+                    }
+                
                 }
                 MessageBox.Show("Добавлено строк " + addRowsCount);
 
