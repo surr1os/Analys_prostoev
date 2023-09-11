@@ -90,6 +90,7 @@ namespace Analys_prostoev
                         // Записываем значение поля t в datefinish и добавляем строку analysisTest в таблицу
                         analysisTests[analysisTests.Count - 1].date_finish = t;
                         previousT = DateTime.MinValue;
+
                         previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
                     }
                     else
@@ -111,7 +112,9 @@ namespace Analys_prostoev
                         if (analysisTest.date_finish != DateTime.MinValue)
                         {
                             // Проверка на уже обработанные строки
+
                             connectionSecond.Open();
+                           
                             string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
 
                             NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
@@ -135,14 +138,17 @@ namespace Analys_prostoev
                             {
                                 TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
                                 int minutes = (int)period.TotalMinutes;
-                                string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
-                                NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
-                                insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-                                insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
-                                insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
-                                insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
-                                insertCommand.ExecuteNonQuery();
-                                addRowsCount++;
+                                if(minutes >= 5)
+                                {
+                                    string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
+                                    NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
+                                    insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+                                    insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
+                                    insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+                                    insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
+                                    insertCommand.ExecuteNonQuery();
+                                    addRowsCount++;
+                                }                            
                             }
                         }
                     }
