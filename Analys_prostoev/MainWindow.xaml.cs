@@ -44,7 +44,7 @@ namespace Analys_prostoev
                     }
                 }
             }
-            SelectDataFromTrends();
+          //  SelectDataFromTrends();
             CreateSelectRowCB();
         }
 
@@ -57,119 +57,118 @@ namespace Analys_prostoev
         }
 
 
-        private void SelectDataFromTrends()
-        {
-            string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 2";
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionStringSecond))
-            {
-                connection.Open();
-                NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
-                NpgsqlDataReader reader = command.ExecuteReader();
-                DateTime previousT = DateTime.MinValue;
-                // Список для хранения строк analysisTest
-                List<AnalysisTest> analysisTests = new List<AnalysisTest>();
-                int previousMilliseconds = -1; // Предыдущее значение миллисекунд                                           
-                while (reader.Read())
-                {
-                    // Чтение значений полей id t и v
-                    int id = reader.GetInt32(0);
-                    DateTime t = reader.GetDateTime(1);
-                    double v = reader.GetDouble(2);
-                    int milliseconds = t.Millisecond;
+        //private void SelectDataFromTrends()
+        //{
+        //    string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 2";
+        //    using (NpgsqlConnection connection = new NpgsqlConnection(connectionStringSecond))
+        //    {
+        //        connection.Open();
+        //        NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
+        //        NpgsqlDataReader reader = command.ExecuteReader();
+        //        DateTime previousT = DateTime.MinValue;
+        //        // Список для хранения строк analysisTest
+        //        List<AnalysisTest> analysisTests = new List<AnalysisTest>();
+        //        int previousMilliseconds = -1; // Предыдущее значение миллисекунд                                           
+        //        while (reader.Read())
+        //        {
+        //            // Чтение значений полей id t и v
+        //            int id = reader.GetInt32(0);
+        //            DateTime t = reader.GetDateTime(1);
+        //            double v = reader.GetDouble(2);
+        //            int milliseconds = t.Millisecond;
 
-                    if (v == 1)
-                    {
-                        previousMilliseconds = milliseconds;
-                        analysisTests.Add(new AnalysisTest { id = id, date_start = t });
-                        previousT = t;
+        //            if (v == 1)
+        //            {
+        //                previousMilliseconds = milliseconds;
+        //                analysisTests.Add(new AnalysisTest { id = id, date_start = t });
+        //                previousT = t;
 
-                    }
+        //            }
 
-                    else if (v == 0 && analysisTests.Count > 0 && milliseconds == previousMilliseconds)
-                    {
+        //            else if (v == 0 && analysisTests.Count > 0 && milliseconds == previousMilliseconds)
+        //            {
 
-                        // Записываем значение поля t в datefinish и добавляем строку analysisTest в таблицу
-                        analysisTests[analysisTests.Count - 1].date_finish = t;
-                        previousT = DateTime.MinValue;
+        //                // Записываем значение поля t в datefinish и добавляем строку analysisTest в таблицу
+        //                analysisTests[analysisTests.Count - 1].date_finish = t;
+        //                previousT = DateTime.MinValue;
 
-                        previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
-                    }
+        //                previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
+        //            }
 
-                    else
-                    {
-                        continue;
-                    }
+        //            else
+        //            {
+        //                continue;
+        //            }
 
-                }
+        //        }
 
+        //        reader.Close();
+        //        int addRowsCount = 0;
+        //        int sameRowsCount = 0;
+        //        int minutesRowsCount = 0;
+        //        foreach (AnalysisTest analysisTest in analysisTests)
+        //        {
+        //            using (NpgsqlConnection connectionSecond = new NpgsqlConnection(connectionString))
+        //            {
 
-                reader.Close();
-                int addRowsCount = 0;
-                int sameRowsCount = 0;
-                int minutesRowsCount = 0;
-                foreach (AnalysisTest analysisTest in analysisTests)
-                {
-                    using (NpgsqlConnection connectionSecond = new NpgsqlConnection(connectionString))
-                    {
+        //                if (analysisTest.date_finish != DateTime.MinValue)
+        //                {
+        //                    // Проверка на уже обработанные строки
 
-                        if (analysisTest.date_finish != DateTime.MinValue)
-                        {
-                            // Проверка на уже обработанные строки
+        //                    connectionSecond.Open();
 
-                            connectionSecond.Open();
+        //                    string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
 
-                            string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
+        //                    NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
+        //                    hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
 
-                            NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
-                            hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
+        //                    NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
 
-                            NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
+        //                    if (hptReader.Read())
+        //                    {
+        //                        // Чтение значения поля region
+        //                        analysisTest.region = hptReader.GetString(0);
+        //                    }
 
-                            if (hptReader.Read())
-                            {
-                                // Чтение значения поля region
-                                analysisTest.region = hptReader.GetString(0);
-                            }
+        //                    hptReader.Close();
+        //                    NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connectionSecond);
+        //                    selectCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+        //                    selectCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
 
-                            hptReader.Close();
-                            NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connectionSecond);
-                            selectCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-                            selectCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+        //                    int count = Convert.ToInt32(selectCommand.ExecuteScalar());
+        //                    if (count == 0)
+        //                    {
+        //                        TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
+        //                        int minutes = (int)period.TotalMinutes;
+        //                        if (minutes >= 5)
+        //                        {
+        //                            string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
+        //                            NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
+        //                            insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
+        //                            insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
+        //                            insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
+        //                            insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
+        //                            insertCommand.ExecuteNonQuery();
+        //                            addRowsCount++;
+        //                        }
+        //                        else
+        //                        {
+        //                            minutesRowsCount++;
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        sameRowsCount++;
+        //                    }
+        //                }
+        //            }
 
-                            int count = Convert.ToInt32(selectCommand.ExecuteScalar());
-                            if (count == 0)
-                            {
-                                TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
-                                int minutes = (int)period.TotalMinutes;
-                                if (minutes >= 5)
-                                {
-                                    string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
-                                    NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
-                                    insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-                                    insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
-                                    insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
-                                    insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
-                                    insertCommand.ExecuteNonQuery();
-                                    addRowsCount++;
-                                }
-                                else
-                                {
-                                    minutesRowsCount++;
-                                }
-                            }
-                            else
-                            {
-                                sameRowsCount++;
-                            }
-                        }
-                    }
+        //        }
+        //        MessageBox.Show($"Добавлено строк: {addRowsCount}\nНе добавлено:\nПохожих строк: {sameRowsCount}\nС периодом < 5 минут: {minutesRowsCount}"); ;
 
-                }
-                MessageBox.Show($"Добавлено строк: {addRowsCount}\nНе добавлено:\nПохожих строк: {sameRowsCount}\nС периодом < 5 минут: {minutesRowsCount}"); ;
+        //    }
 
-            }
-
-        }
+        //}
 
         private void CreateSelectRowCB()
         {
