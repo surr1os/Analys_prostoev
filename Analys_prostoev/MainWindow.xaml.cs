@@ -17,9 +17,9 @@ namespace Analys_prostoev
 
     public partial class MainWindow : Window
     {
-        // private string connectionString = "Host=10.241.224.71;Port=5432;Database=planning_dept_db;Username=postgres_10_241_224_71;Password=feDoz5Xreh";
-        private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        private string connectionStringSecond = "Host=10.241.16.9:5432;Database=ParamASU;Username=postgres;Password=asutp2023";
+        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysisTestBD;Username=postgres;Password=BOuDxGVN2g";
+        //private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
+        //private string connectionStringSecond = "Host=10.241.16.9:5432;Database=ParamASU;Username=postgres;Password=asutp2023";
         public MainWindow()
         {
             InitializeComponent();
@@ -182,7 +182,8 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                string queryString = "SELECT * FROM analysistest WHERE 1=1";
+                 string queryString = "SELECT * FROM analysistest WHERE 1=1";
+
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                 if (startDatePicker.SelectedDate != null)
@@ -239,8 +240,9 @@ namespace Analys_prostoev
                     NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
-
+                  
                     DataGridTable.ItemsSource = dataTable.DefaultView;
+                 
                     SetNewColumnNames();
                 }
             }
@@ -279,11 +281,13 @@ namespace Analys_prostoev
             if (date_start != null)
             {
                 date_start.Header = "Дата Начала";
+                date_start.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
             }
             DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_finish");
             if (date_finish != null)
             {
                 date_finish.Header = "Дата Финиша";
+                date_finish.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
             }
             DataGridTextColumn period = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "period");
             if (period != null)
@@ -357,6 +361,7 @@ namespace Analys_prostoev
                 selectedItem["category_two"] = categoryTwoValue;
                 selectedItem["category_third"] = categoryThirdValue;
                 selectedItem["reason"] = reasonValue;
+               
                 // Обновляем строку в базе данных
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
