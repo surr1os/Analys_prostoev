@@ -182,7 +182,7 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                 string queryString = "SELECT * FROM analysistest WHERE 1=1";
+                 string queryString = "SELECT * FROM analysis WHERE 1=1";
 
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
