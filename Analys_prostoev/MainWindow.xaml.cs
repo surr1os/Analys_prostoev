@@ -17,7 +17,7 @@ namespace Analys_prostoev
 
     public partial class MainWindow : Window
     {
-        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysisTestBD;Username=postgres;Password=BOuDxGVN2g";
+        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysisProdBD;Username=analysis_user;Password=71NfhRec";
         //private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
         //private string connectionStringSecond = "Host=10.241.16.9:5432;Database=ParamASU;Username=postgres;Password=asutp2023";
         public MainWindow()

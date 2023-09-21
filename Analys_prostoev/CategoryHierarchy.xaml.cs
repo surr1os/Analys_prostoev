@@ -17,7 +17,7 @@ namespace Analys_prostoev
 
         public MainWindow ParentWindow { get; set; }
 
-        private string connectionString = "Host=localhost;Port=5432;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
+        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysisProdBD;Username=analysis_user;Password=71NfhRec";
         public CategoryHierarchy(string regionValue)
         {
             RegionValue = regionValue;
