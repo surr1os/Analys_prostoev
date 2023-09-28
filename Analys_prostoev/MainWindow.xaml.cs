@@ -28,22 +28,30 @@ namespace Analys_prostoev
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            try
             {
-                connection.Open();
-
-                string selectQuery = "SELECT region FROM hpt_select";
-                using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
+                    connection.Open();
+
+                    string selectQuery = "SELECT region FROM hpt_select";
+                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
                     {
-                        while (reader.Read())
+                        using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                         {
-                            selectComboBox.Items.Add(reader["region"].ToString());
+                            while (reader.Read())
+                            {
+                                selectComboBox.Items.Add(reader["region"].ToString());
+                            }
                         }
                     }
                 }
             }
+            catch(Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+           
           //  SelectDataFromTrends();
             CreateSelectRowCB();
         }
@@ -180,71 +188,81 @@ namespace Analys_prostoev
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
-                connection.Open();
-
-                 string queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
-
-                List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-                if (startDatePicker.SelectedDate != null)
+                try
                 {
-                    queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') >= @startDate";
-                    parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Date));
-                    parameters[parameters.Count - 1].Value = startDatePicker.SelectedDate;
-                }
+                    connection.Open();
 
-                if (endDatePicker.SelectedDate != null)
+
+
+                    string queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
+
+                    List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+
+                    if (startDatePicker.SelectedDate != null)
+                    {
+                        queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') >= @startDate";
+                        parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Date));
+                        parameters[parameters.Count - 1].Value = startDatePicker.SelectedDate;
+                    }
+
+                    if (endDatePicker.SelectedDate != null)
+                    {
+                        queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') <= @endDate";
+                        parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Date));
+                        parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
+                    }
+
+                    if (selectComboBox.SelectedItem != null)
+                    {
+                        string selectedRegion = selectComboBox.SelectedItem.ToString();
+                        if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
+                        {
+                            queryString += $" AND region ILIKE @selectedRegion";
+                        }
+                        else
+                        {
+                            queryString += $" AND region = @selectedRegionCurrent";
+                            parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
+                        }
+                        parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
+                    }
+
+                    if (selectRowComboBox.SelectedItem != null)
+                    {
+                        string rowSelect = selectRowComboBox.SelectedItem.ToString();
+                        if (rowSelect == "Все строки")
+                        {
+                            queryString += "";
+                        }
+                        else if (rowSelect == "Классифицированные строки")
+                        {
+                            queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                        }
+                        else if (rowSelect == "Неклассифицированные строки")
+                        {
+                            queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
+                        }
+                    }
+
+
+                    using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
+                    {
+                        command.Parameters.AddRange(parameters.ToArray());
+
+                        NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
+                        DataTable dataTable = new DataTable();
+                        adapter.Fill(dataTable);
+
+                        DataGridTable.ItemsSource = dataTable.DefaultView;
+
+                        SetNewColumnNames();
+                    }
+                }
+                catch (Exception ex)
                 {
-                    queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') <= @endDate";
-                    parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Date));
-                    parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
+                    MessageBox.Show(ex.Message, "Error");
                 }
-
-                if (selectComboBox.SelectedItem != null)
-                {
-                    string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
-                    {
-                        queryString += $" AND region ILIKE @selectedRegion";
-                    }
-                    else
-                    {
-                        queryString += $" AND region = @selectedRegionCurrent";
-                        parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
-                    }
-                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
-                }
-
-                if (selectRowComboBox.SelectedItem != null)
-                {
-                    string rowSelect = selectRowComboBox.SelectedItem.ToString();
-                    if (rowSelect == "Все строки")
-                    {
-                        queryString += "";
-                    }
-                    else if (rowSelect == "Классифицированные строки")
-                    {
-                        queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
-                    }
-                    else if (rowSelect == "Неклассифицированные строки")
-                    {
-                        queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
-                    }
-                }
-
-
-                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
-                {
-                    command.Parameters.AddRange(parameters.ToArray());
-
-                    NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                    DataTable dataTable = new DataTable();
-                    adapter.Fill(dataTable);
-                  
-                    DataGridTable.ItemsSource = dataTable.DefaultView;
-                 
-                    SetNewColumnNames();
-                }
+                
             }
         }
 
