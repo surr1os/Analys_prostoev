@@ -134,12 +134,10 @@ C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_pro
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.SuggestedBindingRedirects.cache
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.exe.config
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\CategoryHierarchy.g.cs
-C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\ReasonHierarchy.g.cs
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\App.g.cs
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev_MarkupCompile.cache
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev_MarkupCompile.lref
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\CategoryHierarchy.baml
-C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\ReasonHierarchy.baml
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.g.resources
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.Properties.Resources.resources
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.GenerateResource.cache
