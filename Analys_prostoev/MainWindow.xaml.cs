@@ -385,7 +385,7 @@ namespace Analys_prostoev
                 {
                     connection.Open();
 
-                    string updateQuery = "UPDATE analysistest SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
+                    string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
                     using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
                     {
                         updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
