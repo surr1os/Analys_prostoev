@@ -8,10 +8,6 @@ using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
 {
-    /// <summary>
-    /// Логика взаимодействия для Window1.xaml
-    /// </summary
-
     public partial class CategoryHierarchy : Window
     {
 
