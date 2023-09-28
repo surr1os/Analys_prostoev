@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -220,7 +221,15 @@ namespace Analys_prostoev
                 this.Close();
 
                 // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
-                mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue, reasonValue);
+                try
+                {
+                    mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue, reasonValue);
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+               
             }
         }
     }
