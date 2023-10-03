@@ -11,6 +11,7 @@ using System.Windows.Controls.Primitives;
 using System.Linq;
 using System.Data.SqlClient;
 using NpgsqlTypes;
+using Xceed.Wpf.Toolkit;
 
 namespace Analys_prostoev
 {
@@ -49,7 +50,7 @@ namespace Analys_prostoev
             }
             catch(Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                System.Windows.MessageBox.Show(ex.Message);
             }
            
           //  SelectDataFromTrends();
@@ -192,24 +193,22 @@ namespace Analys_prostoev
                 {
                     connection.Open();
 
-
-
                     string queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
 
                     List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
-                    if (startDatePicker.SelectedDate != null)
+                    if (startDatePicker.Value.Value != null)
                     {
-                        queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') >= @startDate";
-                        parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Date));
-                        parameters[parameters.Count - 1].Value = startDatePicker.SelectedDate;
+                        queryString += " AND date_start >= @startDate";
+                        parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                        parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                     }
 
-                    if (endDatePicker.SelectedDate != null)
+                    if (endDatePicker.Value.Value != null)
                     {
-                        queryString += " AND TO_DATE(cast(date_start as TEXT), 'YYYY-MM-DD') <= @endDate";
-                        parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Date));
-                        parameters[parameters.Count - 1].Value = endDatePicker.SelectedDate;
+                        queryString += " AND date_start <= @endDate";
+                        parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                        parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                     }
 
                     if (selectComboBox.SelectedItem != null)
@@ -260,7 +259,7 @@ namespace Analys_prostoev
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show(ex.Message, "Error");
+                    System.Windows.MessageBox.Show(ex.Message, "Error");
                 }
                 
             }
@@ -399,11 +398,11 @@ namespace Analys_prostoev
                         int rowsAffected = updateCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            MessageBox.Show("Обновление значения выполнено успешно");
+                            System.Windows.MessageBox.Show("Обновление значения выполнено успешно");
                         }
                         else
                         {
-                            MessageBox.Show("Ошибка при обновлении значения");
+                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }

@@ -4,6 +4,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800">
 
@@ -19,8 +20,8 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <DatePicker x:Name="startDatePicker" Grid.Row="1" Margin="10,10,10,10" MaxWidth="157" MaxHeight="30" MinWidth="157" MinHeight="30" Grid.ColumnSpan="2"/>
-        <DatePicker x:Name="endDatePicker" Grid.Row="1" Margin="146,10,-198,10" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Grid.Column="1"/>
+        <xctk:DateTimePicker x:Name="startDatePicker" Grid.Row="1" Margin="10,10,10,10" MaxWidth="157" MaxHeight="30" MinWidth="157" MinHeight="30" Grid.ColumnSpan="2"/>
+        <xctk:DateTimePicker x:Name="endDatePicker" Grid.Row="1" Margin="146,10,-198,10" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Grid.Column="1"/>
         <ComboBox x:Name="selectComboBox" Grid.Row="1" Margin="3,10,485,10" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
  IsReadOnly="True"
  Text="Выберите участок" Grid.ColumnSpan="2">
