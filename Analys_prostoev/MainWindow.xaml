@@ -17,14 +17,14 @@
             <RowDefinition Height="97*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1104">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1282">
             <StackPanel Margin="20,0,0,0">
                 <Label Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker x:Name="startDatePicker" MaxWidth="157" MaxHeight="30" MinWidth="157" MinHeight="30" Margin="5"/>
+                <xctk:DateTimePicker x:Name="startDatePicker" MaxWidth="185" MaxHeight="30" MinWidth="185" MinHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
                 <Label Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Margin="5"/>
+                <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="185" MinHeight="30" MaxWidth="185" MaxHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
                 <Label Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
