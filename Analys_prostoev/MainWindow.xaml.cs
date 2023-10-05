@@ -197,14 +197,14 @@ namespace Analys_prostoev
 
                     List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
-                    if (startDatePicker.Value.Value != null)
+                    if (startDatePicker.Value.HasValue)
                     {
                         queryString += " AND date_start >= @startDate";
                         parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                     }
 
-                    if (endDatePicker.Value.Value != null)
+                    if (endDatePicker.Value.HasValue)
                     {
                         queryString += " AND date_start <= @endDate";
                         parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
@@ -290,7 +290,7 @@ namespace Analys_prostoev
             DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
             if (reason != null)
             {
-                reason.Width = new DataGridLength(300);
+                reason.Width = new DataGridLength(600);
                 reason.Header = "Причина";
             }
 

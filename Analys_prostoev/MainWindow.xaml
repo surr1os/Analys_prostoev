@@ -11,29 +11,40 @@
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="35*"/>
-            <ColumnDefinition Width="887*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="15*"/>
+            <RowDefinition Height="97*"/>
         </Grid.RowDefinitions>
 
-        <xctk:DateTimePicker x:Name="startDatePicker" Grid.Row="1" Margin="10,10,10,10" MaxWidth="157" MaxHeight="30" MinWidth="157" MinHeight="30" Grid.ColumnSpan="2"/>
-        <xctk:DateTimePicker x:Name="endDatePicker" Grid.Row="1" Margin="146,10,-198,10" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Grid.Column="1"/>
-        <ComboBox x:Name="selectComboBox" Grid.Row="1" Margin="3,10,485,10" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
- IsReadOnly="True"
- Text="Выберите участок" Grid.ColumnSpan="2">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1104">
+            <StackPanel Margin="20,0,0,0">
+                <Label Content="Время начала" HorizontalAlignment="Center"/>
+                <xctk:DateTimePicker x:Name="startDatePicker" MaxWidth="157" MaxHeight="30" MinWidth="157" MinHeight="30" Margin="5"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0">
+                <Label Content="Время окончания" HorizontalAlignment="Center"/>
+                <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="157" MinHeight="30" MaxWidth="157" MaxHeight="30" Margin="5"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0">
+                <Label Content="Выбор агрегата/участка" HorizontalAlignment="Center"/>
+                <ComboBox x:Name="selectComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
+        IsReadOnly="True" Text="Выберите участок" Margin="5"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0">
+                <Label Content="Выбор строки" HorizontalAlignment="Center"/>
+                <ComboBox x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
+        IsReadOnly="True" Text="Все строки" Margin="5"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
+                <Button Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+            </StackPanel>
+        </StackPanel>
 
-        </ComboBox>
-        <ComboBox x:Name="selectRowComboBox" Grid.Row="1" Margin="-256,10,744,10" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
-IsReadOnly="True"
-Text="Все строки" Grid.ColumnSpan="2">
-        </ComboBox>
-        <Button Background="#FFF046" Content="Загрузить" Click="Button_Click" Grid.Row="1" Margin="396,12,-433,12" MaxWidth="252" MaxHeight="44" Grid.Column="1"/>
-        <DataGrid Height="auto" x:Name="DataGridTable" Grid.Row="2" Margin="10,0,10,0" AutoGenerateColumns="True" MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Grid.ColumnSpan="2" RowBackground="#FFF046" AlternatingRowBackground="#C0C0C0" Grid.RowSpan="2">
 
+        <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" 
+              MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#FFF046" 
+              AlternatingRowBackground="#C0C0C0" Grid.Row="1">
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="Background" Value="#C0C0C0"/>
