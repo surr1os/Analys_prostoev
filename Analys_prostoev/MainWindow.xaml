@@ -32,7 +32,7 @@
         IsReadOnly="True" Text="Выберите участок" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Content="Выбор строки" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <Label Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <ComboBox x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
         IsReadOnly="True" Text="Все строки" Margin="5"/>
             </StackPanel>
