@@ -215,3 +215,5 @@ C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\ro\Xceed.W
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\ru\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\sv\Xceed.Wpf.AvalonDock.resources.dll
 C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\zh-Hans\Xceed.Wpf.AvalonDock.resources.dll
+C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\System.Drawing.Common.dll
+C:\Users\Konstantin.Kazakov\source\repos\an\Analys_prostoev\bin\Debug\System.Drawing.Common.xml

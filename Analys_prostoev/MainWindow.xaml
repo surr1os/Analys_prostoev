@@ -17,7 +17,7 @@
             <RowDefinition Height="97*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1282">
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1379">
             <StackPanel Margin="20,0,0,0">
                 <Label Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <xctk:DateTimePicker x:Name="startDatePicker" MaxWidth="185" MaxHeight="30" MinWidth="185" MinHeight="30" Margin="5"/>
@@ -38,6 +38,9 @@
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
                 <Button Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
+                <Button Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
             </StackPanel>
         </StackPanel>
 

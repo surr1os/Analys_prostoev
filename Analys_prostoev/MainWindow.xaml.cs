@@ -5,18 +5,18 @@ using System.Data;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Documents;
 using System;
 using System.Windows.Controls.Primitives;
 using System.Linq;
-using System.Data.SqlClient;
-using NpgsqlTypes;
-using Xceed.Wpf.Toolkit;
+using Microsoft.Office.Interop.Excel;
+using System.Globalization;
+using System.Drawing;
+
 
 namespace Analys_prostoev
 {
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
         //private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
@@ -249,7 +249,7 @@ namespace Analys_prostoev
                         command.Parameters.AddRange(parameters.ToArray());
 
                         NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                        DataTable dataTable = new DataTable();
+                        System.Data.DataTable dataTable = new System.Data.DataTable();
                         adapter.Fill(dataTable);
 
                         DataGridTable.ItemsSource = dataTable.DefaultView;
@@ -322,7 +322,7 @@ namespace Analys_prostoev
                 DataGridTextColumn textColumn = column as DataGridTextColumn;
                 if (textColumn != null)
                 {
-                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle = new System.Windows.Style(typeof(DataGridColumnHeader));
                     textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
                 }
             }
@@ -402,13 +402,106 @@ namespace Analys_prostoev
                         }
                         else
                         {
-                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");
+                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");              
                         }
                     }
                 }
             }
         }
+        public void ExportToExcel(DataGrid dg)
+        {
+            // Создание нового экземпляра Excel.
+            var excelApp = new Microsoft.Office.Interop.Excel.Application();
 
+            // Настройка свойств новой книги Excel.
+            excelApp.Visible = true;
+            var workbook = excelApp.Workbooks.Add();
+            var worksheet = workbook.ActiveSheet as Microsoft.Office.Interop.Excel.Worksheet;
+
+            // Установка заголовков столбцов.
+            for (int i = 0; i < dg.Columns.Count; i++)
+            {
+                worksheet.Cells[1, i + 1] = dg.Columns[i].Header;
+            }
+
+            // Открытие диалогового окна сохранения файла.
+            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            saveFileDialog.Filter = "Excel файлы (*.xlsx)|*.xlsx";
+            saveFileDialog.DefaultExt = "xlsx";
+
+            // Если пользователь выбрал место сохранения файла и нажал "ОК", продолжаем сохранение файла.
+
+
+            // Создание стилей для заголовков и данных.
+            var headerStyle = workbook.Styles.Add("HeaderStyle");
+            headerStyle.Font.Bold = true;
+            headerStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+            headerStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightBlue);
+
+            var dataStyle = workbook.Styles.Add("DataStyle");
+            dataStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+            dataStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightYellow);
+
+            // Применение стилей к заголовкам столбцов.
+            worksheet.get_Range("A1:I1", $"A{dg.Columns.Count}").Style = "HeaderStyle";
+
+                // Заполнение ячеек данными из DataGrid и применение стилей.
+                for (int row = 0; row < dg.Items.Count; row++)
+                {
+                    for (int col = 0; col < dg.Columns.Count; col++)
+                    {
+                        var cellContent = dg.Columns[col].GetCellContent(dg.Items[row]);
+                        if (cellContent is TextBlock textBlock)
+                        {
+                            string columnName = dg.Columns[col].Header.ToString();
+                            switch (columnName)
+                            {
+                                case "Дата Начала":
+                                case "Дата Финиша":
+                                //DateTime dateTime = DateTime.ParseExact(textBlock.Text, "yyyy-MM-dd H:mm:ss", CultureInfo.InvariantCulture);
+                                //worksheet.Cells[row + 2, col + 1] = dateTime.ToString("dd.MM.yyyy H:mm");
+                                //worksheet.Columns[col + 1].NumberFormat = "dd.MM.yyyy H:mm";
+                                worksheet.Columns[col + 1].ColumnWidth = 15;
+                                worksheet.Cells[row + 2, col + 1] = textBlock.Text;
+                                break;
+                                case "Id":
+                                case "Период":
+                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
+                                    //worksheet.Columns[col + 1].NumberFormat = "0";
+                                    worksheet.Columns[col + 1].ColumnWidth = 15;
+                                    break;
+                                default:
+                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
+                                    worksheet.Columns[col + 1].ColumnWidth = 25;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            worksheet.Cells[row + 2, col + 1] = (cellContent != null) ? cellContent.ToString() : "";
+                        }
+
+                        // Применение стилей к данным.
+                        worksheet.Cells[row + 2, col + 1].Style = "DataStyle";
+                    }
+                }
+
+                // Применение стилей к строкам данных.
+                var range = worksheet.Range[$"A2:I{dg.Items.Count + 1}"]; // Замените "Z" на последнюю колонку, которую вы заполняете данными.
+                range.Style = "DataStyle";
+                
+
+                // Сохранение файла Excel.
+               
+               
+               
+            
+        }
+
+        private void Button_Click_Excel(object sender, RoutedEventArgs e)
+        {
+            ExportToExcel(DataGridTable);
+        }
     }
 }
 
