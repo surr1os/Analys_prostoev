@@ -430,20 +430,21 @@ namespace Analys_prostoev
             saveFileDialog.DefaultExt = "xlsx";
 
             // Если пользователь выбрал место сохранения файла и нажал "ОК", продолжаем сохранение файла.
+           
+            
 
+                // Создание стилей для заголовков и данных.
+                var headerStyle = workbook.Styles.Add("HeaderStyle");
+                headerStyle.Font.Bold = true;
+                headerStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                headerStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightBlue);
 
-            // Создание стилей для заголовков и данных.
-            var headerStyle = workbook.Styles.Add("HeaderStyle");
-            headerStyle.Font.Bold = true;
-            headerStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-            headerStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightBlue);
+                var dataStyle = workbook.Styles.Add("DataStyle");
+                dataStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
+                dataStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightYellow);
 
-            var dataStyle = workbook.Styles.Add("DataStyle");
-            dataStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-            dataStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightYellow);
-
-            // Применение стилей к заголовкам столбцов.
-            worksheet.get_Range("A1:I1", $"A{dg.Columns.Count}").Style = "HeaderStyle";
+                // Применение стилей к заголовкам столбцов.
+               // worksheet.get_Range("A1:I1", $"A{dg.Columns.Count}").Style = "HeaderStyle";
 
                 // Заполнение ячеек данными из DataGrid и применение стилей.
                 for (int row = 0; row < dg.Items.Count; row++)
@@ -458,12 +459,12 @@ namespace Analys_prostoev
                             {
                                 case "Дата Начала":
                                 case "Дата Финиша":
-                                //DateTime dateTime = DateTime.ParseExact(textBlock.Text, "yyyy-MM-dd H:mm:ss", CultureInfo.InvariantCulture);
-                                //worksheet.Cells[row + 2, col + 1] = dateTime.ToString("dd.MM.yyyy H:mm");
-                                //worksheet.Columns[col + 1].NumberFormat = "dd.MM.yyyy H:mm";
-                                worksheet.Columns[col + 1].ColumnWidth = 15;
-                                worksheet.Cells[row + 2, col + 1] = textBlock.Text;
-                                break;
+                                    //DateTime dateTime = DateTime.ParseExact(textBlock.Text, "yyyy-MM-dd H:mm:ss", CultureInfo.InvariantCulture);
+                                    //worksheet.Cells[row + 2, col + 1] = dateTime.ToString("dd.MM.yyyy H:mm");
+                                    //worksheet.Columns[col + 1].NumberFormat = "dd.MM.yyyy H:mm";
+                                    worksheet.Columns[col + 1].ColumnWidth = 15;
+                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
+                                    break;
                                 case "Id":
                                 case "Период":
                                     worksheet.Cells[row + 2, col + 1] = textBlock.Text;
@@ -482,21 +483,20 @@ namespace Analys_prostoev
                         }
 
                         // Применение стилей к данным.
-                        worksheet.Cells[row + 2, col + 1].Style = "DataStyle";
+                       // worksheet.Cells[row + 2, col + 1].Style = "DataStyle";
                     }
                 }
 
                 // Применение стилей к строкам данных.
                 var range = worksheet.Range[$"A2:I{dg.Items.Count + 1}"]; // Замените "Z" на последнюю колонку, которую вы заполняете данными.
-                range.Style = "DataStyle";
+               // range.Style = "DataStyle";
+            }
+
                 
 
                 // Сохранение файла Excel.
-               
-               
-               
-            
-        }
+    
+        
 
         private void Button_Click_Excel(object sender, RoutedEventArgs e)
         {
