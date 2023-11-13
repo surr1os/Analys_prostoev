@@ -43,7 +43,7 @@
                 <Button Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
             </StackPanel>
         </StackPanel>
-
+            
 
         <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" 
               MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#FFF046" 

@@ -11,7 +11,14 @@ using System.Linq;
 using Microsoft.Office.Interop.Excel;
 using System.Globalization;
 using System.Drawing;
-
+using System.Xml;
+using System.Data.SqlClient;
+using System.ComponentModel;
+using Excel = Microsoft.Office.Interop.Excel;
+using System.Threading.Tasks;
+using OfficeOpenXml;
+using System.IO;
+using System.Windows.Forms;
 
 namespace Analys_prostoev
 {
@@ -48,21 +55,27 @@ namespace Analys_prostoev
                     }
                 }
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 System.Windows.MessageBox.Show(ex.Message);
             }
-           
-          //  SelectDataFromTrends();
+
+            //  SelectDataFromTrends();
             CreateSelectRowCB();
         }
 
-        public class AnalysisTest
+        string queryString = "";
+
+        public class Analysis
         {
             public DateTime date_start { get; set; }
             public DateTime date_finish { get; set; }
             public int id { get; set; }
             public string region { get; set; }
+            public int period { get; set; }
+            public string category_one { get; set; }
+            public string category_two { get; set; }
+            public string category_third { get; set; }
         }
 
 
@@ -193,20 +206,20 @@ namespace Analys_prostoev
                 {
                     connection.Open();
 
-                    string queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
+                    this.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
 
                     List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                     if (startDatePicker.Value.HasValue)
                     {
-                        queryString += " AND date_start >= @startDate";
+                        this.queryString += " AND date_start >= @startDate";
                         parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                     }
 
                     if (endDatePicker.Value.HasValue)
                     {
-                        queryString += " AND date_start <= @endDate";
+                        this.queryString += " AND date_start <= @endDate";
                         parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                     }
@@ -216,11 +229,11 @@ namespace Analys_prostoev
                         string selectedRegion = selectComboBox.SelectedItem.ToString();
                         if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                         {
-                            queryString += $" AND region ILIKE @selectedRegion";
+                            this.queryString += $" AND region ILIKE @selectedRegion";
                         }
                         else
                         {
-                            queryString += $" AND region = @selectedRegionCurrent";
+                            this.queryString += $" AND region = @selectedRegionCurrent";
                             parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                         }
                         parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
@@ -231,20 +244,20 @@ namespace Analys_prostoev
                         string rowSelect = selectRowComboBox.SelectedItem.ToString();
                         if (rowSelect == "Все строки")
                         {
-                            queryString += "";
+                            this.queryString += "";
                         }
                         else if (rowSelect == "Классифицированные строки")
                         {
-                            queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                            this.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
                         }
                         else if (rowSelect == "Неклассифицированные строки")
                         {
-                            queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
+                            this.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
                         }
                     }
 
 
-                    using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand(this.queryString, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
 
@@ -261,7 +274,7 @@ namespace Analys_prostoev
                 {
                     System.Windows.MessageBox.Show(ex.Message, "Error");
                 }
-                
+
             }
         }
 
@@ -323,7 +336,7 @@ namespace Analys_prostoev
                 if (textColumn != null)
                 {
                     textColumn.HeaderStyle = new System.Windows.Style(typeof(DataGridColumnHeader));
-                    textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+                    textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, System.Windows.HorizontalAlignment.Center));
                 }
             }
         }
@@ -378,7 +391,7 @@ namespace Analys_prostoev
                 selectedItem["category_two"] = categoryTwoValue;
                 selectedItem["category_third"] = categoryThirdValue;
                 selectedItem["reason"] = reasonValue;
-               
+
                 // Обновляем строку в базе данных
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
@@ -402,105 +415,147 @@ namespace Analys_prostoev
                         }
                         else
                         {
-                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");              
+                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
             }
         }
-        public void ExportToExcel(DataGrid dg)
+
+        public List<Analysis> GetAnalysisList(string queryString)
         {
-            // Создание нового экземпляра Excel.
-            var excelApp = new Microsoft.Office.Interop.Excel.Application();
+            List<Analysis> analysisList = new List<Analysis>();
 
-            // Настройка свойств новой книги Excel.
-            excelApp.Visible = true;
-            var workbook = excelApp.Workbooks.Add();
-            var worksheet = workbook.ActiveSheet as Microsoft.Office.Interop.Excel.Worksheet;
-
-            // Установка заголовков столбцов.
-            for (int i = 0; i < dg.Columns.Count; i++)
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
-                worksheet.Cells[1, i + 1] = dg.Columns[i].Header;
-            }
+                connection.Open();
+                List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
-            // Открытие диалогового окна сохранения файла.
-            System.Windows.Forms.SaveFileDialog saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            saveFileDialog.Filter = "Excel файлы (*.xlsx)|*.xlsx";
-            saveFileDialog.DefaultExt = "xlsx";
-
-            // Если пользователь выбрал место сохранения файла и нажал "ОК", продолжаем сохранение файла.
-           
-            
-
-                // Создание стилей для заголовков и данных.
-                var headerStyle = workbook.Styles.Add("HeaderStyle");
-                headerStyle.Font.Bold = true;
-                headerStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                headerStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightBlue);
-
-                var dataStyle = workbook.Styles.Add("DataStyle");
-                dataStyle.HorizontalAlignment = XlHAlign.xlHAlignCenter;
-                dataStyle.Interior.Color = System.Drawing.ColorTranslator.ToOle(System.Drawing.Color.LightYellow);
-
-                // Применение стилей к заголовкам столбцов.
-               // worksheet.get_Range("A1:I1", $"A{dg.Columns.Count}").Style = "HeaderStyle";
-
-                // Заполнение ячеек данными из DataGrid и применение стилей.
-                for (int row = 0; row < dg.Items.Count; row++)
+                if (startDatePicker.Value.HasValue)
                 {
-                    for (int col = 0; col < dg.Columns.Count; col++)
-                    {
-                        var cellContent = dg.Columns[col].GetCellContent(dg.Items[row]);
-                        if (cellContent is TextBlock textBlock)
-                        {
-                            string columnName = dg.Columns[col].Header.ToString();
-                            switch (columnName)
-                            {
-                                case "Дата Начала":
-                                case "Дата Финиша":
-                                    //DateTime dateTime = DateTime.ParseExact(textBlock.Text, "yyyy-MM-dd H:mm:ss", CultureInfo.InvariantCulture);
-                                    //worksheet.Cells[row + 2, col + 1] = dateTime.ToString("dd.MM.yyyy H:mm");
-                                    //worksheet.Columns[col + 1].NumberFormat = "dd.MM.yyyy H:mm";
-                                    worksheet.Columns[col + 1].ColumnWidth = 15;
-                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
-                                    break;
-                                case "Id":
-                                case "Период":
-                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
-                                    //worksheet.Columns[col + 1].NumberFormat = "0";
-                                    worksheet.Columns[col + 1].ColumnWidth = 15;
-                                    break;
-                                default:
-                                    worksheet.Cells[row + 2, col + 1] = textBlock.Text;
-                                    worksheet.Columns[col + 1].ColumnWidth = 25;
-                                    break;
-                            }
-                        }
-                        else
-                        {
-                            worksheet.Cells[row + 2, col + 1] = (cellContent != null) ? cellContent.ToString() : "";
-                        }
-
-                        // Применение стилей к данным.
-                       // worksheet.Cells[row + 2, col + 1].Style = "DataStyle";
-                    }
+                    this.queryString += " AND date_start >= @startDate";
+                    parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                    parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                 }
 
-                // Применение стилей к строкам данных.
-                var range = worksheet.Range[$"A2:I{dg.Items.Count + 1}"]; // Замените "Z" на последнюю колонку, которую вы заполняете данными.
-               // range.Style = "DataStyle";
+                if (endDatePicker.Value.HasValue)
+                {
+                    this.queryString += " AND date_start <= @endDate";
+                    parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                    parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
+                }
+
+                if (selectComboBox.SelectedItem != null)
+                {
+                    string selectedRegion = selectComboBox.SelectedItem.ToString();
+                    this.queryString += $" AND region = @selectedRegionCurrent";
+                    parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
+                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
+                }
+
+
+                // Execute SQL Query and fetch data
+                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))      
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+                    using (NpgsqlDataReader reader = command.ExecuteReader())
+                    {
+                        
+                        // Fetch data and populate the list
+                        while (reader.Read())
+                        {
+                            Analysis analysis = new Analysis
+                            {
+                                date_start = reader.GetDateTime(reader.GetOrdinal("date_start")),
+                                date_finish = reader.GetDateTime(reader.GetOrdinal("date_finish")),
+                                id = reader.GetInt32(reader.GetOrdinal("id")),
+                                region = reader.GetString(reader.GetOrdinal("region")),
+                                period = reader.GetInt32(reader.GetOrdinal("period")),
+                                category_one = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
+                                category_two = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
+                                category_third = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
+                            };
+
+                            analysisList.Add(analysis);
+                        }
+                    }
+                }
             }
 
-                
+            return analysisList;
+        }
 
-                // Сохранение файла Excel.
-    
-        
+        public void ExportToExcel(string queryString)
+        {
+            // Заполнение списка
+            List<Analysis> analysisList = GetAnalysisList(queryString);
+
+            // Создание Excel файла
+            CreateExcelFile(analysisList);
+        }
+        public void CreateExcelFile(List<Analysis> analysisList)
+        {
+            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+
+            // Открытие диалогового окна для сохранения файла
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
+            saveFileDialog.FilterIndex = 1;
+            saveFileDialog.RestoreDirectory = true;
+
+            if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) // Используйте DialogResult.OK
+            {
+                string fileName = saveFileDialog.FileName;
+
+                // Создание нового Excel пакета
+                using (ExcelPackage package = new ExcelPackage())
+                {
+                    // Создание нового листа
+                    ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Analysis");
+
+                    // Установка заголовков столбцов
+                    string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур" };
+                    for (int i = 0; i < headers.Length; i++)
+                    {
+                        worksheet.Cells[1, i + 1].Value = headers[i];
+                    }
+
+                    // Заполнение данных из списка анализов
+                    for (int i = 0; i < analysisList.Count; i++)
+                    {
+                        Analysis analysis = analysisList[i];
+                        int row = i + 2; // Начинаем заполнение с 2 строки
+
+                        worksheet.Cells[row, 1].Value = analysis.id;
+
+                        worksheet.Cells[row, 2].Value = analysis.date_start;
+                        worksheet.Cells[row, 2].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
+
+                        worksheet.Cells[row, 3].Value = analysis.date_finish;
+                        worksheet.Cells[row, 3].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
+
+                        worksheet.Cells[row, 4].Value = analysis.period;
+                        worksheet.Cells[row, 5].Value = analysis.region;
+                        worksheet.Cells[row, 6].Value = analysis.category_one;
+                        worksheet.Cells[row, 7].Value = analysis.category_two;
+                        worksheet.Cells[row, 8].Value = analysis.category_third;
+
+                    }
+
+
+                    // Автоматическое подгонка ширины столбцов
+                    worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
+
+                    // Сохранение файла Excel
+                    FileInfo file = new FileInfo(fileName);
+                    package.SaveAs(file);
+                }
+            }
+        }
 
         private void Button_Click_Excel(object sender, RoutedEventArgs e)
         {
-            ExportToExcel(DataGridTable);
+            ExportToExcel(queryString);
         }
     }
 }
