@@ -1,11 +1,8 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
 {

@@ -46,7 +46,7 @@
             
 
         <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" 
-              MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#FFF046" 
+              MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" Grid.Row="1">
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
