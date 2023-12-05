@@ -11,7 +11,8 @@ namespace Analys_prostoev
 
         public MainWindow ParentWindow { get; set; }
 
-        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
+        //private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
+        private string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
         public CategoryHierarchy(string regionValue)
         {
             RegionValue = regionValue;
@@ -229,6 +230,7 @@ namespace Analys_prostoev
                
             }
         }
+
     }
 
 

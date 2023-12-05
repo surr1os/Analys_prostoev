@@ -55,6 +55,13 @@
                     <Setter Property="BorderThickness" Value="1" />
                 </Style>
             </DataGrid.Resources>
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"></MenuItem>
+                    <MenuItem Header="Добавить"></MenuItem>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
     </Grid>
 </Window>

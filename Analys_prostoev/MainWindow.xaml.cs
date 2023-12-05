@@ -1,15 +1,15 @@
 ﻿using Npgsql;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
-using System;
-using System.Windows.Controls.Primitives;
-using System.Linq;
-using OfficeOpenXml;
 using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
+using System.Windows.Input;
 
 namespace Analys_prostoev
 {
@@ -52,20 +52,23 @@ namespace Analys_prostoev
 
             //  SelectDataFromTrends();
             CreateSelectRowCB();
+
+
         }
 
         string queryString = "";
 
         public class Analysis
         {
+            public int id { get; set; }
             public DateTime date_start { get; set; }
             public DateTime date_finish { get; set; }
-            public int id { get; set; }
             public string region { get; set; }
             public int period { get; set; }
             public string category_one { get; set; }
             public string category_two { get; set; }
             public string category_third { get; set; }
+            public string status { get; set; }
         }
 
         private void CreateSelectRowCB()
@@ -73,6 +76,26 @@ namespace Analys_prostoev
             selectRowComboBox.Items.Add("Все строки");
             selectRowComboBox.Items.Add("Классифицированные строки");
             selectRowComboBox.Items.Add("Неклассифицированные строки");
+        }
+        private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            {
+                connection.Open();
+
+                DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+                int id = (int)item.Row["Id"];
+                string deleteQuery = $"DELETE FROM analysis WHERE \"Id\" = {id}";
+
+                using (NpgsqlCommand deleteCommand = new NpgsqlCommand(deleteQuery, connection))
+                {
+                    int rowsAffected = deleteCommand.ExecuteNonQuery();
+                    if (rowsAffected > 0)
+                    {
+                        System.Windows.MessageBox.Show("Запись удалена успешно. \nСделайте повторную загрузку для обновления таблицы");
+                    }
+                }
+            }
         }
         private void Button_Click(object sender, RoutedEventArgs e)
         {
@@ -140,6 +163,8 @@ namespace Analys_prostoev
                         NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
                         System.Data.DataTable dataTable = new System.Data.DataTable();
                         adapter.Fill(dataTable);
+                        NpgsqlDataReader reader = command.ExecuteReader();
+
 
                         DataGridTable.ItemsSource = dataTable.DefaultView;
 
@@ -159,21 +184,20 @@ namespace Analys_prostoev
             DataGridTextColumn category_level_one = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
             if (category_level_one != null)
             {
-                category_level_one.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_one.Width = new DataGridLength(300);
                 category_level_one.Header = "Категория Уровень 1";
-
             }
 
             DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
             if (category_level_two != null)
             {
-                category_level_two.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_two.Width = new DataGridLength(300);
                 category_level_two.Header = "Категория Уровень 2";
             }
             DataGridTextColumn category_level_third = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
             if (category_level_third != null)
             {
-                category_level_third.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_third.Width = new DataGridLength(300);
                 category_level_third.Header = "Категория Уровень 3";
             }
             DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
@@ -204,6 +228,12 @@ namespace Analys_prostoev
             if (region != null)
             {
                 region.Header = "Участок";
+            }
+            DataGridTextColumn status = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "status");
+            if (status != null)
+            {
+                status.Width = new DataGridLength(300);
+                status.Header = "Состояние";
             }
 
             foreach (DataGridColumn column in DataGridTable.Columns)
@@ -331,12 +361,12 @@ namespace Analys_prostoev
 
 
                 // Execute SQL Query and fetch data
-                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))      
+                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
                 {
                     command.Parameters.AddRange(parameters.ToArray());
                     using (NpgsqlDataReader reader = command.ExecuteReader())
                     {
-                        
+
                         // Fetch data and populate the list
                         while (reader.Read())
                         {
