@@ -90,7 +90,7 @@ namespace Analys_prostoev
                     int rowsAffected = deleteCommand.ExecuteNonQuery();
                     if (rowsAffected > 0)
                     {
-                        System.Windows.MessageBox.Show("Запись удалена успешно. \nСделайте повторную загрузку для обновления таблицы");
+                        System.Windows.MessageBox.Show("Запись удалена успешно.\nСделайте повторную загрузку для обновления таблицы");
                     }
                 }
             }
@@ -105,6 +105,15 @@ namespace Analys_prostoev
         {
             ChangeHistory history = new ChangeHistory();
             history.Show();
+        }
+        private void ChangeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            ChangeTimeDown change = new ChangeTimeDown(Convert.ToDateTime(item.Row.ItemArray[1]),
+                Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[3]),
+                Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
+
+            change.Show();
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

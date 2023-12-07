@@ -13,7 +13,7 @@
         <ComboBox Height="24" Margin="10,10,10,0" VerticalAlignment="Top"
                   x:Name="selectComboBox" IsEditable="True"
         IsReadOnly="True" Text="Выберите участок"/>
-        <Button Content="Скрыть" Margin="90,0,90,25" Background="#FFF046" Height="33" VerticalAlignment="Bottom"/>
+        <Button Content="Скрыть" Margin="90,0,90,25" Background="#FFF046" Height="33" VerticalAlignment="Bottom" Click="Button_Click"/>
 
     </Grid>
 

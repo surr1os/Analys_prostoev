@@ -58,10 +58,10 @@
 
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"/>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click"/>
+                    <MenuItem Header="Изменить" Click="ChangeMenuItem_Click"/>
+                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click"/>
-                    <!--Click="ChangeHistoryItem_Click"-->
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

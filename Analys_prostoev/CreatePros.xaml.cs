@@ -56,8 +56,8 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                string insertQuery = "INSERT INTO analysis (date_start, date_finish, period, region, status, was_created)" +
-                    " VALUES (@dateStart, @dateFinish, @period, @region, @status, @created_at, @date_change)";
+                string insertQuery = "INSERT INTO analysis (date_start, date_finish, period, region, status, created_at)" +
+                    " VALUES (@dateStart, @dateFinish, @period, @region, @status, @created_at)";
 
                 using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection))
                 {
@@ -69,9 +69,6 @@ namespace Analys_prostoev
                     AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                     insertCommand.Parameters.AddWithValue("@status", (byte)status);
                     insertCommand.Parameters.AddWithValue("@created_at", 1);
-                    insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-
-
                     insertCommand.ExecuteNonQuery();
                     Hide();
                 }

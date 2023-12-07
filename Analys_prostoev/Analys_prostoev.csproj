@@ -174,6 +174,10 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="ChangeTimeDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="CreatePros.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -188,6 +192,9 @@
     </Compile>
     <Compile Include="ChangeHistory.xaml.cs">
       <DependentUpon>ChangeHistory.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTimeDown.xaml.cs">
+      <DependentUpon>ChangeTimeDown.xaml</DependentUpon>
     </Compile>
     <Compile Include="CreatePros.xaml.cs">
       <DependentUpon>CreatePros.xaml</DependentUpon>

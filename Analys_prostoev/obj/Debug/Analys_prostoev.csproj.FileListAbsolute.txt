@@ -78,3 +78,5 @@ C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\A
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.pdb
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeHistory.g.cs
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeHistory.baml
+C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeTimeDown.g.cs
+C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeTimeDown.baml

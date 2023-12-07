@@ -1,18 +1,8 @@
 ﻿using Npgsql;
-using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Analys_prostoev
 {
@@ -55,7 +45,7 @@ namespace Analys_prostoev
 
         private void GetHistory(NpgsqlConnection connection)
         {
-            string queryString = "SELECT \"Id\", period, region, date_change FROM analysis WHERE 1=1 AND period >= 5";
+            string queryString = "SELECT id_pros, region, date_change FROM change_history WHERE 1=1 ";
 
             List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
@@ -71,7 +61,7 @@ namespace Analys_prostoev
             //    this.queryString += " AND date_start <= @endDate";
             //    parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
             //    parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
-            //}
+            //}  на случай если понадобится поиск по времени
 
             if (selectComboBox.SelectedItem != null)
             {
@@ -111,6 +101,9 @@ namespace Analys_prostoev
             }
         }
 
-
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
     }
 }
