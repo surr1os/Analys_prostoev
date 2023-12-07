@@ -7,14 +7,14 @@
         xmlns:local="clr-namespace:Analys_prostoev"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Создание записи" Height="433" Width="382">
+        Title="Создание записи" Height="433" Width="382" WindowStartupLocation="CenterScreen">
     <Grid>
 
 
         <Border BorderThickness="0" 
                 HorizontalAlignment="Center" 
                 Margin="0,18,0,0" 
-                Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top"/>
+                Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" />
 
         <Canvas HorizontalAlignment="Center" Height="252" Margin="0,64,0,0" VerticalAlignment="Top" Width="338">
             <Label Height="37" Content="Дата начала" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>

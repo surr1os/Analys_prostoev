@@ -76,3 +76,5 @@ C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\A
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.csproj.CopyComplete
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.exe
 C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\Analys_prostoev.pdb
+C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeHistory.g.cs
+C:\Users\Vadim.Filippov\source\repos\Analys_prostoev\Analys_prostoev\obj\Debug\ChangeHistory.baml

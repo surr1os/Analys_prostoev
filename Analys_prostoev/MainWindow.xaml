@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800">
+        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -58,8 +58,10 @@
 
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"></MenuItem>
-                    <MenuItem Header="Добавить" Click="CreateMenuItem_Click"></MenuItem>
+                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"/>
+                    <MenuItem Header="Добавить" Click="CreateMenuItem_Click"/>
+                    <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click"/>
+                    <!--Click="ChangeHistoryItem_Click"-->
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
