@@ -1,7 +1,6 @@
 ﻿using Npgsql;
 using System;
 using System.Data;
-using System.Drawing;
 using System.Windows;
 
 namespace Analys_prostoev
@@ -20,11 +19,11 @@ namespace Analys_prostoev
         public ChangeTimeDown(DateTime start, DateTime finish, int period, string region, long id)
         {
             InitializeComponent();
+            this.id = id;
             this.start = start;
             this.finish = finish;
             this.period = period;
             this.region = region;
-            this.id = id;
             startDatePicker.Value = start;
             endDatePicker.Value = finish;
             Period.Text = period.ToString();
@@ -48,6 +47,11 @@ namespace Analys_prostoev
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            startDatePicker.IsEnabled = false;
+            endDatePicker.IsEnabled = false;
+            Period.IsEnabled = false;
+            CB_Region.IsEnabled = false;
+
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
                 connection.Open();
@@ -66,44 +70,55 @@ namespace Analys_prostoev
             }
         }
 
+
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            if (CB_Region.Text == String.Empty)
             {
-                connection.Open();
-                MainWindow main = new MainWindow();
-                DataRowView item = (DataRowView)main.DataGridTable.SelectedItem;
-                long id = this.id;
-
-                string updateQuery = "UPDATE analysis SET date_start = @dateStart, date_finish = @dateFinish, period = @period, region = @region, status = @status WHERE \"Id\" = @id";
-
-                using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
-                {
-                    updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
-                    updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
-                    updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
-                    updateCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-
-                    AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
-                    updateCommand.Parameters.AddWithValue("@status", (byte)status);
-                    updateCommand.Parameters.AddWithValue("@id", id);
-                    updateCommand.ExecuteNonQuery();
-                }
+                Close();
             }
-            using (NpgsqlConnection connection2 = new NpgsqlConnection(connectionString)) // Open a new connection
+            else
             {
-                connection2.Open();
-                string insertQuery = "INSERT INTO change_history (region, date_change, id_pros) VALUES (@region, @date_change, @id_pros)";
-
-                using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection2))
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                    insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                    insertCommand.Parameters.AddWithValue("@id_pros", id);
-                    insertCommand.ExecuteNonQuery();
+                    connection.Open();
+                    MainWindow main = new MainWindow();
+                    DataRowView item = (DataRowView)main.DataGridTable.SelectedItem;
+                    long id = this.id;
+
+                    string updateQuery = "UPDATE analysis SET  status = @status WHERE \"Id\" = @id";
+                    /*date_start = @dateStart, date_finish = @dateFinish, period = @period, region = @region,*/
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                    {
+                        //updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
+                        //updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
+                        //updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
+                        //updateCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+
+                        AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
+                        updateCommand.Parameters.AddWithValue("@status", (byte)status);
+                        updateCommand.Parameters.AddWithValue("@id", id);
+                        updateCommand.ExecuteNonQuery();
+                    }
                 }
+
+                using (NpgsqlConnection connection2 = new NpgsqlConnection(connectionString)) // Open a new connection
+                {
+                    connection2.Open();
+                    string insertQuery = "INSERT INTO change_history (region, date_change, id_pros, modified_element) VALUES (@region, @date_change, @id_pros, @modified_element)";
+
+                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection2))
+                    {
+                        insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                        insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+                        insertCommand.Parameters.AddWithValue("@id_pros", id);
+
+                        insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
+                        insertCommand.ExecuteNonQuery();
+                    }
+                }
+                Close();
             }
-            Close();
         }
     }
 }

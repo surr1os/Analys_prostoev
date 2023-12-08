@@ -5,9 +5,9 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="История изменения простоев" Height="455" Width="430" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="История изменения простоев" Height="455" Width="534" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
-        <DataGrid Margin="10,39,10,70" AutoGenerateColumns="True" 
+        <DataGrid Margin="10,39,10,70" AutoGenerateColumns="True"
               IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" x:Name="HistoryTable"/>
         <ComboBox Height="24" Margin="10,10,10,0" VerticalAlignment="Top"

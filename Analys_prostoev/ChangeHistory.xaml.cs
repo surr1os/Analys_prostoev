@@ -1,6 +1,7 @@
 ﻿using Npgsql;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -17,7 +18,7 @@ namespace Analys_prostoev
             selectComboBox.SelectionChanged += SelectComboBox_SelectionChanged;
         }
 
-        
+
 
         //private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
         private string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
@@ -45,7 +46,7 @@ namespace Analys_prostoev
 
         private void GetHistory(NpgsqlConnection connection)
         {
-            string queryString = "SELECT id_pros, region, date_change FROM change_history WHERE 1=1 ";
+            string queryString = "SELECT id_pros, region, date_change, modified_element FROM change_history WHERE 1=1 ";
 
             List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
@@ -89,6 +90,7 @@ namespace Analys_prostoev
 
 
                 HistoryTable.ItemsSource = dataTable.DefaultView;
+                SetNewColumnNames();
             }
         }
         private void SelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -98,6 +100,30 @@ namespace Analys_prostoev
             {
                 connection.Open();
                 GetHistory(connection);
+            }
+        }
+        private void SetNewColumnNames()
+        {
+            DataGridTextColumn id_pros = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "id_pros");
+            if (id_pros != null)
+            {
+                id_pros.Header = "Номер простоя";
+            }
+            DataGridTextColumn region = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
+            if (region != null)
+            {
+                region.Header = "Участок";
+            }
+            DataGridTextColumn date_change = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_change");
+            if (date_change != null)
+            {
+                date_change.Header = "Дата изменения";
+            }
+            DataGridTextColumn modified_element = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "modified_element");
+            if (modified_element != null)
+            {
+
+                modified_element.Header = "Изменения";
             }
         }
 
