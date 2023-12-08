@@ -78,30 +78,40 @@ namespace Analys_prostoev
         }
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить простой?", "Удаление", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
             {
-                connection.Open();
-
-                DataRowView item = (DataRowView)DataGridTable.SelectedItem;
-                if (item == null)
+                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
-                    MessageBox.Show("Вы не выбрали простой!");
-                    return;
-                }
-                else
-                {
-                    long id = (long)item.Row["Id"]; ;
-                    string deleteQuery = $"DELETE FROM analysis WHERE \"Id\" = {id}";
+                    connection.Open();
 
-                    using (NpgsqlCommand deleteCommand = new NpgsqlCommand(deleteQuery, connection))
+                    DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+                    if (item == null)
                     {
-                        int rowsAffected = deleteCommand.ExecuteNonQuery();
-                        if (rowsAffected > 0)
-                        {
-                            System.Windows.MessageBox.Show("Запись удалена успешно.\nСделайте повторную загрузку для обновления таблицы");
-                        }
+                        MessageBox.Show("Вы не выбрали простой!");
+                        return;
                     }
+                    else
+                    {
+                        long id = (long)item.Row["Id"]; ;
+                        string deleteQuery = $"DELETE FROM analysis WHERE \"Id\" = {id}";
+
+                        using (NpgsqlCommand deleteCommand = new NpgsqlCommand(deleteQuery, connection))
+                        {
+                            int rowsAffected = deleteCommand.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Запись удалена успешно.\nСделайте повторную загрузку для обновления таблицы");
+                            }
+                        }
+                        GetSortTable();
+                    }
+                    
                 }
+            }
+            else
+            {
+                return;
             }
         }
 
@@ -134,6 +144,11 @@ namespace Analys_prostoev
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            GetSortTable();
+        }
+
+        public void GetSortTable()
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
             {
@@ -209,7 +224,7 @@ namespace Analys_prostoev
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show(ex.Message, "Error");
+                    MessageBox.Show(ex.Message, "Error");
                 }
 
             }
@@ -356,11 +371,11 @@ namespace Analys_prostoev
                         int rowsAffected = updateCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            System.Windows.MessageBox.Show("Обновление значения выполнено успешно");
+                           MessageBox.Show("Обновление значения выполнено успешно");
                         }
                         else
                         {
-                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");
+                           MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
@@ -503,7 +518,7 @@ namespace Analys_prostoev
         {
             if (DataGridTable.Items.Count == 0)
             {
-                System.Windows.MessageBox.Show("Нельзя выгрузить в эксель из пустых данных. Загрузите данные в таблицу.");
+                MessageBox.Show("Нельзя выгрузить в эксель пустые данные. Загрузите данные в таблицу.");
             }
             else
             {

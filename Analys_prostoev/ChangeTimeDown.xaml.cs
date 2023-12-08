@@ -73,7 +73,7 @@ namespace Analys_prostoev
 
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
-            if (CB_Region.Text == String.Empty)
+            if (CB_Region.Text == string.Empty)
             {
                 Close();
             }
@@ -82,8 +82,7 @@ namespace Analys_prostoev
                 using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
                 {
                     connection.Open();
-                    MainWindow main = new MainWindow();
-                    DataRowView item = (DataRowView)main.DataGridTable.SelectedItem;
+                    MainWindow main = Application.Current.MainWindow as MainWindow;
                     long id = this.id;
 
                     string updateQuery = "UPDATE analysis SET  status = @status WHERE \"Id\" = @id";
@@ -93,12 +92,14 @@ namespace Analys_prostoev
                         //updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
                         //updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
                         //updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
-                        //updateCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                        //updateCommand.Parameters.AddWithValue("@region", CB_Region.Text);   На случай если понадобися изменение по другим параметрам
 
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                         updateCommand.Parameters.AddWithValue("@status", (byte)status);
                         updateCommand.Parameters.AddWithValue("@id", id);
                         updateCommand.ExecuteNonQuery();
+
+                        main.GetSortTable();
                     }
                 }
 
@@ -112,8 +113,8 @@ namespace Analys_prostoev
                         insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
                         insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
                         insertCommand.Parameters.AddWithValue("@id_pros", id);
-
                         insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
+
                         insertCommand.ExecuteNonQuery();
                     }
                 }
