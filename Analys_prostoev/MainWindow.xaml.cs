@@ -24,6 +24,7 @@ namespace Analys_prostoev
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Edit_MenuItem.Visibility = Visibility.Collapsed;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
@@ -101,7 +102,7 @@ namespace Analys_prostoev
                         }
                         GetSortTable();
                     }
-                    
+
                 }
             }
             else
@@ -364,11 +365,11 @@ namespace Analys_prostoev
                         int rowsAffected = updateCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                           MessageBox.Show("Обновление значения выполнено успешно");
+                            MessageBox.Show("Обновление значения выполнено успешно");
                         }
                         else
                         {
-                           MessageBox.Show("Ошибка при обновлении значения");
+                            MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
@@ -518,6 +519,34 @@ namespace Analys_prostoev
                 ExportToExcel(DBContext.queryString);
             }
 
+        }
+
+        private void DataGridTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            if (item != null)
+            {
+                var status = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (short)item.Row.ItemArray[9] : (short?)null;
+                var create = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[10] != DBNull.Value ? (short)item.Row.ItemArray[10] : (short?)null;
+
+                if (status == null && create == null)
+                {
+                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+                }
+                else if ((status == 0 || status == 1) && create == 1)
+                {
+                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+                }
+                else
+                {
+                    Edit_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку изменения
+                }
+            }
+            else
+            {
+                Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+            }
         }
     }
 }

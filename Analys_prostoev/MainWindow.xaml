@@ -43,9 +43,9 @@
                 <Button Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
             </StackPanel>
         </StackPanel>
-            
 
-        <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" 
+
+        <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
               MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" Grid.Row="1">
             <DataGrid.Resources>
@@ -59,7 +59,7 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click"/>
-                    <MenuItem Header="Изменить" Click="ChangeMenuItem_Click"/>
+                    <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click"/>
                     <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click"/>
                 </ContextMenu>
