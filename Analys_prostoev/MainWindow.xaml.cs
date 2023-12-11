@@ -1,49 +1,35 @@
 ﻿using Npgsql;
+using OfficeOpenXml;
+using System;
 using System.Collections.Generic;
 using System.Data;
-//using pree
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
-using System;
-using System.Windows.Controls.Primitives;
-using System.Linq;
-using Microsoft.Office.Interop.Excel;
-using System.Globalization;
-using System.Drawing;
-using System.Xml;
-using System.Data.SqlClient;
-using System.ComponentModel;
-using Excel = Microsoft.Office.Interop.Excel;
-using System.Threading.Tasks;
-using OfficeOpenXml;
 using System.IO;
+using System.Linq;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
+using System.Windows.Input;
+using MessageBox = System.Windows.MessageBox;
 
 namespace Analys_prostoev
 {
 
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
-        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-        //private string connectionString = "Host=localhost;Database=myDb;Username=postgres;Password=iqdeadzoom1r";
-        //private string connectionStringSecond = "Host=10.241.16.9:5432;Database=ParamASU;Username=postgres;Password=asutp2023";
         public MainWindow()
         {
             InitializeComponent();
         }
-        //DataGridTable.ItemsSource
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
-                    string selectQuery = "SELECT region FROM hpt_select";
-                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
+                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                     {
                         using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                         {
@@ -57,140 +43,27 @@ namespace Analys_prostoev
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
 
-            //  SelectDataFromTrends();
             CreateSelectRowCB();
         }
 
-        string queryString = "";
+        //string queryString = "";
 
         public class Analysis
         {
+            public int id { get; set; }
             public DateTime date_start { get; set; }
             public DateTime date_finish { get; set; }
-            public int id { get; set; }
             public string region { get; set; }
             public int period { get; set; }
             public string category_one { get; set; }
             public string category_two { get; set; }
             public string category_third { get; set; }
+            public int status { get; set; }
+            public int created_at { get; set; }
         }
-
-
-        //private void SelectDataFromTrends()
-        //{
-        //    string selectQuery = "SELECT id, t, v FROM trends WHERE l = 0 and id = 2";
-        //    using (NpgsqlConnection connection = new NpgsqlConnection(connectionStringSecond))
-        //    {
-        //        connection.Open();
-        //        NpgsqlCommand command = new NpgsqlCommand(selectQuery, connection);
-        //        NpgsqlDataReader reader = command.ExecuteReader();
-        //        DateTime previousT = DateTime.MinValue;
-        //        // Список для хранения строк analysisTest
-        //        List<AnalysisTest> analysisTests = new List<AnalysisTest>();
-        //        int previousMilliseconds = -1; // Предыдущее значение миллисекунд                                           
-        //        while (reader.Read())
-        //        {
-        //            // Чтение значений полей id t и v
-        //            int id = reader.GetInt32(0);
-        //            DateTime t = reader.GetDateTime(1);
-        //            double v = reader.GetDouble(2);
-        //            int milliseconds = t.Millisecond;
-
-        //            if (v == 1)
-        //            {
-        //                previousMilliseconds = milliseconds;
-        //                analysisTests.Add(new AnalysisTest { id = id, date_start = t });
-        //                previousT = t;
-
-        //            }
-
-        //            else if (v == 0 && analysisTests.Count > 0 && milliseconds == previousMilliseconds)
-        //            {
-
-        //                // Записываем значение поля t в datefinish и добавляем строку analysisTest в таблицу
-        //                analysisTests[analysisTests.Count - 1].date_finish = t;
-        //                previousT = DateTime.MinValue;
-
-        //                previousMilliseconds = -1; // Сброс предыдущего значения миллисекунд
-        //            }
-
-        //            else
-        //            {
-        //                continue;
-        //            }
-
-        //        }
-
-        //        reader.Close();
-        //        int addRowsCount = 0;
-        //        int sameRowsCount = 0;
-        //        int minutesRowsCount = 0;
-        //        foreach (AnalysisTest analysisTest in analysisTests)
-        //        {
-        //            using (NpgsqlConnection connectionSecond = new NpgsqlConnection(connectionString))
-        //            {
-
-        //                if (analysisTest.date_finish != DateTime.MinValue)
-        //                {
-        //                    // Проверка на уже обработанные строки
-
-        //                    connectionSecond.Open();
-
-        //                    string selectHptQuery = "SELECT region FROM hpt_select_trends WHERE id = @id";
-
-        //                    NpgsqlCommand hptCommand = new NpgsqlCommand(selectHptQuery, connectionSecond);
-        //                    hptCommand.Parameters.AddWithValue("@id", analysisTest.id);
-
-        //                    NpgsqlDataReader hptReader = hptCommand.ExecuteReader();
-
-        //                    if (hptReader.Read())
-        //                    {
-        //                        // Чтение значения поля region
-        //                        analysisTest.region = hptReader.GetString(0);
-        //                    }
-
-        //                    hptReader.Close();
-        //                    NpgsqlCommand selectCommand = new NpgsqlCommand("SELECT COUNT(*) FROM analysisTest WHERE date_start = @date_start AND region = @region", connectionSecond);
-        //                    selectCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-        //                    selectCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
-
-        //                    int count = Convert.ToInt32(selectCommand.ExecuteScalar());
-        //                    if (count == 0)
-        //                    {
-        //                        TimeSpan period = analysisTest.date_finish - analysisTest.date_start;
-        //                        int minutes = (int)period.TotalMinutes;
-        //                        if (minutes >= 5)
-        //                        {
-        //                            string insertQuery = "INSERT INTO analysisTest (date_start, date_finish, region, period) VALUES (@date_start, @date_finish, @region, @period)";
-        //                            NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connectionSecond);
-        //                            insertCommand.Parameters.AddWithValue("@date_start", analysisTest.date_start);
-        //                            insertCommand.Parameters.AddWithValue("@date_finish", analysisTest.date_finish);
-        //                            insertCommand.Parameters.AddWithValue("@region", NpgsqlDbType.Text, analysisTest.region);
-        //                            insertCommand.Parameters.AddWithValue("@period", NpgsqlDbType.Integer, minutes);
-        //                            insertCommand.ExecuteNonQuery();
-        //                            addRowsCount++;
-        //                        }
-        //                        else
-        //                        {
-        //                            minutesRowsCount++;
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        sameRowsCount++;
-        //                    }
-        //                }
-        //            }
-
-        //        }
-        //        MessageBox.Show($"Добавлено строк: {addRowsCount}\nНе добавлено:\nПохожих строк: {sameRowsCount}\nС периодом < 5 минут: {minutesRowsCount}"); ;
-
-        //    }
-
-        //}
 
         private void CreateSelectRowCB()
         {
@@ -198,28 +71,100 @@ namespace Analys_prostoev
             selectRowComboBox.Items.Add("Классифицированные строки");
             selectRowComboBox.Items.Add("Неклассифицированные строки");
         }
+        private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить простой?", "Удаление", MessageBoxButton.YesNo);
+            if (result == MessageBoxResult.Yes)
+            {
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+                {
+                    connection.Open();
+
+                    DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+                    if (item == null)
+                    {
+                        MessageBox.Show("Вы не выбрали простой!");
+                        return;
+                    }
+                    else
+                    {
+                        long id = (long)item.Row["Id"];
+                        DBContext.deleteQuery += $" \"Id\" = {id}";
+
+                        using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
+                        {
+                            int rowsAffected = deleteCommand.ExecuteNonQuery();
+                            if (rowsAffected > 0)
+                            {
+                                MessageBox.Show("Запись удалена");
+                            }
+                        }
+                        GetSortTable();
+                    }
+                    
+                }
+            }
+            else
+            {
+                return;
+            }
+        }
+
+        private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            CreatePros create = new CreatePros();
+            create.Show();
+        }
+        private void ChangeHistoryItem_Click(object sender, RoutedEventArgs e)
+        {
+            ChangeHistory history = new ChangeHistory();
+            history.Show();
+        }
+        private void ChangeMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            if (item == null)
+            {
+                MessageBox.Show("Вы не выбрали простой!");
+                return;
+            }
+            else
+            {
+                ChangeTimeDown change = new ChangeTimeDown(Convert.ToDateTime(item.Row.ItemArray[1]),
+                               Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[3]),
+                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
+
+                change.Show();
+            }
+        }
+
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            GetSortTable();
+        }
+
+        public void GetSortTable()
+        {
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 try
                 {
                     connection.Open();
 
-                    this.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
+                    DBContext.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
 
                     List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                     if (startDatePicker.Value.HasValue)
                     {
-                        this.queryString += " AND date_start >= @startDate";
+                        DBContext.queryString += " AND date_start >= @startDate";
                         parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                     }
 
                     if (endDatePicker.Value.HasValue)
                     {
-                        this.queryString += " AND date_start <= @endDate";
+                        DBContext.queryString += " AND date_start <= @endDate";
                         parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                     }
@@ -229,11 +174,11 @@ namespace Analys_prostoev
                         string selectedRegion = selectComboBox.SelectedItem.ToString();
                         if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                         {
-                            this.queryString += $" AND region ILIKE @selectedRegion";
+                            DBContext.queryString += $" AND region ILIKE @selectedRegion";
                         }
                         else
                         {
-                            this.queryString += $" AND region = @selectedRegionCurrent";
+                            DBContext.queryString += $" AND region = @selectedRegionCurrent";
                             parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                         }
                         parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
@@ -244,26 +189,28 @@ namespace Analys_prostoev
                         string rowSelect = selectRowComboBox.SelectedItem.ToString();
                         if (rowSelect == "Все строки")
                         {
-                            this.queryString += "";
+                            DBContext.queryString += "";
                         }
                         else if (rowSelect == "Классифицированные строки")
                         {
-                            this.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                            DBContext.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
                         }
                         else if (rowSelect == "Неклассифицированные строки")
                         {
-                            this.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
+                            DBContext.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
                         }
                     }
 
 
-                    using (NpgsqlCommand command = new NpgsqlCommand(this.queryString, connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand(DBContext.queryString, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
 
                         NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                        System.Data.DataTable dataTable = new System.Data.DataTable();
+                        DataTable dataTable = new DataTable();
                         adapter.Fill(dataTable);
+                        NpgsqlDataReader reader = command.ExecuteReader();
+
 
                         DataGridTable.ItemsSource = dataTable.DefaultView;
 
@@ -272,7 +219,7 @@ namespace Analys_prostoev
                 }
                 catch (Exception ex)
                 {
-                    System.Windows.MessageBox.Show(ex.Message, "Error");
+                    MessageBox.Show(ex.Message, "Error");
                 }
 
             }
@@ -283,21 +230,20 @@ namespace Analys_prostoev
             DataGridTextColumn category_level_one = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
             if (category_level_one != null)
             {
-                category_level_one.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_one.Width = new DataGridLength(300);
                 category_level_one.Header = "Категория Уровень 1";
-
             }
 
             DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
             if (category_level_two != null)
             {
-                category_level_two.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_two.Width = new DataGridLength(300);
                 category_level_two.Header = "Категория Уровень 2";
             }
             DataGridTextColumn category_level_third = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
             if (category_level_third != null)
             {
-                category_level_third.Width = new DataGridLength(300); // Введите нужную вам ширину
+                category_level_third.Width = new DataGridLength(300);
                 category_level_third.Header = "Категория Уровень 3";
             }
             DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
@@ -329,13 +275,22 @@ namespace Analys_prostoev
             {
                 region.Header = "Участок";
             }
-
+            DataGridTextColumn status = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "status");
+            if (status != null)
+            {
+                status.Header = "Состояние";
+            }
+            DataGridTextColumn created_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "created_at");
+            if (created_at != null)
+            {
+                created_at.Header = "Создано";
+            }
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
                 DataGridTextColumn textColumn = column as DataGridTextColumn;
                 if (textColumn != null)
                 {
-                    textColumn.HeaderStyle = new System.Windows.Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
                     textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, System.Windows.HorizontalAlignment.Center));
                 }
             }
@@ -393,12 +348,10 @@ namespace Analys_prostoev
                 selectedItem["reason"] = reasonValue;
 
                 // Обновляем строку в базе данных
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
-                    string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.updateQuery, connection))
                     {
                         updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
                         updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
@@ -411,11 +364,11 @@ namespace Analys_prostoev
                         int rowsAffected = updateCommand.ExecuteNonQuery();
                         if (rowsAffected > 0)
                         {
-                            System.Windows.MessageBox.Show("Обновление значения выполнено успешно");
+                           MessageBox.Show("Обновление значения выполнено успешно");
                         }
                         else
                         {
-                            System.Windows.MessageBox.Show("Ошибка при обновлении значения");
+                           MessageBox.Show("Ошибка при обновлении значения");
                         }
                     }
                 }
@@ -426,21 +379,21 @@ namespace Analys_prostoev
         {
             List<Analysis> analysisList = new List<Analysis>();
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                 if (startDatePicker.Value.HasValue)
                 {
-                    this.queryString += " AND date_start >= @startDate";
+                    DBContext.queryString += " AND date_start >= @startDate";
                     parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                     parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                 }
 
                 if (endDatePicker.Value.HasValue)
                 {
-                    this.queryString += " AND date_start <= @endDate";
+                    DBContext.queryString += " AND date_start <= @endDate";
                     parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                     parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                 }
@@ -448,19 +401,19 @@ namespace Analys_prostoev
                 if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    this.queryString += $" AND region = @selectedRegionCurrent";
+                    DBContext.queryString += $" AND region = @selectedRegionCurrent";
                     parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                     parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
                 }
 
 
                 // Execute SQL Query and fetch data
-                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))      
+                using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
                 {
                     command.Parameters.AddRange(parameters.ToArray());
                     using (NpgsqlDataReader reader = command.ExecuteReader())
                     {
-                        
+
                         // Fetch data and populate the list
                         while (reader.Read())
                         {
@@ -469,7 +422,7 @@ namespace Analys_prostoev
                                 date_start = reader.GetDateTime(reader.GetOrdinal("date_start")),
                                 date_finish = reader.GetDateTime(reader.GetOrdinal("date_finish")),
                                 id = reader.GetInt32(reader.GetOrdinal("id")),
-                                region = reader.GetString(reader.GetOrdinal("region")),
+                                region = reader.IsDBNull(reader.GetOrdinal("region")) ? string.Empty : reader.GetString(reader.GetOrdinal("region")),
                                 period = reader.GetInt32(reader.GetOrdinal("period")),
                                 category_one = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
                                 category_two = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
@@ -553,9 +506,18 @@ namespace Analys_prostoev
             }
         }
 
+
         private void Button_Click_Excel(object sender, RoutedEventArgs e)
         {
-            ExportToExcel(queryString);
+            if (DataGridTable.Items.Count == 0)
+            {
+                MessageBox.Show("Нельзя выгрузить в эксель пустые данные. Загрузите данные в таблицу.");
+            }
+            else
+            {
+                ExportToExcel(DBContext.queryString);
+            }
+
         }
     }
 }

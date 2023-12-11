@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800">
+        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -46,7 +46,7 @@
             
 
         <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" 
-              MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#FFF046" 
+              MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" Grid.Row="1">
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
@@ -55,6 +55,15 @@
                     <Setter Property="BorderThickness" Value="1" />
                 </Style>
             </DataGrid.Resources>
+
+            <DataGrid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="Добавить" Click="CreateMenuItem_Click"/>
+                    <MenuItem Header="Изменить" Click="ChangeMenuItem_Click"/>
+                    <MenuItem Header="Удалить" Click="DeleteMenuItem_Click"/>
+                    <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
     </Grid>
 </Window>

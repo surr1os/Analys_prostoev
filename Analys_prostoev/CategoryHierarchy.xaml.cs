@@ -1,11 +1,8 @@
 ﻿using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using static Analys_prostoev.CategoryHierarchy;
 
 namespace Analys_prostoev
 {
@@ -14,13 +11,12 @@ namespace Analys_prostoev
 
         public MainWindow ParentWindow { get; set; }
 
-        private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
         public CategoryHierarchy(string regionValue)
         {
             RegionValue = regionValue;
             InitializeComponent();
             //   categoryText.Text = cellValue;
-            List<Category> categories = GetCategories(connectionString);
+            List<Category> categories = GetCategories(DBContext.connectionString);
 
 
             // Установка источника данных для TreeView
@@ -54,9 +50,7 @@ namespace Analys_prostoev
                 connection.Open();
 
                 // Запрос для получения данных из таблицы Category
-                string categoryQuery = "SELECT category_name FROM Category";
-
-                using (NpgsqlCommand categoryCommand = new NpgsqlCommand(categoryQuery, connection))
+                using (NpgsqlCommand categoryCommand = new NpgsqlCommand(DBContext.categoryQuery, connection))
                 {
                     using (NpgsqlDataReader categoryReader = categoryCommand.ExecuteReader())
                     {
@@ -89,9 +83,7 @@ namespace Analys_prostoev
 
                 // Запрос для получения данных из таблицы Subcategory_one по заданной категории
 
-                string subcategoryOneQuery = "SELECT subcategory_one_name FROM Subcategory_one WHERE category_name = @CategoryName";
-
-                using (NpgsqlCommand subcategoryOneCommand = new NpgsqlCommand(subcategoryOneQuery, connection))
+                using (NpgsqlCommand subcategoryOneCommand = new NpgsqlCommand(DBContext.subcategoryOneQuery, connection))
                 {
                     subcategoryOneCommand.Parameters.AddWithValue("@CategoryName", categoryName);
                     using (NpgsqlDataReader subcategoryOneReader = subcategoryOneCommand.ExecuteReader())
@@ -232,6 +224,7 @@ namespace Analys_prostoev
                
             }
         }
+
     }
 
 

@@ -170,6 +170,18 @@
     <Compile Include="CategoryHierarchy.xaml.cs">
       <DependentUpon>CategoryHierarchy.xaml</DependentUpon>
     </Compile>
+    <Page Include="ChangeHistory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ChangeTimeDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CreatePros.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -177,6 +189,16 @@
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ChangeHistory.xaml.cs">
+      <DependentUpon>ChangeHistory.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ChangeTimeDown.xaml.cs">
+      <DependentUpon>ChangeTimeDown.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="DBContext.cs" />
+    <Compile Include="CreatePros.xaml.cs">
+      <DependentUpon>CreatePros.xaml</DependentUpon>
     </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
