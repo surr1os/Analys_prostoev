@@ -196,6 +196,7 @@
     <Compile Include="ChangeTimeDown.xaml.cs">
       <DependentUpon>ChangeTimeDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DBContext.cs" />
     <Compile Include="CreatePros.xaml.cs">
       <DependentUpon>CreatePros.xaml</DependentUpon>
     </Compile>

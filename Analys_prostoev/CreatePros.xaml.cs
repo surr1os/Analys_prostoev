@@ -26,17 +26,12 @@ namespace Analys_prostoev
             auto = 0
         }
 
-        //private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-        private string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
-
-                string selectQuery = "SELECT region FROM hpt_select";
-                using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
+                using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
                     using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                     {
@@ -52,14 +47,12 @@ namespace Analys_prostoev
         private void CreateDownTime(object sender, RoutedEventArgs e)
         {
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
+                MainWindow main = Application.Current.MainWindow as MainWindow;
 
-                string insertQuery = "INSERT INTO analysis (date_start, date_finish, period, region, status, created_at)" +
-                    " VALUES (@dateStart, @dateFinish, @period, @region, @status, @created_at)";
-
-                using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection))
+                using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertQuery, connection))
                 {
                     insertCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
                     insertCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
@@ -70,6 +63,7 @@ namespace Analys_prostoev
                     insertCommand.Parameters.AddWithValue("@status", (byte)status);
                     insertCommand.Parameters.AddWithValue("@created_at", 1);
                     insertCommand.ExecuteNonQuery();
+                    main.GetSortTable();
                     Hide();
                 }
             }

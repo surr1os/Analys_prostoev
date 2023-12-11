@@ -15,26 +15,21 @@ using MessageBox = System.Windows.MessageBox;
 namespace Analys_prostoev
 {
 
-    public partial class MainWindow : System.Windows.Window
+    public partial class MainWindow : Window
     {
-        //private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-        private string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
         public MainWindow()
         {
             InitializeComponent();
         }
-        //DataGridTable.ItemsSource
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             try
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
-                    string selectQuery = "SELECT region FROM hpt_select";
-                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
+                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                     {
                         using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                         {
@@ -48,13 +43,13 @@ namespace Analys_prostoev
             }
             catch (Exception ex)
             {
-                System.Windows.MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message);
             }
 
             CreateSelectRowCB();
         }
 
-        string queryString = "";
+        //string queryString = "";
 
         public class Analysis
         {
@@ -81,7 +76,7 @@ namespace Analys_prostoev
             MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить простой?", "Удаление", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
 
@@ -93,15 +88,15 @@ namespace Analys_prostoev
                     }
                     else
                     {
-                        long id = (long)item.Row["Id"]; ;
-                        string deleteQuery = $"DELETE FROM analysis WHERE \"Id\" = {id}";
+                        long id = (long)item.Row["Id"];
+                        DBContext.deleteQuery += $" \"Id\" = {id}";
 
-                        using (NpgsqlCommand deleteCommand = new NpgsqlCommand(deleteQuery, connection))
+                        using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
                         {
                             int rowsAffected = deleteCommand.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Запись удалена успешно.\nСделайте повторную загрузку для обновления таблицы");
+                                MessageBox.Show("Запись удалена");
                             }
                         }
                         GetSortTable();
@@ -150,26 +145,26 @@ namespace Analys_prostoev
 
         public void GetSortTable()
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 try
                 {
                     connection.Open();
 
-                    this.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
+                    DBContext.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
 
                     List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                     if (startDatePicker.Value.HasValue)
                     {
-                        this.queryString += " AND date_start >= @startDate";
+                        DBContext.queryString += " AND date_start >= @startDate";
                         parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                     }
 
                     if (endDatePicker.Value.HasValue)
                     {
-                        this.queryString += " AND date_start <= @endDate";
+                        DBContext.queryString += " AND date_start <= @endDate";
                         parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                         parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                     }
@@ -179,11 +174,11 @@ namespace Analys_prostoev
                         string selectedRegion = selectComboBox.SelectedItem.ToString();
                         if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                         {
-                            this.queryString += $" AND region ILIKE @selectedRegion";
+                            DBContext.queryString += $" AND region ILIKE @selectedRegion";
                         }
                         else
                         {
-                            this.queryString += $" AND region = @selectedRegionCurrent";
+                            DBContext.queryString += $" AND region = @selectedRegionCurrent";
                             parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                         }
                         parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
@@ -194,20 +189,20 @@ namespace Analys_prostoev
                         string rowSelect = selectRowComboBox.SelectedItem.ToString();
                         if (rowSelect == "Все строки")
                         {
-                            this.queryString += "";
+                            DBContext.queryString += "";
                         }
                         else if (rowSelect == "Классифицированные строки")
                         {
-                            this.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                            DBContext.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
                         }
                         else if (rowSelect == "Неклассифицированные строки")
                         {
-                            this.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
+                            DBContext.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
                         }
                     }
 
 
-                    using (NpgsqlCommand command = new NpgsqlCommand(this.queryString, connection))
+                    using (NpgsqlCommand command = new NpgsqlCommand(DBContext.queryString, connection))
                     {
                         command.Parameters.AddRange(parameters.ToArray());
 
@@ -353,12 +348,10 @@ namespace Analys_prostoev
                 selectedItem["reason"] = reasonValue;
 
                 // Обновляем строку в базе данных
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
-                    string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, reason = @reason_new WHERE \"Id\" = @Id";
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.updateQuery, connection))
                     {
                         updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
                         updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
@@ -386,21 +379,21 @@ namespace Analys_prostoev
         {
             List<Analysis> analysisList = new List<Analysis>();
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
                 if (startDatePicker.Value.HasValue)
                 {
-                    this.queryString += " AND date_start >= @startDate";
+                    DBContext.queryString += " AND date_start >= @startDate";
                     parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                     parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                 }
 
                 if (endDatePicker.Value.HasValue)
                 {
-                    this.queryString += " AND date_start <= @endDate";
+                    DBContext.queryString += " AND date_start <= @endDate";
                     parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                     parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                 }
@@ -408,7 +401,7 @@ namespace Analys_prostoev
                 if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    this.queryString += $" AND region = @selectedRegionCurrent";
+                    DBContext.queryString += $" AND region = @selectedRegionCurrent";
                     parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                     parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
                 }
@@ -522,7 +515,7 @@ namespace Analys_prostoev
             }
             else
             {
-                ExportToExcel(queryString);
+                ExportToExcel(DBContext.queryString);
             }
 
         }

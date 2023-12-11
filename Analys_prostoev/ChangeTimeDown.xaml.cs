@@ -1,6 +1,5 @@
 ﻿using Npgsql;
 using System;
-using System.Data;
 using System.Windows;
 
 namespace Analys_prostoev
@@ -42,9 +41,6 @@ namespace Analys_prostoev
             auto = 0
         }
 
-        //private string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-        private string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             startDatePicker.IsEnabled = false;
@@ -52,12 +48,11 @@ namespace Analys_prostoev
             Period.IsEnabled = false;
             CB_Region.IsEnabled = false;
 
-            using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
 
-                string selectQuery = "SELECT region FROM hpt_select";
-                using (NpgsqlCommand selectCommand = new NpgsqlCommand(selectQuery, connection))
+                using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
                     using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                     {
@@ -79,21 +74,14 @@ namespace Analys_prostoev
             }
             else
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(connectionString))
+                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
                     MainWindow main = Application.Current.MainWindow as MainWindow;
                     long id = this.id;
 
-                    string updateQuery = "UPDATE analysis SET  status = @status WHERE \"Id\" = @id";
-                    /*date_start = @dateStart, date_finish = @dateFinish, period = @period, region = @region,*/
-                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(updateQuery, connection))
+                    using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.changeQuery, connection))
                     {
-                        //updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
-                        //updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
-                        //updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
-                        //updateCommand.Parameters.AddWithValue("@region", CB_Region.Text);   На случай если понадобися изменение по другим параметрам
-
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                         updateCommand.Parameters.AddWithValue("@status", (byte)status);
                         updateCommand.Parameters.AddWithValue("@id", id);
@@ -103,12 +91,10 @@ namespace Analys_prostoev
                     }
                 }
 
-                using (NpgsqlConnection connection2 = new NpgsqlConnection(connectionString)) // Open a new connection
+                using (NpgsqlConnection connection2 = new NpgsqlConnection(DBContext.connectionString)) // Open a new connection
                 {
                     connection2.Open();
-                    string insertQuery = "INSERT INTO change_history (region, date_change, id_pros, modified_element) VALUES (@region, @date_change, @id_pros, @modified_element)";
-
-                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(insertQuery, connection2))
+                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                     {
                         insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
                         insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
