@@ -50,9 +50,7 @@ namespace Analys_prostoev
                 connection.Open();
 
                 // Запрос для получения данных из таблицы Category
-                string categoryQuery = "SELECT category_name FROM Category";
-
-                using (NpgsqlCommand categoryCommand = new NpgsqlCommand(categoryQuery, connection))
+                using (NpgsqlCommand categoryCommand = new NpgsqlCommand(DBContext.categoryQuery, connection))
                 {
                     using (NpgsqlDataReader categoryReader = categoryCommand.ExecuteReader())
                     {
