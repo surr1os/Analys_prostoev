@@ -118,8 +118,18 @@ namespace Analys_prostoev
         }
         private void ChangeHistoryItem_Click(object sender, RoutedEventArgs e)
         {
-            ChangeHistory history = new ChangeHistory();
-            history.Show();
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            if (item == null)
+            {
+                MessageBox.Show("Вы не выбрали простой!");
+                return;
+            }
+            else
+            {
+                ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[3]),
+                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
+                history.Show();
+            }
         }
         private void ChangeMenuItem_Click(object sender, RoutedEventArgs e)
         {
