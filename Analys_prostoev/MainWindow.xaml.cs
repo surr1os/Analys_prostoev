@@ -25,6 +25,7 @@ namespace Analys_prostoev
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Edit_MenuItem.Visibility = Visibility.Collapsed;
+            Delete_MenuItem.Visibility = Visibility.Collapsed;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
@@ -530,13 +531,18 @@ namespace Analys_prostoev
                 var status = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (short)item.Row.ItemArray[9] : (short?)null;
                 var create = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[10] != DBNull.Value ? (short)item.Row.ItemArray[10] : (short?)null;
 
+                if (create == 0 || create == null)
+                {
+                    Delete_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку удаления у автоматических простоев
+                }
                 if (status == null && create == null)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
                 }
                 else if ((status == 0 || status == 1) && create == 1)
                 {
-                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+                    Edit_MenuItem.Visibility = Visibility.Visible;
+                    Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
                 }
                 else
                 {
