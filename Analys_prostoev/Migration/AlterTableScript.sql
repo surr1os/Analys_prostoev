@@ -1,13 +1,16 @@
 Alter table public.analysis 
-drop column is_manual
-alter column created_at not null default current_timestamp
+drop column if exists created_at;
+Alter table public.analysis
+add column created_at timestamp not null default current_timestamp;
 
 Alter table public.analysis 
-drop column change_at
-alter column change_at not null default current_timestamp
+drop column  if exists change_at;
+Alter table public.analysis
+add column change_at timestamp not null default current_timestamp;
 
 Alter table public.analysis 
-drop column is_manual
+drop column if exists is_manual;
+Alter table public.analysis
 add column is_manual bool not null default false;
 
 update public.analysis set created_at = date_start 
