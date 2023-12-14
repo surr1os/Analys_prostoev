@@ -550,7 +550,7 @@ namespace Analys_prostoev
                 {
                     Delete_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку удаления у автоматических простоев
                 }
-                if (status == null && manual == null)
+                if (status == 0 && manual == false)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
                 }

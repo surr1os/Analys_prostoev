@@ -20,11 +20,6 @@ namespace Analys_prostoev
             NotApproved = 0
         }
 
-        private enum AnalisisWasCreated
-        {
-            manually = 1,
-            auto = 0
-        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
