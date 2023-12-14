@@ -25,6 +25,7 @@ namespace Analys_prostoev
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Edit_MenuItem.Visibility = Visibility.Collapsed;
+            Delete_MenuItem.Visibility = Visibility.Collapsed;
             try
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
@@ -63,7 +64,7 @@ namespace Analys_prostoev
             public string category_two { get; set; }
             public string category_third { get; set; }
             public int status { get; set; }
-            public int created_at { get; set; }
+            public bool is_manual { get; set; }
         }
 
         private void CreateSelectRowCB()
@@ -295,6 +296,11 @@ namespace Analys_prostoev
             if (created_at != null)
             {
                 created_at.Header = "Создано";
+            }
+            DataGridTextColumn change_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "change_at");
+            if (change_at != null)
+            {
+                change_at.Header = "Изменено";
             }
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
@@ -538,15 +544,20 @@ namespace Analys_prostoev
             if (item != null)
             {
                 var status = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (short)item.Row.ItemArray[9] : (short?)null;
-                var create = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[10] != DBNull.Value ? (short)item.Row.ItemArray[10] : (short?)null;
+                var manual = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[12] != DBNull.Value ? (bool)item.Row.ItemArray[12] : (bool?)null;
 
-                if (status == null && create == null)
+                if (manual == false)
+                {
+                    Delete_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку удаления у автоматических простоев
+                }
+                if (status == null && manual == null)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
                 }
-                else if ((status == 0 || status == 1) && create == 1)
+                else if ((status == 0 || status == 1) && manual == true)
                 {
-                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+                    Edit_MenuItem.Visibility = Visibility.Visible;
+                    Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
                 }
                 else
                 {
