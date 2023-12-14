@@ -85,6 +85,7 @@ namespace Analys_prostoev
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                         updateCommand.Parameters.AddWithValue("@status", (byte)status);
                         updateCommand.Parameters.AddWithValue("@id", id);
+                        updateCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
                         updateCommand.ExecuteNonQuery();
 
                         main.GetSortTable();

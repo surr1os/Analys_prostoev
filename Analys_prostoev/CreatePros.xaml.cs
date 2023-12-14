@@ -20,11 +20,6 @@ namespace Analys_prostoev
             NotApproved = 0
         }
 
-        private enum AnalisisWasCreated
-        {
-            manually = 1,
-            auto = 0
-        }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -61,7 +56,7 @@ namespace Analys_prostoev
 
                     AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                     insertCommand.Parameters.AddWithValue("@status", (byte)status);
-                    insertCommand.Parameters.AddWithValue("@created_at", 1);
+                    insertCommand.Parameters.AddWithValue("@is_manual", true);
                     insertCommand.ExecuteNonQuery();
                     main.GetSortTable();
                     Hide();
