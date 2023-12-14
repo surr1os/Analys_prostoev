@@ -282,10 +282,15 @@ namespace Analys_prostoev
             {
                 status.Header = "Состояние";
             }
-            DataGridTextColumn is_auto = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "is_auto");
-            if (is_auto != null)
+            DataGridTextColumn created_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "created_at");
+            if (created_at != null)
             {
-                is_auto.Header = "Создано";
+                created_at.Header = "Создано";
+            }
+            DataGridTextColumn change_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "change_at");
+            if (change_at != null)
+            {
+                change_at.Header = "Изменено";
             }
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
