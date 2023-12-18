@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Analys_prostoev
 {
@@ -11,7 +12,6 @@ namespace Analys_prostoev
     /// </summary>
     public partial class ChangeHistory : Window
     {
-
         public int period;
         public string region;
         readonly long id;
@@ -55,26 +55,27 @@ namespace Analys_prostoev
 
         private void SetNewColumnNames()
         {
-            DataGridTextColumn id_pros = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "id_pros");
-            if (id_pros != null)
-            {
-                id_pros.Header = "Номер простоя";
-            }
-            DataGridTextColumn region = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
-            if (region != null)
-            {
-                region.Header = "Участок";
-            }
             DataGridTextColumn date_change = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_change");
             if (date_change != null)
             {
                 date_change.Header = "Дата изменения";
+                date_change.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
+                date_change.Width = new DataGridLength(120);
             }
             DataGridTextColumn modified_element = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "modified_element");
             if (modified_element != null)
             {
 
                 modified_element.Header = "Изменения";
+            }
+            foreach (DataGridColumn column in HistoryTable.Columns)
+            {
+                DataGridTextColumn textColumn = column as DataGridTextColumn;
+                if (textColumn != null)
+                {
+                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+                }
             }
         }
 

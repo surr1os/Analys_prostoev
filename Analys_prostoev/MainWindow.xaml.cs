@@ -26,28 +26,21 @@ namespace Analys_prostoev
         {
             Edit_MenuItem.Visibility = Visibility.Collapsed;
             Delete_MenuItem.Visibility = Visibility.Collapsed;
-            try
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
-                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+                connection.Open();
+                using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
-                    connection.Open();
-                    using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
+                    using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
                     {
-                        using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
+                        while (reader.Read())
                         {
-                            while (reader.Read())
-                            {
-                                selectComboBox.Items.Add(reader["region"].ToString());
-                            }
+                            selectComboBox.Items.Add(reader["region"].ToString());
                         }
                     }
                 }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-
             CreateSelectRowCB();
         }
 
@@ -127,7 +120,7 @@ namespace Analys_prostoev
             }
             else
             {
-                ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[3]),
+                ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[5]),
                                Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
                 history.Show();
             }
@@ -142,9 +135,9 @@ namespace Analys_prostoev
             }
             else
             {
-                ChangeTimeDown change = new ChangeTimeDown(Convert.ToDateTime(item.Row.ItemArray[1]),
-                               Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[3]),
-                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
+                ChangeTimeDown change = new ChangeTimeDown(Convert.ToInt64(item.Row.ItemArray[0]), Convert.ToDateTime(item.Row.ItemArray[1]),
+                               Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[5]),
+                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]));
 
                 change.Show();
             }
@@ -159,81 +152,75 @@ namespace Analys_prostoev
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
-                try
+
+                connection.Open();
+
+                DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
+                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5";
+
+                List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
+
+                if (startDatePicker.Value.HasValue)
                 {
-                    connection.Open();
-
-                    DBContext.queryString = "SELECT * FROM analysis WHERE 1=1 AND period >= 5";
-
-                    List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-                    if (startDatePicker.Value.HasValue)
-                    {
-                        DBContext.queryString += " AND date_start >= @startDate";
-                        parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-                        parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
-                    }
-
-                    if (endDatePicker.Value.HasValue)
-                    {
-                        DBContext.queryString += " AND date_start <= @endDate";
-                        parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-                        parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
-                    }
-
-                    if (selectComboBox.SelectedItem != null)
-                    {
-                        string selectedRegion = selectComboBox.SelectedItem.ToString();
-                        if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
-                        {
-                            DBContext.queryString += $" AND region ILIKE @selectedRegion";
-                        }
-                        else
-                        {
-                            DBContext.queryString += $" AND region = @selectedRegionCurrent";
-                            parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
-                        }
-                        parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
-                    }
-
-                    if (selectRowComboBox.SelectedItem != null)
-                    {
-                        string rowSelect = selectRowComboBox.SelectedItem.ToString();
-                        if (rowSelect == "Все строки")
-                        {
-                            DBContext.queryString += "";
-                        }
-                        else if (rowSelect == "Классифицированные строки")
-                        {
-                            DBContext.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
-                        }
-                        else if (rowSelect == "Неклассифицированные строки")
-                        {
-                            DBContext.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
-                        }
-                    }
-
-
-                    using (NpgsqlCommand command = new NpgsqlCommand(DBContext.queryString, connection))
-                    {
-                        command.Parameters.AddRange(parameters.ToArray());
-
-                        NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                        DataTable dataTable = new DataTable();
-                        adapter.Fill(dataTable);
-                        NpgsqlDataReader reader = command.ExecuteReader();
-
-
-                        DataGridTable.ItemsSource = dataTable.DefaultView;
-
-                        SetNewColumnNames();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message, "Error");
+                    DBContext.queryString += " AND date_start >= @startDate";
+                    parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                    parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
                 }
 
+                if (endDatePicker.Value.HasValue)
+                {
+                    DBContext.queryString += " AND date_start <= @endDate";
+                    parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                    parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
+                }
+
+                if (selectComboBox.SelectedItem != null)
+                {
+                    string selectedRegion = selectComboBox.SelectedItem.ToString();
+                    if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
+                    {
+                        DBContext.queryString += $" AND region ILIKE @selectedRegion";
+                    }
+                    else
+                    {
+                        DBContext.queryString += $" AND region = @selectedRegionCurrent";
+                        parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
+                    }
+                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
+                }
+
+                if (selectRowComboBox.SelectedItem != null)
+                {
+                    string rowSelect = selectRowComboBox.SelectedItem.ToString();
+                    if (rowSelect == "Все строки")
+                    {
+                        DBContext.queryString += "";
+                    }
+                    else if (rowSelect == "Классифицированные строки")
+                    {
+                        DBContext.queryString += " AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''";
+                    }
+                    else if (rowSelect == "Неклассифицированные строки")
+                    {
+                        DBContext.queryString += " AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL";
+                    }
+                }
+
+
+                using (NpgsqlCommand command = new NpgsqlCommand(DBContext.queryString, connection))
+                {
+                    command.Parameters.AddRange(parameters.ToArray());
+
+                    NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    NpgsqlDataReader reader = command.ExecuteReader();
+
+
+                    DataGridTable.ItemsSource = dataTable.DefaultView;
+
+                    SetNewColumnNames();
+                }
             }
         }
 
@@ -245,7 +232,11 @@ namespace Analys_prostoev
                 category_level_one.Width = new DataGridLength(300);
                 category_level_one.Header = "Категория Уровень 1";
             }
-
+            DataGridTextColumn Id = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Id");
+            if (Id != null)
+            {
+                Id.Header = "Номер";
+            }
             DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
             if (category_level_two != null)
             {
@@ -290,17 +281,38 @@ namespace Analys_prostoev
             DataGridTextColumn status = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "status");
             if (status != null)
             {
-                status.Header = "Состояние";
+                status.Header = "Статус";
             }
+            foreach (DataRowView row in DataGridTable.Items)
+            {
+                DataRow dataRow = row.Row;
+                int statusValue = Convert.ToInt32(dataRow["status"]);
+                if (statusValue == 1)
+                {
+                    dataRow["status"] = "Согласовано";
+                }
+                else
+                {
+                    dataRow["status"] = "Не согласовано";
+                }
+            }
+
             DataGridTextColumn created_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "created_at");
             if (created_at != null)
             {
                 created_at.Header = "Создано";
+                created_at.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
             }
             DataGridTextColumn change_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "change_at");
             if (change_at != null)
             {
                 change_at.Header = "Изменено";
+                change_at.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
+            }
+            DataGridTextColumn is_manual = DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "\"is_manual\"") as DataGridTextColumn;
+            if (is_manual != null)
+            {
+                is_manual.Header = "Создано вручную";
             }
             foreach (DataGridColumn column in DataGridTable.Columns)
             {
@@ -375,7 +387,7 @@ namespace Analys_prostoev
                         updateCommand.Parameters.AddWithValue("categoryThird", categoryThirdValue);
                         updateCommand.Parameters.AddWithValue("reason_new", reasonValue);
 
-                        int id = Convert.ToInt32(selectedItem["Id"]);
+                        long id = Convert.ToInt64(selectedItem["Id"]);
                         updateCommand.Parameters.AddWithValue("Id", id);
 
                         int rowsAffected = updateCommand.ExecuteNonQuery();
@@ -465,7 +477,7 @@ namespace Analys_prostoev
         }
         public void CreateExcelFile(List<Analysis> analysisList)
         {
-            ExcelPackage.LicenseContext = OfficeOpenXml.LicenseContext.NonCommercial;
+            ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
 
             // Открытие диалогового окна для сохранения файла
             SaveFileDialog saveFileDialog = new SaveFileDialog();
@@ -543,18 +555,26 @@ namespace Analys_prostoev
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
             if (item != null)
             {
-                var status = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (short)item.Row.ItemArray[9] : (short?)null;
-                var manual = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[12] != DBNull.Value ? (bool)item.Row.ItemArray[12] : (bool?)null;
+                var status = item.Row.ItemArray.Length > 3 && item.Row.ItemArray[3] != DBNull.Value ? (string)item.Row.ItemArray[3] : null;
+                var categoryOne = item.Row.ItemArray.Length > 6 && item.Row.ItemArray[6] != DBNull.Value ? (string)item.Row.ItemArray[6] : null;
+                var categoryTwo = item.Row.ItemArray.Length > 7 && item.Row.ItemArray[7] != DBNull.Value ? (string)item.Row.ItemArray[7] : null;
+                var categoryThird = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
+                //var reason_new  = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[9] : null;
+                var manual = item.Row.ItemArray.Length > 12 && item.Row.ItemArray[12] != DBNull.Value ? (bool)item.Row.ItemArray[12] : (bool?)null;
 
+                if (categoryOne == null || categoryTwo == null || categoryThird == null)
+                {
+                    Edit_MenuItem.Visibility = Visibility.Collapsed;
+                }
                 if (manual == false)
                 {
                     Delete_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку удаления у автоматических простоев
                 }
-                if (status == 0 && manual == false)
+                if (status == "Не согласованно" && manual == false)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
                 }
-                else if ((status == 0 || status == 1) && manual == true)
+                if (manual == true && categoryOne != null || categoryTwo != null || categoryThird != null)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible;
                     Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
@@ -571,6 +591,7 @@ namespace Analys_prostoev
         }
     }
 }
+
 
 
 

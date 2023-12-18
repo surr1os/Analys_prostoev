@@ -5,7 +5,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="История изменения простоев" Height="455" Width="534" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" BorderThickness="1">
+        Title="История изменения простоев" Height="455" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" BorderThickness="1">
     <Grid>
         <DataGrid Margin="10,48,10,70" AutoGenerateColumns="True" FontFamily="Brutal Type"
               IsReadOnly="True" RowBackground="#CCCCCC" 

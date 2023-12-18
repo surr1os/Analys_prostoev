@@ -13,20 +13,26 @@ namespace Analys_prostoev
         public DateTime finish;
         public int period;
         public string region;
+        public string status;
         readonly long id;
 
-        public ChangeTimeDown(DateTime start, DateTime finish, int period, string region, long id)
+        public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status)
         {
             InitializeComponent();
             this.id = id;
             this.start = start;
             this.finish = finish;
+            this.status = status;
             this.period = period;
             this.region = region;
             startDatePicker.Value = start;
             endDatePicker.Value = finish;
             Period.Text = period.ToString();
             CB_Region.SelectedItem = region;
+            if (status == "Согласовано")
+                CB_Status.SelectedItem = Agreed;
+            else
+                CB_Status.SelectedItem = NotAgreed;
         }
 
         public enum AnalysisStatus
