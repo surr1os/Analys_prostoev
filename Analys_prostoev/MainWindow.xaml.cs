@@ -521,9 +521,7 @@ namespace Analys_prostoev
                         worksheet.Cells[row, 6].Value = analysis.category_one;
                         worksheet.Cells[row, 7].Value = analysis.category_two;
                         worksheet.Cells[row, 8].Value = analysis.category_third;
-
                     }
-
 
                     // Автоматическое подгонка ширины столбцов
                     worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
@@ -559,7 +557,6 @@ namespace Analys_prostoev
                 var categoryOne = item.Row.ItemArray.Length > 6 && item.Row.ItemArray[6] != DBNull.Value ? (string)item.Row.ItemArray[6] : null;
                 var categoryTwo = item.Row.ItemArray.Length > 7 && item.Row.ItemArray[7] != DBNull.Value ? (string)item.Row.ItemArray[7] : null;
                 var categoryThird = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
-                //var reason_new  = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[9] : null;
                 var manual = item.Row.ItemArray.Length > 12 && item.Row.ItemArray[12] != DBNull.Value ? (bool)item.Row.ItemArray[12] : (bool?)null;
 
                 if (categoryOne == null || categoryTwo == null || categoryThird == null)
@@ -591,13 +588,3 @@ namespace Analys_prostoev
         }
     }
 }
-
-
-
-
-
-
-
-
-
-

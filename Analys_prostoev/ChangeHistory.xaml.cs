@@ -12,21 +12,21 @@ namespace Analys_prostoev
     /// </summary>
     public partial class ChangeHistory : Window
     {
-        public int period;
-        public string region;
-        readonly long id;
+        private readonly int _period;
+        private readonly string _region;
+        private readonly long _id;
 
         public ChangeHistory(int period, string region, long id)
         {
             InitializeComponent();
-            this.id = id;
-            this.period = period;
-            this.region = region;
+            _id = id;
+            _period = period;
+            _region = region;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            namePros.Content = $"Простой: {id}  Период: {period}  Усчасток: {region}";
+            namePros.Content = $"Простой: {_id}  Период: {_period}  Усчасток: {_region}";
             HistorySearch();
         }
 
@@ -38,7 +38,7 @@ namespace Analys_prostoev
 
                 using (NpgsqlCommand getHistory = new NpgsqlCommand(DBContext.getHistoryString, connection))
                 {
-                    getHistory.Parameters.AddWithValue("@id", id);
+                    getHistory.Parameters.AddWithValue("@id", _id);
                     
                     NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(getHistory);
                     DataTable dataTable = new DataTable();
