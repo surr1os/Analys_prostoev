@@ -24,8 +24,8 @@
 
 
             <ComboBox x:Name="CB_Status" Height="37" Width="210" HorizontalAlignment="Center" Canvas.Left="119" Canvas.Top="170" VerticalAlignment="Top">
-                <ComboBoxItem Content="Согласован"/>
-                <ComboBoxItem Content="Не согласован"/>
+                <ComboBoxItem Name="Agreed" Content="Согласован"/>
+                <ComboBoxItem Name="NotAgreed" Content="Не согласован"/>
             </ComboBox>
             <ComboBox x:Name="CB_Region" Height="37" Width="210" HorizontalAlignment="Left" Canvas.Left="119" Canvas.Top="128" VerticalAlignment="Center"/>
             <xctk:DateTimePicker x:Name="endDatePicker" Width="210" Height="37" HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="86" VerticalAlignment="Center"/>

@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen">
+        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type">
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -19,35 +19,35 @@
 
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1379">
             <StackPanel Margin="20,0,0,0">
-                <Label Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker x:Name="startDatePicker" MaxWidth="185" MaxHeight="30" MinWidth="185" MinHeight="30" Margin="5"/>
+                <Label FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="185" MaxHeight="30" MinWidth="185" MinHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="185" MinHeight="30" MaxWidth="185" MaxHeight="30" Margin="5"/>
+                <Label FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" MinWidth="185" MinHeight="30" MaxWidth="185" MaxHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <ComboBox x:Name="selectComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
+                <Label FontFamily="Brutal Type" Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <ComboBox FontFamily="Brutal Type" x:Name="selectComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
         IsReadOnly="True" Text="Выберите участок" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <ComboBox x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
+                <Label FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
         IsReadOnly="True" Text="Все строки" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
             </StackPanel>
         </StackPanel>
 
 
         <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
               MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 
-              AlternatingRowBackground="#C0C0C0" Grid.Row="1">
+              AlternatingRowBackground="#C0C0C0" Grid.Row="1" FontFamily="Brutal Type">
             <DataGrid.Resources>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="Background" Value="#C0C0C0"/>
@@ -58,10 +58,10 @@
 
             <DataGrid.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить" Click="CreateMenuItem_Click"/>
-                    <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click"/>
-                    <MenuItem x:Name="Delete_MenuItem" Header="Аннулировать" Click="DeleteMenuItem_Click"/>
-                    <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click"/>
+                    <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Delete_MenuItem" Header="Аннулировать" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

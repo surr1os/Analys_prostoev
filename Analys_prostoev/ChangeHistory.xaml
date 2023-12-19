@@ -5,15 +5,13 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="История изменения простоев" Height="455" Width="534" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+        Title="История изменения простоев" Height="455" Width="450" ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None" BorderThickness="1">
     <Grid>
-        <DataGrid Margin="10,39,10,70" AutoGenerateColumns="True"
+        <DataGrid Margin="10,48,10,70" AutoGenerateColumns="True" FontFamily="Brutal Type"
               IsReadOnly="True" RowBackground="#CCCCCC" 
-              AlternatingRowBackground="#C0C0C0" x:Name="HistoryTable"/>
-        <ComboBox Height="24" Margin="10,10,10,0" VerticalAlignment="Top"
-                  x:Name="selectComboBox" IsEditable="True"
-        IsReadOnly="True" Text="Выберите участок"/>
-        <Button Content="Скрыть" Margin="90,0,90,25" Background="#FFF046" Height="33" VerticalAlignment="Bottom" Click="Button_Click"/>
+              AlternatingRowBackground="#C0C0C0" x:Name="HistoryTable" ColumnWidth="*"/>
+        <Button Content="Закрыть" Margin="90,0,90,25" Background="#FFF046" Height="33" VerticalAlignment="Bottom" Click="Button_Click" FontFamily="Brutal Type"/>
+        <Label Content="" Margin="10,10,10,0" x:Name="namePros" Height="33" VerticalAlignment="Top" FontFamily="Brutal Type"/>
 
     </Grid>
 

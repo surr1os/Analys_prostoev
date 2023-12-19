@@ -15,16 +15,18 @@ namespace Analys_prostoev
         {
             RegionValue = regionValue;
             InitializeComponent();
-            //   categoryText.Text = cellValue;
+
             List<Category> categories = GetCategories(DBContext.connectionString);
 
-
-            // Установка источника данных для TreeView
             TreeViewCategories.ItemsSource = categories;
 
         }
-        //Создаем модель представления
-        public string RegionValue { get; set; }
+
+		/// <summary>
+		/// Создаем модель представления
+		/// </summary>
+		public string RegionValue { get; set; }
+
         public class Category
         {
             public string CategoryName { get; set; }
@@ -224,11 +226,7 @@ namespace Analys_prostoev
                
             }
         }
-
     }
-
-
-
 }
 
 

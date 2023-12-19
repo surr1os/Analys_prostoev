@@ -9,24 +9,25 @@ namespace Analys_prostoev
     /// </summary>
     public partial class ChangeTimeDown : Window
     {
-        public DateTime start;
-        public DateTime finish;
-        public int period;
-        public string region;
-        readonly long id;
+        readonly long _id;
 
-        public ChangeTimeDown(DateTime start, DateTime finish, int period, string region, long id)
+        public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status)
         {
             InitializeComponent();
-            this.id = id;
-            this.start = start;
-            this.finish = finish;
-            this.period = period;
-            this.region = region;
+            _id = id;
             startDatePicker.Value = start;
             endDatePicker.Value = finish;
             Period.Text = period.ToString();
             CB_Region.SelectedItem = region;
+            
+            if (status == "Согласовано")
+            {
+                CB_Status.SelectedItem = Agreed;
+            }
+            else
+            {
+                CB_Status.SelectedItem = NotAgreed;
+            }
         }
 
         public enum AnalysisStatus
@@ -77,14 +78,14 @@ namespace Analys_prostoev
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
+
                     MainWindow main = Application.Current.MainWindow as MainWindow;
-                    long id = this.id;
 
                     using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.changeQuery, connection))
                     {
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
                         updateCommand.Parameters.AddWithValue("@status", (byte)status);
-                        updateCommand.Parameters.AddWithValue("@id", id);
+                        updateCommand.Parameters.AddWithValue("@id", _id);
                         updateCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
                         updateCommand.ExecuteNonQuery();
 
@@ -99,7 +100,7 @@ namespace Analys_prostoev
                     {
                         insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
                         insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                        insertCommand.Parameters.AddWithValue("@id_pros", id);
+                        insertCommand.Parameters.AddWithValue("@id_pros", _id);
                         insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
 
                         insertCommand.ExecuteNonQuery();

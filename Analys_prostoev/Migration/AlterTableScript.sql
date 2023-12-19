@@ -16,3 +16,6 @@ add column is_manual bool not null default false;
 update public.analysis set created_at = date_start 
 
 update public.analysis set change_at = date_finish 
+
+ALTER TABLE public.analysis
+ALTER COLUMN status TYPE TEXT;

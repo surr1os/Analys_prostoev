@@ -1,9 +1,9 @@
 ﻿using Npgsql;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace Analys_prostoev
 {
@@ -12,94 +12,70 @@ namespace Analys_prostoev
     /// </summary>
     public partial class ChangeHistory : Window
     {
-        public ChangeHistory()
+        private readonly int _period;
+        private readonly string _region;
+        private readonly long _id;
+
+        public ChangeHistory(int period, string region, long id)
         {
             InitializeComponent();
-            selectComboBox.SelectionChanged += SelectComboBox_SelectionChanged;
+            _id = id;
+            _period = period;
+            _region = region;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
-            {
-                connection.Open();
-
-                using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
-                {
-                    using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            selectComboBox.Items.Add(reader["region"].ToString());
-                        }
-                    }
-                }
-            }
+            namePros.Content = $"Простой: {_id}  Период: {_period}  Усчасток: {_region}";
+            HistorySearch();
         }
 
-        private void GetHistory(NpgsqlConnection connection)
-        {
-            List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-            if (selectComboBox.SelectedItem != null)
-            {
-                string selectedRegion = selectComboBox.SelectedItem.ToString();
-                if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
-                {
-                    DBContext.getHistoryString += $" AND region ILIKE @selectedRegion";
-                }
-                else
-                {
-                    DBContext.getHistoryString += $" AND region = @selectedRegionCurrent";
-                    parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
-                }
-                parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
-            }
-
-            using (NpgsqlCommand command = new NpgsqlCommand(DBContext.getHistoryString, connection))
-            {
-                command.Parameters.AddRange(parameters.ToArray());
-
-                NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                DataTable dataTable = new DataTable();
-                adapter.Fill(dataTable);
-                NpgsqlDataReader reader = command.ExecuteReader();
-
-
-                HistoryTable.ItemsSource = dataTable.DefaultView;
-                SetNewColumnNames();
-            }
-        }
-        private void SelectComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void HistorySearch()
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
-                GetHistory(connection);
+
+                using (NpgsqlCommand getHistory = new NpgsqlCommand(DBContext.getHistoryString, connection))
+                {
+                    getHistory.Parameters.AddWithValue("@id", _id);
+                    
+                    NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(getHistory);
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    NpgsqlDataReader reader = getHistory.ExecuteReader();
+
+
+                    HistoryTable.ItemsSource = dataTable.DefaultView;
+                }
             }
+
+            SetNewColumnNames();
         }
+
         private void SetNewColumnNames()
         {
-            DataGridTextColumn id_pros = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "id_pros");
-            if (id_pros != null)
-            {
-                id_pros.Header = "Номер простоя";
-            }
-            DataGridTextColumn region = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
-            if (region != null)
-            {
-                region.Header = "Участок";
-            }
             DataGridTextColumn date_change = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_change");
             if (date_change != null)
             {
                 date_change.Header = "Дата изменения";
+                date_change.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
+                date_change.Width = new DataGridLength(120);
             }
             DataGridTextColumn modified_element = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "modified_element");
             if (modified_element != null)
             {
 
                 modified_element.Header = "Изменения";
+            }
+            foreach (DataGridColumn column in HistoryTable.Columns)
+            {
+                DataGridTextColumn textColumn = column as DataGridTextColumn;
+                if (textColumn != null)
+                {
+                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+                }
             }
         }
 
