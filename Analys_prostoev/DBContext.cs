@@ -1,6 +1,11 @@
-﻿namespace Analys_prostoev
+﻿
+using Microsoft.Extensions.Logging;
+using System.ComponentModel.DataAnnotations.Schema;
+
+
+namespace Analys_prostoev
 {
-    public static class DBContext
+    public class DBContext
     {
         //static public string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
         static public string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";

@@ -4,12 +4,15 @@ using Npgsql;
 
 internal class Program
 {
-    private static void Main(string[] args)
+    private static void Main()
     {
         using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
         {
-            FillShifts Shifts = new FillShifts();
+            connection.Open();
+            TimeShifts Shifts = new TimeShifts();
             List<long> shifts = Shifts.GetTime(connection);
+            FillShiftsTable fillShifts = new();
+            fillShifts.FillTable(connection, shifts);
             Console.WriteLine("Готово");
         }
 
