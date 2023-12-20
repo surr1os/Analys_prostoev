@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Factory_shifts.Tables
 {
     [Table("shifts")]
-    public class Shifts
+    public class Shift
     {
         [Key]
         [Column("id")]

@@ -11,7 +11,7 @@ namespace Factory_shifts
 {
     public class FillShiftsTable
     {
-        private List<Shifts> shifts_sourse = new();
+        private List<Shift> shifts_sourse = new();
 
         public void FillTable(NpgsqlConnection connection, List<long> timeShift)
         {
@@ -24,7 +24,7 @@ namespace Factory_shifts
                 DateTime currentDate = startDate.AddDays(i);
                 int groupIndex = i % 4; 
 
-                Shifts shifts = new Shifts
+                Shift shifts = new Shift
                 {
                     Day = currentDate,
                     Letter = groups[groupIndex],
