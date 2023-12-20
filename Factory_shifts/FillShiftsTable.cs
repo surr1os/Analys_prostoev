@@ -15,20 +15,20 @@ namespace Factory_shifts
 
         public void FillTable(NpgsqlConnection connection, List<long> timeShift)
         {
-            DateTime startDate = new DateTime(2023, 12, 1); // Start date for shifts
+            DateTime startDate = new DateTime(2023, 12, 1); 
             string[] groups = new string[] { "А", "В", "С", "Д" };
-            int[] groupShifts = new int[] { 2, 3, 1, 3 }; // Shifts for each group
+            int[] groupShifts = new int[] { 2, 3, 1, 3 }; 
 
-            for (int i = 0; i < 31; i++) // December has 31 days
+            for (int i = 0; i < 31; i++) 
             {
                 DateTime currentDate = startDate.AddDays(i);
-                int groupIndex = i % 4; // Calculate group index based on day
+                int groupIndex = i % 4; 
 
                 Shifts shifts = new Shifts
                 {
                     Day = currentDate,
                     Letter = groups[groupIndex],
-                    TimeShiftId = groupShifts[groupIndex] // Assign shift based on group index
+                    TimeShiftId = groupShifts[groupIndex] 
                 };
 
                 shifts_sourse.Add(shifts);
