@@ -19,3 +19,6 @@ update public.analysis set change_at = date_finish
 
 ALTER TABLE public.analysis
 ALTER COLUMN status TYPE TEXT;
+
+alter table public.analysis
+add column if not exists shifts text;

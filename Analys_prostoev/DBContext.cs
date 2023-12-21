@@ -1,9 +1,4 @@
-﻿
-using Microsoft.Extensions.Logging;
-using System.ComponentModel.DataAnnotations.Schema;
-
-
-namespace Analys_prostoev
+﻿namespace Analys_prostoev
 {
     public class DBContext
     {
@@ -20,5 +15,7 @@ namespace Analys_prostoev
         static public string insertHistory = "INSERT INTO change_history (region, date_change, id_pros, modified_element) VALUES (@region, @date_change, @id_pros, @modified_element)";
         static public string subcategoryOneQuery = "SELECT subcategory_one_name FROM Subcategory_one WHERE category_name = @CategoryName";
         static public string categoryQuery = "SELECT category_name FROM Category";
+        static public string shifts = "select day, letter, time_shift_id from shifts";
+        static public string timeShifts = "select * from time_shifts WHERE id < 3";
     }
 }

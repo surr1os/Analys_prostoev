@@ -31,6 +31,9 @@ namespace Analys_prostoev
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
+                //SetShifts setShifts = new SetShifts();
+                //setShifts.Set(connection);
+
                 using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
                     using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
@@ -42,6 +45,7 @@ namespace Analys_prostoev
                     }
                 }
             }
+            
             CreateSelectRowCB();
         }
 

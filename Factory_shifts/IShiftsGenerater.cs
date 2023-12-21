@@ -1,9 +1,10 @@
 ﻿using Factory_shifts.Data;
+using Factory_shifts.Tables;
 
 namespace Factory_shifts
 {
 	public interface IShiftsGenerater
 	{
-		void Generate(DateTime from, DateTime to, DateShift initialData);
+        List<Shift> Generate(DateTime from, DateTime to, DateShift initialData);
 	}
 }

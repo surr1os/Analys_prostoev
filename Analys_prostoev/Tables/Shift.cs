@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Factory_shifts.Tables
@@ -15,6 +16,5 @@ namespace Factory_shifts.Tables
         public string Letter { get; set; }
         [Column("time_shift_id")]
         public long TimeShiftId { get; set; }
-
     }
 }

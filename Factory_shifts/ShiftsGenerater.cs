@@ -6,7 +6,7 @@ namespace Factory_shifts
 	public class ShiftsGenerater : IShiftsGenerater
 	{
 		private List<string> literals = new List<string> { "А", "В", "С", "Д" };
-		public void Generate(DateTime from, DateTime to, DateShift initialData)
+		public List<Shift> Generate(DateTime from, DateTime to, DateShift initialData)
 		{
 			var currentData = initialData;
 			var indexDate = from;
@@ -22,11 +22,7 @@ namespace Factory_shifts
 
 				indexDate = indexDate.AddDays(1);
 			}
-
-			foreach (var shift in shifts) 
-			{
-				Console.WriteLine($"{shift.Day} - {shift.Letter} - {shift.TimeShiftId}");
-			}
+			return shifts;
 		}
 
 		private Shift GetNewShit(DateTime date, DateShiftGroup group)
