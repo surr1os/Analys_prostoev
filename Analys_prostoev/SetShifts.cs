@@ -1,8 +1,10 @@
 ﻿using Analys_prostoev.Tables;
 using Factory_shifts.Tables;
 using Npgsql;
+using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Analys_prostoev
 {
@@ -10,73 +12,48 @@ namespace Analys_prostoev
     {
         public void Set(NpgsqlConnection connection)
         {
-            connection.Open();
-
-            var listShifts = GetShiftsList(connection);
             var listAnalysis = GetSortAnalysis(connection);
+            var listShifts = GetShiftsList(connection);
             var listTimeShifts = GetTimeShifts(connection);
 
-            foreach (Analysis a in listAnalysis)
+            using (NpgsqlCommand command = new NpgsqlCommand())
             {
-                TimeSpan dateStart = a.DateStart.TimeOfDay;
-                TimeSpan dateFinish = a.DateFinish.TimeOfDay;
-
-                bool alreadyInserted = false;
-
-                using (NpgsqlCommand checkCommand = new NpgsqlCommand())
+                command.Connection = connection;
+                command.CommandText = "update analysis set shifts = @Shifts where \"Id\" = @Id";
+                command.Parameters.Add("@Shifts", NpgsqlDbType.Varchar);
+                command.Parameters.Add("@Id", NpgsqlDbType.Integer);
+                foreach (var analysis in listAnalysis)
                 {
-                    checkCommand.Connection = connection;
-                    checkCommand.CommandText = "SELECT COUNT(*) FROM analysis WHERE shifts = @Shifts";
-                    checkCommand.Parameters.AddWithValue("@Shifts", a.Shifts);
-                    int count = (int)checkCommand.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        alreadyInserted = true; // Если запись уже есть, устанавливаем флаг
-                    }
-                }
+                    TimeSpan dateStart = analysis.DateStart.TimeOfDay;
+                    TimeSpan dateFinish = analysis.DateFinish.TimeOfDay;
+                    var shifts = listShifts.FirstOrDefault(shift => analysis.DateStart.Date == shift.Day);
 
-                if (!alreadyInserted) // Если записи нет, продолжаем выполнение
-                {
-                    foreach (Shift s in listShifts)
+                    if (shifts != null)
                     {
-                        foreach (TimeShifts t in listTimeShifts)
+                        foreach (var time in listTimeShifts)
                         {
-                            if (a.DateStart.Date == s.Day)
+                            if (shifts.TimeShiftId == 1 && dateStart <= time.TimeBegin && dateStart >= time.TimeEnd)
                             {
-                                if (s.TimeShiftId == 1)
-                                {
-                                    if (dateStart <= t.TimeBegin & dateStart >= t.TimeEnd)
-                                    {
-                                        a.Shifts = s.Letter;
-                                    }
-                                }
-                                if (s.TimeShiftId == 2)
-                                {
-                                    if (dateStart >= t.TimeBegin && dateStart <= TimeSpan.Parse("23:59:59"))
-                                    {
-                                        a.Shifts = s.Letter;
-                                    }
-                                    if (dateStart >= TimeSpan.Parse("00:00:00") && dateStart <= t.TimeEnd)
-                                    {
-                                        a.Shifts = s.Letter;
-                                    }
-                                }
+                                analysis.Shifts = shifts.Letter;
+                                break;
+                            }
+
+                            if (shifts.TimeShiftId == 2 && ((dateStart >= time.TimeBegin && dateStart <= TimeSpan.Parse("23:59:59")) || (dateStart >= TimeSpan.Parse("00:00:00") && dateStart <= time.TimeEnd)))
+                            {
+                                analysis.Shifts = shifts.Letter;
+                                break;
                             }
                         }
                     }
 
-                    using (NpgsqlCommand command = new NpgsqlCommand())
-                    {
-                        command.Connection = connection;
-                        command.CommandText = "INSERT INTO analysis(shifts) VALUES(@Shifts)";
-                        command.Parameters.AddWithValue("@Shifts", a.Shifts);
-                        command.ExecuteNonQuery(); // Выполняем команду вставки в базу данных
-                    }
+                    command.Parameters["@Shifts"].Value = analysis.Shifts;
+                    command.Parameters["@Id"].Value = analysis.Id;
+                    command.ExecuteNonQuery();
                 }
             }
         }
 
-        private List<TimeShifts> GetTimeShifts(NpgsqlConnection connection)
+        public List<TimeShifts> GetTimeShifts(NpgsqlConnection connection)
         {
             List<TimeShifts> timeShifts = new List<TimeShifts>();
             NpgsqlCommand selectTime = new NpgsqlCommand(DBContext.timeShifts, connection);
@@ -96,28 +73,28 @@ namespace Analys_prostoev
             return timeShifts;
         }
 
-        private List<Analysis> GetSortAnalysis(NpgsqlConnection connection)
+        public List<Analysis> GetSortAnalysis(NpgsqlConnection connection)
         {
-            List<Analysis> analysis = new List<Analysis>();
-            NpgsqlCommand test = new NpgsqlCommand("SELECT * FROM analysis where date_start >= '2023-12-01'", connection);
+            List<Analysis> analysisList = new List<Analysis>();
+            NpgsqlCommand test = new NpgsqlCommand("SELECT * FROM analysis WHERE date_start >= '2023-12-01' ORDER BY date_start", connection);
 
             using (NpgsqlDataReader reader = test.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    Analysis shift = new Analysis()
+                    Analysis analysis = new Analysis()
                     {
                         Id = reader.GetInt32(0),
                         DateStart = reader.GetDateTime(1),
                         DateFinish = reader.GetDateTime(2),
                     };
-                    analysis.Add(shift);
+                    analysisList.Add(analysis);
                 }
             }
-            return analysis;
+            return analysisList;
         }
 
-        private List<Shift> GetShiftsList(NpgsqlConnection connection)
+        public List<Shift> GetShiftsList(NpgsqlConnection connection)
         {
             List<Shift> shifts = new List<Shift>();
             NpgsqlCommand selectShifts = new NpgsqlCommand(DBContext.shifts, connection);
@@ -128,9 +105,10 @@ namespace Analys_prostoev
                 {
                     Shift shift = new Shift()
                     {
-                        Day = reader.GetDateTime(0),
-                        Letter = reader.GetString(1),
-                        TimeShiftId = reader.GetInt64(2)
+                        Id = reader.GetInt64(0),
+                        Day = reader.GetDateTime(1),
+                        Letter = reader.GetString(2),
+                        TimeShiftId = reader.GetInt64(3)
                     };
                     shifts.Add(shift);
                 }

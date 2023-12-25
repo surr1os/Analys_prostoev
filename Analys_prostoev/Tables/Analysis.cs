@@ -14,6 +14,20 @@ namespace Analys_prostoev.Tables
         public DateTime DateStart { get; set; }
         [Column("date_finish")]
         public DateTime DateFinish { get; set; }
+        [Column("region")]
+        public string Region { get; set; }
+        [Column("period")]
+        public int Period { get; set; }
+        [Column("category_one")]
+        public string CategoryOne { get; set; }
+        [Column("category_two")]
+        public string CategoryTwo { get; set; }
+        [Column("category_hird")]
+        public string CategoryHird { get; set; }
+        [Column("status")]
+        public int Status { get; set; }
+        [Column("is_manual")]
+        public bool IsManual { get; set; }
         [Column("shifts")]
         public string Shifts { get; set; }
 

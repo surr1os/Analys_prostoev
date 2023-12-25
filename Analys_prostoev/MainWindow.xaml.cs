@@ -61,8 +61,6 @@ namespace Analys_prostoev
             public string category_one { get; set; }
             public string category_two { get; set; }
             public string category_third { get; set; }
-            public int status { get; set; }
-            public bool is_manual { get; set; }
         }
 
         private void CreateSelectRowCB()
@@ -112,7 +110,7 @@ namespace Analys_prostoev
 
         private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            CreatePros create = new CreatePros();
+            CreateTimeDown create = new CreateTimeDown();
             create.Show();
         }
         private void ChangeHistoryItem_Click(object sender, RoutedEventArgs e)
@@ -142,7 +140,7 @@ namespace Analys_prostoev
             {
                 ChangeTimeDown change = new ChangeTimeDown(Convert.ToInt64(item.Row.ItemArray[0]), Convert.ToDateTime(item.Row.ItemArray[1]),
                                Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[5]),
-                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]));
+                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]), Convert.ToString(item.Row.ItemArray[13]));
 
                 change.Show();
             }
@@ -161,7 +159,7 @@ namespace Analys_prostoev
                 connection.Open();
 
                 DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
-                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5";
+                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
 
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
@@ -288,6 +286,11 @@ namespace Analys_prostoev
             {
                 status.Header = "Статус";
             }
+            DataGridTextColumn shifts = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "shifts");
+            if (shifts != null)
+            {
+                shifts.Header = "Смена";
+            }
             foreach (DataRowView row in DataGridTable.Items)
             {
                 DataRow dataRow = row.Row;
@@ -314,7 +317,7 @@ namespace Analys_prostoev
                 change_at.Header = "Изменено";
                 change_at.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
             }
-            DataGridTextColumn is_manual = DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "\"is_manual\"") as DataGridTextColumn;
+            DataGridCheckBoxColumn is_manual = (DataGridCheckBoxColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "is_manual");
             if (is_manual != null)
             {
                 is_manual.Header = "Создано вручную";

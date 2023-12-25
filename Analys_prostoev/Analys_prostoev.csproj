@@ -180,6 +180,9 @@
     <Compile Include="CategoryHierarchy.xaml.cs">
       <DependentUpon>CategoryHierarchy.xaml</DependentUpon>
     </Compile>
+    <Compile Include="CreateTimeDown.xaml.cs">
+      <DependentUpon>CreateTimeDown.xaml</DependentUpon>
+    </Compile>
     <Compile Include="SetShifts.cs" />
     <Compile Include="Tables\Analysis.cs" />
     <Compile Include="Tables\Shift.cs" />
@@ -192,7 +195,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="CreatePros.xaml">
+    <Page Include="CreateTimeDown.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -211,9 +214,6 @@
       <DependentUpon>ChangeTimeDown.xaml</DependentUpon>
     </Compile>
     <Compile Include="DBContext.cs" />
-    <Compile Include="CreatePros.xaml.cs">
-      <DependentUpon>CreatePros.xaml</DependentUpon>
-    </Compile>
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

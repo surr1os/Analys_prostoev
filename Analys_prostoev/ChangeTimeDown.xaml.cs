@@ -11,7 +11,7 @@ namespace Analys_prostoev
     {
         readonly long _id;
 
-        public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status)
+        public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status, string shifts)
         {
             InitializeComponent();
             _id = id;
@@ -19,14 +19,31 @@ namespace Analys_prostoev
             endDatePicker.Value = finish;
             Period.Text = period.ToString();
             CB_Region.SelectedItem = region;
-            
-            if (status == "Согласовано")
+
+            CB_Status.SelectedItem = status == "Согласовано" ? Agreed : (object)NotAgreed;
+
+            SelectShifts(shifts);
+        }
+
+        private void SelectShifts(string shifts)
+        {
+            switch (shifts)
             {
-                CB_Status.SelectedItem = Agreed;
-            }
-            else
-            {
-                CB_Status.SelectedItem = NotAgreed;
+                case "":
+                    Letter.SelectedIndex = 0;
+                    break;
+                case "А":
+                    Letter.SelectedIndex = 1;
+                    break;
+                case "В":
+                    Letter.SelectedIndex = 2;
+                    break;
+                case "С":
+                    Letter.SelectedIndex = 3;
+                    break;
+                case "Д":
+                    Letter.SelectedIndex = 4;
+                    break;
             }
         }
 
@@ -87,6 +104,7 @@ namespace Analys_prostoev
                         updateCommand.Parameters.AddWithValue("@status", (byte)status);
                         updateCommand.Parameters.AddWithValue("@id", _id);
                         updateCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
+                        updateCommand.Parameters.AddWithValue("@shifts", Letter.Text);
                         updateCommand.ExecuteNonQuery();
 
                         main.GetSortTable();
@@ -102,7 +120,6 @@ namespace Analys_prostoev
                         insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
                         insertCommand.Parameters.AddWithValue("@id_pros", _id);
                         insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
-
                         insertCommand.ExecuteNonQuery();
                     }
                 }

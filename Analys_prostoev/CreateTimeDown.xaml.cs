@@ -1,31 +1,26 @@
 ﻿using Npgsql;
 using System;
 using System.Windows;
+using static Analys_prostoev.ChangeTimeDown;
 
 namespace Analys_prostoev
 {
     /// <summary>
-    /// Логика взаимодействия для CreatePros.xaml
+    /// Логика взаимодействия для CreateTimeDown.xaml
     /// </summary>
-    public partial class CreatePros : Window
+    public partial class CreateTimeDown : Window
     {
-        public CreatePros()
+        public CreateTimeDown()
         {
             InitializeComponent();
         }
-
-        public enum AnalysisStatus
-        {
-            Approved = 1,
-            NotApproved = 0
-        }
-
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
+
                 using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
                     using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
@@ -41,7 +36,6 @@ namespace Analys_prostoev
 
         private void CreateDownTime(object sender, RoutedEventArgs e)
         {
-
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
@@ -59,12 +53,44 @@ namespace Analys_prostoev
                     insertCommand.Parameters.AddWithValue("@created_at", DateTime.Now);
                     insertCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
 
+                    string selectedShift = CalculateShiftForDateTime(Convert.ToDateTime(startDatePicker.Text), Convert.ToDateTime(endDatePicker.Text), connection);
+                    insertCommand.Parameters.AddWithValue("@shift", selectedShift);
+
                     insertCommand.Parameters.AddWithValue("@is_manual", true);
                     insertCommand.ExecuteNonQuery();
                     main.GetSortTable();
                     Hide();
                 }
             }
+        }
+
+        // Метод для определения подходящей смены на основе даты
+        private string CalculateShiftForDateTime(DateTime start, DateTime end, NpgsqlConnection connection)
+        {
+            SetShifts setShifts = new SetShifts();
+            var listShifts = setShifts.GetShiftsList(connection);
+            foreach (var time in listShifts)
+            {
+                if (start.Date == time.Day)
+                {
+                    if (time.TimeShiftId == 1 
+                        && start.TimeOfDay >= TimeSpan.Parse("08:00:00") 
+                        && end.TimeOfDay <= TimeSpan.Parse("20:00:00"))
+                    {
+                        return time.Letter;
+                    }
+
+                    if (time.TimeShiftId == 2 
+                        && ((start.TimeOfDay >= TimeSpan.Parse("20:00:00") 
+                        && start.TimeOfDay <= TimeSpan.Parse("23:59:59")) 
+                        || (start.TimeOfDay >= TimeSpan.Parse("00:00:00") 
+                        && start.TimeOfDay <= TimeSpan.Parse("08:00:00"))))
+                    {
+                        return time.Letter;
+                    }
+                }
+            }
+            return null; // Если не найдена подходящая смена, возвращаем null.
         }
     }
 }
