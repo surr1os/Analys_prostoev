@@ -15,7 +15,7 @@
         Margin="0,18,0,0" 
         Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" />
 
-        <Canvas HorizontalAlignment="Center" Height="255" VerticalAlignment="Center" Width="338">
+        <Canvas HorizontalAlignment="Center" Height="255" VerticalAlignment="Top" Width="338" Margin="0,64,0,0">
             <Label FontFamily="Brutal Type" Height="37" Content="Дата начала" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
             <Label FontFamily="Brutal Type" Height="37" Content="Дата финиша" Canvas.Top="86" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
             <Label FontFamily="Brutal Type" Height="37" Content="Участок" Canvas.Top="129" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
@@ -30,9 +30,10 @@
             <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Width="220" Height="37" HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="44" VerticalAlignment="Center"/>
 
         </Canvas>
-        <Button FontFamily="Brutal Type" x:Name="Save" Content="Сохранить" Click="CreateDownTime" Margin="172,0,22,35" Background="#FFF046" Height="28" VerticalAlignment="Bottom"/>
-        <Label FontFamily="Brutal Type" Content="Период (мин.)" Height="38" VerticalAlignment="Bottom" Width="110" HorizontalAlignment="Left" Margin="22,0,0,23"/>
-        <TextBox FontFamily="Brutal Type" x:Name="Period" Text="" Height="28" TextAlignment="Center" VerticalAlignment="Bottom" Width="40" HorizontalAlignment="Left" Margin="117,0,0,35"/>
+
+        <Button FontFamily="Brutal Type" x:Name="Save" Content="Сохранить" Click="CreateDownTime" Margin="173,0,23,50" Background="#FFF046" Height="28" VerticalAlignment="Bottom"/>
+        <TextBox FontFamily="Brutal Type" x:Name="Period" Text="" Height="28" TextAlignment="Center" VerticalAlignment="Bottom" Width="40" HorizontalAlignment="Left" Margin="118,0,0,50"/>
+        <Label FontFamily="Brutal Type" Content="Период (мин.)" Height="38" VerticalAlignment="Bottom" Width="110" HorizontalAlignment="Left" Margin="22,0,0,43"/>
 
     </Grid>
 </Window>

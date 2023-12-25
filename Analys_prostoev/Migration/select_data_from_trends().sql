@@ -99,8 +99,7 @@ BEGIN
 
                     IF shift_letter IS NULL
                     THEN
-                        -- Обработка случая, когда для новой записи не найдена подходящая смена
-                        RAISE NOTICE 'Не найдена подходящая смена для записи с id % и датой %', row_id, row_t;
+                        shift_letter := NULL;
                     END IF;
                 END IF;
             END IF;
