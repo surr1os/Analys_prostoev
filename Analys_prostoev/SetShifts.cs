@@ -10,49 +10,6 @@ namespace Analys_prostoev
 {
     public class SetShifts
     {
-        public void Set(NpgsqlConnection connection)
-        {
-            var listAnalysis = GetSortAnalysis(connection);
-            var listShifts = GetShiftsList(connection);
-            var listTimeShifts = GetTimeShifts(connection);
-
-            using (NpgsqlCommand command = new NpgsqlCommand())
-            {
-                command.Connection = connection;
-                command.CommandText = "update analysis set shifts = @Shifts where \"Id\" = @Id";
-                command.Parameters.Add("@Shifts", NpgsqlDbType.Varchar);
-                command.Parameters.Add("@Id", NpgsqlDbType.Integer);
-                foreach (var analysis in listAnalysis)
-                {
-                    TimeSpan dateStart = analysis.DateStart.TimeOfDay;
-                    TimeSpan dateFinish = analysis.DateFinish.TimeOfDay;
-                    var shifts = listShifts.FirstOrDefault(shift => analysis.DateStart.Date == shift.Day);
-
-                    if (shifts != null)
-                    {
-                        foreach (var time in listTimeShifts)
-                        {
-                            if (shifts.TimeShiftId == 1 && dateStart <= time.TimeBegin && dateStart >= time.TimeEnd)
-                            {
-                                analysis.Shifts = shifts.Letter;
-                                break;
-                            }
-
-                            if (shifts.TimeShiftId == 2 && ((dateStart >= time.TimeBegin && dateStart <= TimeSpan.Parse("23:59:59")) || (dateStart >= TimeSpan.Parse("00:00:00") && dateStart <= time.TimeEnd)))
-                            {
-                                analysis.Shifts = shifts.Letter;
-                                break;
-                            }
-                        }
-                    }
-
-                    command.Parameters["@Shifts"].Value = analysis.Shifts;
-                    command.Parameters["@Id"].Value = analysis.Id;
-                    command.ExecuteNonQuery();
-                }
-            }
-        }
-
         public List<TimeShifts> GetTimeShifts(NpgsqlConnection connection)
         {
             List<TimeShifts> timeShifts = new List<TimeShifts>();

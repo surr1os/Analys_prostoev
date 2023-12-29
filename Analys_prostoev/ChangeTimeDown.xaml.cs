@@ -83,7 +83,6 @@ namespace Analys_prostoev
             }
         }
 
-
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
             if (CB_Region.Text == string.Empty)

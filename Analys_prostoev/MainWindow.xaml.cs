@@ -320,7 +320,7 @@ namespace Analys_prostoev
             DataGridCheckBoxColumn is_manual = (DataGridCheckBoxColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "is_manual");
             if (is_manual != null)
             {
-                is_manual.Header = "Создано вручную";
+                is_manual.Header = " Создано вручную ";
             }
             foreach (DataGridColumn column in DataGridTable.Columns)
             {

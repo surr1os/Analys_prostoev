@@ -52,11 +52,9 @@ namespace Analys_prostoev
                     insertCommand.Parameters.AddWithValue("@status", (byte)status);
                     insertCommand.Parameters.AddWithValue("@created_at", DateTime.Now);
                     insertCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
-
-                    string selectedShift = CalculateShiftForDateTime(Convert.ToDateTime(startDatePicker.Text), Convert.ToDateTime(endDatePicker.Text), connection);
-                    insertCommand.Parameters.AddWithValue("@shift", selectedShift);
-
                     insertCommand.Parameters.AddWithValue("@is_manual", true);
+                    string selectedShift = CalculateShiftForDateTime(Convert.ToDateTime(startDatePicker.Value), Convert.ToDateTime(endDatePicker.Value), connection);
+                    insertCommand.Parameters.AddWithValue("@shift", selectedShift);
                     insertCommand.ExecuteNonQuery();
                     main.GetSortTable();
                     Hide();
