@@ -81,6 +81,8 @@ namespace Analys_prostoev
                             if (rowsAffected > 0)
                             {
                                 MessageBox.Show("Запись аннулирована");
+                                DBContext.deleteQuery = "";
+                                DBContext.deleteQuery = $"DELETE FROM analysis WHERE";
                             }
                         }
                         GetSortTable();
