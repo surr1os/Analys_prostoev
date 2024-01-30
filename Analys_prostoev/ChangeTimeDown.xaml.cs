@@ -10,6 +10,10 @@ namespace Analys_prostoev
     public partial class ChangeTimeDown : Window
     {
         readonly long _id;
+        private string originalStatus;
+        private DateTime? originalStartDate;
+        private DateTime? originalEndDate;
+        private string originalPeriod;
 
         public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status, string shifts)
         {
@@ -23,6 +27,11 @@ namespace Analys_prostoev
             CB_Status.SelectedItem = status == "Согласовано" ? Agreed : (object)NotAgreed;
 
             SelectShifts(shifts);
+
+            originalStatus = status;
+            originalStartDate = start;
+            originalEndDate = finish;
+            originalPeriod = period.ToString();
         }
 
         private void SelectShifts(string shifts)
@@ -49,6 +58,7 @@ namespace Analys_prostoev
 
         public enum AnalysisStatus
         {
+            Nothing = 2,
             Approved = 1,
             NotApproved = 0
         }
@@ -61,8 +71,6 @@ namespace Analys_prostoev
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            startDatePicker.IsEnabled = false;
-            endDatePicker.IsEnabled = false;
             Period.IsEnabled = false;
             CB_Region.IsEnabled = false;
 
@@ -82,6 +90,20 @@ namespace Analys_prostoev
                 }
             }
         }
+        private void GetPeriod(object sender, RoutedEventArgs e)
+        {
+            if (startDatePicker.Value != null && endDatePicker.Value != null)
+            {
+                DateTime? start = startDatePicker.Value;
+                DateTime? end = endDatePicker.Value;
+
+                TimeSpan difference = end.Value - start.Value;
+                int periodInMinutes = (int)difference.TotalMinutes;
+
+                Period.Text = periodInMinutes.ToString();
+            }
+            else return;
+        }
 
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
@@ -91,16 +113,50 @@ namespace Analys_prostoev
             }
             else
             {
+                bool isStatusChanged = CB_Status.Text != originalStatus;
+                bool isStartDateChanged = startDatePicker.Value != originalStartDate;
+                bool isEndDateChanged = endDatePicker.Value != originalEndDate;
+                bool isPeriodChanged = Period.Text != originalPeriod;
+
+                if (!isStatusChanged && !isStartDateChanged && !isEndDateChanged && !isPeriodChanged)
+                {
+                    Close(); // Закрываем окно, если изменений не было
+                    return;
+                }
+
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
                     MainWindow main = Application.Current.MainWindow as MainWindow;
 
                     using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.changeQuery, connection))
                     {
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
-                        updateCommand.Parameters.AddWithValue("@status", (byte)status);
+
+                        if (isStatusChanged)
+                        {
+                            updateCommand.Parameters.AddWithValue("@status", (byte)status);
+                        }
+                        else updateCommand.Parameters.AddWithValue("@status", originalStatus);
+
+                        if (isStartDateChanged)
+                        {
+                            updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
+                        }
+                        else updateCommand.Parameters.AddWithValue("@dateStart", originalStartDate);
+
+                        if (isEndDateChanged)
+                        {
+                            updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
+                        }
+                        else updateCommand.Parameters.AddWithValue("@dateFinish", originalEndDate);
+
+                        if (isPeriodChanged)
+                        {
+                            updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
+                        }
+                        else updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(originalPeriod));
+
                         updateCommand.Parameters.AddWithValue("@id", _id);
                         updateCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
                         updateCommand.Parameters.AddWithValue("@shifts", Letter.Text);
@@ -113,15 +169,56 @@ namespace Analys_prostoev
                 using (NpgsqlConnection connection2 = new NpgsqlConnection(DBContext.connectionString)) // Open a new connection
                 {
                     connection2.Open();
-                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+
+                    if (isStatusChanged)
                     {
-                        insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                        insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                        insertCommand.Parameters.AddWithValue("@id_pros", _id);
-                        insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
-                        insertCommand.ExecuteNonQuery();
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+                        {
+                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+                            insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (isStartDateChanged)
+                    {
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+                        {
+                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+                            insertCommand.Parameters.AddWithValue("@modified_element", $"Дата начала изменена на \"{startDatePicker.Value}\"");
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (isEndDateChanged)
+                    {
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+                        {
+                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+                            insertCommand.Parameters.AddWithValue("@modified_element", $"Дата окончания изменена на \"{endDatePicker.Value}\"");
+                            insertCommand.ExecuteNonQuery();
+                        }
+                    }
+
+                    if (isPeriodChanged)
+                    {
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+                        {
+                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+                            insertCommand.Parameters.AddWithValue("@modified_element", $"Период изменён на \"{Period.Text}\"");
+                            insertCommand.ExecuteNonQuery();
+                        }
                     }
                 }
+
                 Close();
             }
         }

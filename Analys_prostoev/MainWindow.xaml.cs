@@ -1,4 +1,7 @@
-﻿using Npgsql;
+﻿using Analys_prostoev.Tables;
+using Microsoft.Extensions.Logging;
+using NLog.Extensions.Logging;
+using Npgsql;
 using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
@@ -18,21 +21,16 @@ namespace Analys_prostoev
 
     public partial class MainWindow : Window
     {
-        public MainWindow()
-        {
-            InitializeComponent();
-        }
-
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Edit_MenuItem.Visibility = Visibility.Collapsed;
             Delete_MenuItem.Visibility = Visibility.Collapsed;
 
+            selectComboBox.Items.Add("Все участки");
+
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
-                //SetShifts setShifts = new SetShifts();
-                //setShifts.Set(connection);
 
                 using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
                 {
@@ -49,20 +47,6 @@ namespace Analys_prostoev
             CreateSelectRowCB();
         }
 
-        //string queryString = "";
-
-        public class Analysis
-        {
-            public int id { get; set; }
-            public DateTime date_start { get; set; }
-            public DateTime date_finish { get; set; }
-            public string region { get; set; }
-            public int period { get; set; }
-            public string category_one { get; set; }
-            public string category_two { get; set; }
-            public string category_third { get; set; }
-        }
-
         private void CreateSelectRowCB()
         {
             selectRowComboBox.Items.Add("Все строки");
@@ -71,22 +55,24 @@ namespace Analys_prostoev
         }
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult result = MessageBox.Show("Вы уверены, что хотите удалить простой?", "Удаление", MessageBoxButton.YesNo);
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            long id = (long)item.Row["Id"];
+
+            MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Аннулировать простой {id}?", "Аннулирование порстоя", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
 
-                    DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+                    
                     if (item == null)
                     {
                         MessageBox.Show("Вы не выбрали простой!");
                         return;
                     }
                     else
-                    {
-                        long id = (long)item.Row["Id"];
+                    { 
                         DBContext.deleteQuery += $" \"Id\" = {id}";
 
                         using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
@@ -94,7 +80,7 @@ namespace Analys_prostoev
                             int rowsAffected = deleteCommand.ExecuteNonQuery();
                             if (rowsAffected > 0)
                             {
-                                MessageBox.Show("Запись удалена");
+                                MessageBox.Show("Запись аннулирована");
                             }
                         }
                         GetSortTable();
@@ -183,6 +169,11 @@ namespace Analys_prostoev
                     if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                     {
                         DBContext.queryString += $" AND region ILIKE @selectedRegion";
+                    }
+                    else if (selectedRegion == "Все участки")
+                    {
+                        DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
+                            " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
                     }
                     else
                     {
@@ -294,14 +285,19 @@ namespace Analys_prostoev
             foreach (DataRowView row in DataGridTable.Items)
             {
                 DataRow dataRow = row.Row;
-                int statusValue = Convert.ToInt32(dataRow["status"]);
-                if (statusValue == 1)
+                string statusValue = dataRow["status"].ToString();
+
+                if (statusValue == "1")
                 {
                     dataRow["status"] = "Согласовано";
                 }
-                else
+                else if (statusValue == "0")
                 {
                     dataRow["status"] = "Не согласовано";
+                }
+                else
+                {
+                    dataRow["status"] = "";
                 }
             }
 
@@ -456,14 +452,14 @@ namespace Analys_prostoev
                         {
                             Analysis analysis = new Analysis
                             {
-                                date_start = reader.GetDateTime(reader.GetOrdinal("date_start")),
-                                date_finish = reader.GetDateTime(reader.GetOrdinal("date_finish")),
-                                id = reader.GetInt32(reader.GetOrdinal("id")),
-                                region = reader.IsDBNull(reader.GetOrdinal("region")) ? string.Empty : reader.GetString(reader.GetOrdinal("region")),
-                                period = reader.GetInt32(reader.GetOrdinal("period")),
-                                category_one = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
-                                category_two = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
-                                category_third = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
+                                DateStart = reader.GetDateTime(reader.GetOrdinal("date_start")),
+                                DateFinish = reader.GetDateTime(reader.GetOrdinal("date_finish")),
+                                Id = reader.GetInt32(reader.GetOrdinal("id")),
+                                Region = reader.IsDBNull(reader.GetOrdinal("region")) ? string.Empty : reader.GetString(reader.GetOrdinal("region")),
+                                Period = reader.GetInt32(reader.GetOrdinal("period")),
+                                CategoryOne = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
+                                CategoryTwo = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
+                                CategoryThird = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
                             };
 
                             analysisList.Add(analysis);
@@ -516,19 +512,19 @@ namespace Analys_prostoev
                         Analysis analysis = analysisList[i];
                         int row = i + 2; // Начинаем заполнение с 2 строки
 
-                        worksheet.Cells[row, 1].Value = analysis.id;
+                        worksheet.Cells[row, 1].Value = analysis.Id;
 
-                        worksheet.Cells[row, 2].Value = analysis.date_start;
+                        worksheet.Cells[row, 2].Value = analysis.DateStart;
                         worksheet.Cells[row, 2].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
 
-                        worksheet.Cells[row, 3].Value = analysis.date_finish;
+                        worksheet.Cells[row, 3].Value = analysis.DateFinish;
                         worksheet.Cells[row, 3].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
 
-                        worksheet.Cells[row, 4].Value = analysis.period;
-                        worksheet.Cells[row, 5].Value = analysis.region;
-                        worksheet.Cells[row, 6].Value = analysis.category_one;
-                        worksheet.Cells[row, 7].Value = analysis.category_two;
-                        worksheet.Cells[row, 8].Value = analysis.category_third;
+                        worksheet.Cells[row, 4].Value = analysis.Period;
+                        worksheet.Cells[row, 5].Value = analysis.Region;
+                        worksheet.Cells[row, 6].Value = analysis.CategoryOne;
+                        worksheet.Cells[row, 7].Value = analysis.CategoryTwo;
+                        worksheet.Cells[row, 8].Value = analysis.CategoryThird;
                     }
 
                     // Автоматическое подгонка ширины столбцов

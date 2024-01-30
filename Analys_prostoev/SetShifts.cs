@@ -1,10 +1,7 @@
 ﻿using Analys_prostoev.Tables;
 using Factory_shifts.Tables;
 using Npgsql;
-using NpgsqlTypes;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Analys_prostoev
 {
