@@ -60,8 +60,9 @@
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Delete_MenuItem" Header="Аннулировать" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Cancel_MenuItem" Header="Аннулировать" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Delete_MenuItem" Header="Удалить" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

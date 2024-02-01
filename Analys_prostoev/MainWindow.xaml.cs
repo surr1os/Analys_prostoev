@@ -141,46 +141,30 @@ namespace Analys_prostoev
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
-
                 connection.Open();
 
-                DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
-                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5 limit 10";
-
+                string conclusion = "SELECT \"Id\", date_start, date_finish, status, region, period," +
+                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
+                DBContext.queryString = conclusion;
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-                if (startDatePicker.Value.HasValue)
-                {
-                    DBContext.queryString += " AND date_start >= @startDate";
-                    parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-                    parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
-                }
-
-                if (endDatePicker.Value.HasValue)
-                {
-                    DBContext.queryString += " AND date_finish <= @endDate";
-                    parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-                    parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
-                }
 
                 if (selectComboBox.SelectedItem != null)
                 {
                     string selectedRegion = selectComboBox.SelectedItem.ToString();
-                    if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
+                    if (selectedRegion == "Все участки")
+                    {
+                        // Do nothing
+                    }
+                    else if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
                     {
                         DBContext.queryString += $" AND region ILIKE @selectedRegion";
-                    }
-                    else if (selectedRegion == "Все участки")
-                    {
-                        DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
-                            " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
+                        parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
                     }
                     else
                     {
                         DBContext.queryString += $" AND region = @selectedRegionCurrent";
                         parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
                     }
-                    parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
                 }
 
                 if (selectRowComboBox.SelectedItem != null)
@@ -188,7 +172,7 @@ namespace Analys_prostoev
                     string rowSelect = selectRowComboBox.SelectedItem.ToString();
                     if (rowSelect == "Все строки")
                     {
-                        DBContext.queryString += "";
+                        // Do nothing
                     }
                     else if (rowSelect == "Классифицированные строки")
                     {
@@ -200,6 +184,7 @@ namespace Analys_prostoev
                     }
                 }
 
+                GetSortDate(parameters);
 
                 using (NpgsqlCommand command = new NpgsqlCommand(DBContext.queryString, connection))
                 {
@@ -210,13 +195,30 @@ namespace Analys_prostoev
                     adapter.Fill(dataTable);
                     NpgsqlDataReader reader = command.ExecuteReader();
 
-
                     DataGridTable.ItemsSource = dataTable.DefaultView;
 
                     SetNewColumnNames();
                 }
             }
         }
+
+        private void GetSortDate(List<NpgsqlParameter> parameters)
+        {
+            if (startDatePicker.Value.HasValue)
+            {
+                DBContext.queryString += " AND (date_start >= @startDate OR date_finish >= @startDate)";
+                parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
+            }
+
+            if (endDatePicker.Value.HasValue)
+            {
+                DBContext.queryString += " AND (date_finish <= @endDate OR date_start <= @endDate)";
+                parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
+                parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
+            }
+        }
+        
 
         private void SetNewColumnNames()
         {
@@ -574,12 +576,15 @@ namespace Analys_prostoev
                 }
                 if (status == "Не согласованно" && manual == false)
                 {
-                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+                    Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения у не автоматических простоев
                 }
-                if (manual == true && categoryOne != null || categoryTwo != null || categoryThird != null)
+                if (manual == true)
+                {
+                    Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
+                }
+                if (categoryOne != null || categoryTwo != null || categoryThird != null)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible;
-                    Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
                 }
                 else
                 {
