@@ -6,15 +6,25 @@ using System.Windows;
 
 namespace Analys_prostoev
 {
-    public partial class CategoryHierarchy : Window
+    public partial class CategoryHierarchy : System.Windows.Window
     {
+        readonly long _id;
+        private string originalCategoryOne;
+        private string originalCategoryTwo;
+        private string originalCategoryThird;
+        public string RegionValue { get; set; }
 
         public MainWindow ParentWindow { get; set; }
 
-        public CategoryHierarchy(string regionValue)
+        public CategoryHierarchy(string regionValue, long id, string CategoryOne, string CategoryTwo, string CategoryThird)
         {
             RegionValue = regionValue;
             InitializeComponent();
+
+            _id = id;
+            originalCategoryOne = CategoryOne;
+            originalCategoryTwo = CategoryTwo;
+            originalCategoryThird = CategoryThird;
 
             List<Category> categories = GetCategories(DBContext.connectionString);
 
@@ -22,27 +32,51 @@ namespace Analys_prostoev
 
         }
 
-		/// <summary>
-		/// Создаем модель представления
-		/// </summary>
-		public string RegionValue { get; set; }
 
-        public class Category
+        private void CategoryHistory(string CategoryOne, string CategoryTwo, string CategoryThird)
         {
-            public string CategoryName { get; set; }
-            public List<SubcategoryOne> SubcategoriesOne { get; set; }
+            bool isCategoryOneChange = CategoryOne != originalCategoryOne;
+            bool isCategoryTwoChange = CategoryTwo != originalCategoryTwo;
+            bool isCategoryThirdChange = CategoryThird != originalCategoryThird;
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+            {
+                connection.Open();
+
+                if (isCategoryOneChange)
+                {
+                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
+                    {
+                        GetHistoryForCategory(insertCommand, $"Категория 1 ур. изменена на \"{CategoryOne}\"");
+                    }
+                }
+                if (isCategoryTwoChange)
+                {
+                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
+                    {
+                        GetHistoryForCategory(insertCommand, $"Категория 2 ур. изменена на \"{CategoryTwo}\"");
+                    }
+                }
+                if (isCategoryThirdChange)
+                {
+                    using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
+                    {
+                        GetHistoryForCategory(insertCommand, $"Категория 3 ур. изменена на \"{CategoryThird}\"");
+                    }
+                }
+
+            }
         }
 
-        public class SubcategoryOne
+        private void GetHistoryForCategory(NpgsqlCommand insertCommand, string modifiedElementegory)
         {
-            public string SubcategoryOneName { get; set; }
-            public List<SubcategorySecond> SubcategoriesSecond { get; set; }
+            insertCommand.Parameters.AddWithValue("@region", RegionValue);
+            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+            insertCommand.Parameters.AddWithValue("@modified_element", modifiedElementegory);  //$"Категория 1 ур. изменена на \"{Category}\""
+            insertCommand.ExecuteNonQuery();
         }
 
-        public class SubcategorySecond
-        {
-            public string SubcategorySecondName { get; set; }
-        }
         private List<Category> GetCategories(string connectionString)
         {
             List<Category> categories = new List<Category>();
@@ -212,18 +246,20 @@ namespace Analys_prostoev
                 string categoryThirdValue = categoryThirdTextB.Text;
                 string reasonValue = reasonTextB.Text;
                 // Закрываем текущее окно
-                this.Close();
+
+                CategoryHistory(categoryOneValue, categoryTwoValue, categoryThirdValue);
+                Close();
 
                 // Вызываем метод в родительском окне для обновления значений ячеек выбранной строки
                 try
                 {
                     mainWindow.UpdateSelectedRowValues(categoryOneValue, categoryTwoValue, categoryThirdValue, reasonValue);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     MessageBox.Show(ex.Message);
                 }
-               
+
             }
         }
     }

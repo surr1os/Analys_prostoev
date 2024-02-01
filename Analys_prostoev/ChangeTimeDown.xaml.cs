@@ -74,6 +74,8 @@ namespace Analys_prostoev
             Period.IsEnabled = false;
             CB_Region.IsEnabled = false;
 
+            info.Content = $"Простой номер: {_id}";
+
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
@@ -174,53 +176,44 @@ namespace Analys_prostoev
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-                            insertCommand.Parameters.AddWithValue("@modified_element", $"Статус изменён на \"{CB_Status.Text}\"");
-                            insertCommand.ExecuteNonQuery();
+                            GetHistoriForElements(insertCommand, $"Статус изменён на \"{CB_Status.Text}\"");
                         }
                     }
-
                     if (isStartDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-                            insertCommand.Parameters.AddWithValue("@modified_element", $"Дата начала изменена на \"{startDatePicker.Value}\"");
-                            insertCommand.ExecuteNonQuery();
+                            GetHistoriForElements(insertCommand, $"Дата окончания изменена c \"{originalStartDate}\" на \"{startDatePicker.Value}\"");
                         }
                     }
-
                     if (isEndDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-                            insertCommand.Parameters.AddWithValue("@modified_element", $"Дата окончания изменена на \"{endDatePicker.Value}\"");
-                            insertCommand.ExecuteNonQuery();
+                            GetHistoriForElements(insertCommand, $"Дата окончания изменена c \"{originalEndDate}\" на \"{endDatePicker.Value}\"");
                         }
                     }
-
                     if (isPeriodChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-                            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-                            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-                            insertCommand.Parameters.AddWithValue("@modified_element", $"Период изменён на \"{Period.Text}\"");
-                            insertCommand.ExecuteNonQuery();
+                            GetHistoriForElements(insertCommand, $"Период изменён на \"{Period.Text}\"");
                         }
                     }
+
                 }
 
                 Close();
             }
+        }
+
+        private void GetHistoriForElements(NpgsqlCommand insertCommand, string modifiedElement)
+        {
+            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
+            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
+            insertCommand.Parameters.AddWithValue("@id_pros", _id);
+            insertCommand.Parameters.AddWithValue("@modified_element", modifiedElement);    //$"Статус изменён на \"{CB_Status.Text}\""
+            insertCommand.ExecuteNonQuery();
         }
     }
 }

@@ -1,6 +1,4 @@
 ﻿using Analys_prostoev.Tables;
-using Microsoft.Extensions.Logging;
-using NLog.Extensions.Logging;
 using Npgsql;
 using OfficeOpenXml;
 using System;
@@ -43,7 +41,7 @@ namespace Analys_prostoev
                     }
                 }
             }
-            
+
             CreateSelectRowCB();
         }
 
@@ -65,14 +63,14 @@ namespace Analys_prostoev
                 {
                     connection.Open();
 
-                    
+
                     if (item == null)
                     {
                         MessageBox.Show("Вы не выбрали простой!");
                         return;
                     }
                     else
-                    { 
+                    {
                         DBContext.deleteQuery += $" \"Id\" = {id}";
 
                         using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
@@ -147,7 +145,7 @@ namespace Analys_prostoev
                 connection.Open();
 
                 DBContext.queryString = "SELECT \"Id\", date_start, date_finish, status, region, period," +
-                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
+                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5 limit 10";
 
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
@@ -160,7 +158,7 @@ namespace Analys_prostoev
 
                 if (endDatePicker.Value.HasValue)
                 {
-                    DBContext.queryString += " AND date_start <= @endDate";
+                    DBContext.queryString += " AND date_finish <= @endDate";
                     parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
                     parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
                 }
@@ -348,6 +346,7 @@ namespace Analys_prostoev
                     // Получаем объект данных
                     DataRowView rowView = (DataRowView)cellInfo.Item;
                     // Получаем значения ячеек выбранной строки
+                    long id = Convert.ToInt64(rowView["Id"]);
                     string reason = rowView["reason"].ToString();
                     string regionValue = rowView["region"].ToString();
                     string categoryOneValue = rowView["category_one"].ToString();
@@ -355,7 +354,7 @@ namespace Analys_prostoev
                     string categoryThirdValue = rowView["category_third"].ToString();
 
                     // Создаем экземпляр окна CategoryHierarchy
-                    var newWindow = new CategoryHierarchy(regionValue);
+                    var newWindow = new CategoryHierarchy(regionValue, id, categoryOneValue, categoryTwoValue, categoryThirdValue);
                     newWindow.ParentWindow = this;
                     // Открываем окно CategoryHierarchy
                     newWindow.Show();

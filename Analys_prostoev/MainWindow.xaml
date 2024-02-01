@@ -6,7 +6,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type">
+        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type" WindowState="Maximized">
 
     <Grid>
         <Grid.ColumnDefinitions>

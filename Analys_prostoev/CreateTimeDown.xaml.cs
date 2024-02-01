@@ -2,16 +2,14 @@
 using System;
 using System.Windows;
 using static Analys_prostoev.ChangeTimeDown;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace Analys_prostoev
 {
     /// <summary>
     /// Логика взаимодействия для CreateTimeDown.xaml
     /// </summary>
-    public partial class CreateTimeDown : System.Windows.Window
+    public partial class CreateTimeDown : Window
     {
-
         public CreateTimeDown()
         {
             InitializeComponent();
@@ -64,7 +62,7 @@ namespace Analys_prostoev
                 connection.Open();
                 MainWindow main = Application.Current.MainWindow as MainWindow;
 
-                
+
 
                 using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertQuery, connection))
                 {
@@ -110,17 +108,17 @@ namespace Analys_prostoev
             {
                 if (start.Date == time.Day)
                 {
-                    if (time.TimeShiftId == 1 
-                        && start.TimeOfDay >= TimeSpan.Parse("08:00:00") 
+                    if (time.TimeShiftId == 1
+                        && start.TimeOfDay >= TimeSpan.Parse("08:00:00")
                         && end.TimeOfDay <= TimeSpan.Parse("20:00:00"))
                     {
                         return time.Letter;
                     }
 
-                    if (time.TimeShiftId == 2 
-                        && ((start.TimeOfDay >= TimeSpan.Parse("20:00:00") 
-                        && start.TimeOfDay <= TimeSpan.Parse("23:59:59")) 
-                        || (start.TimeOfDay >= TimeSpan.Parse("00:00:00") 
+                    if (time.TimeShiftId == 2
+                        && ((start.TimeOfDay >= TimeSpan.Parse("20:00:00")
+                        && start.TimeOfDay <= TimeSpan.Parse("23:59:59"))
+                        || (start.TimeOfDay >= TimeSpan.Parse("00:00:00")
                         && start.TimeOfDay <= TimeSpan.Parse("08:00:00"))))
                     {
                         return time.Letter;

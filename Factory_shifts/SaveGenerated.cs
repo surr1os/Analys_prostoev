@@ -15,15 +15,34 @@ namespace Factory_shifts
                 {
                     using (NpgsqlCommand command = new NpgsqlCommand())
                     {
-                        command.Connection = connection;
-                        command.CommandText = "INSERT INTO shifts (day, letter, time_shift_id ) VALUES (@Day, @Letter, @TimeShiftId)";
-                        command.Parameters.AddWithValue("@Day", shift.Day);
-                        command.Parameters.AddWithValue("@Letter", shift.Letter);
-                        command.Parameters.AddWithValue("@TimeShiftId", Convert.ToInt64(shift.TimeShiftId));
-                        command.ExecuteNonQuery();
+                        int count = ReplayCount(shift, command, connection);
+
+                        if (count == 0)
+                        {
+                            command.Connection = connection;
+                            command.CommandText = "INSERT INTO shifts (day, letter, time_shift_id ) VALUES (@Day, @Letter, @TimeShiftId)";
+                            command.Parameters.AddWithValue("@Day", shift.Day);
+                            command.Parameters.AddWithValue("@Letter", shift.Letter);
+                            command.Parameters.AddWithValue("@TimeShiftId", Convert.ToInt64(shift.TimeShiftId));
+                            command.ExecuteNonQuery();
+                            // Выполняем INSERT только если записи не существует
+
+                        }
+
                     }
                 }
             }
+        }
+
+        private static int ReplayCount(Shift shift, NpgsqlCommand command, NpgsqlConnection connection)
+        {
+            command.Connection = connection;
+            command.CommandText = "SELECT COUNT(*) FROM shifts WHERE day = @Day AND letter = @Letter AND time_shift_id = @TimeShiftId";
+            command.Parameters.AddWithValue("@Day", shift.Day);
+            command.Parameters.AddWithValue("@Letter", shift.Letter);
+            command.Parameters.AddWithValue("@TimeShiftId", Convert.ToInt64(shift.TimeShiftId));
+            int count = Convert.ToInt32(command.ExecuteScalar());
+            return count;
         }
     }
 }
