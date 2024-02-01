@@ -50,6 +50,7 @@ namespace Analys_prostoev
             selectRowComboBox.Items.Add("Все строки");
             selectRowComboBox.Items.Add("Классифицированные строки");
             selectRowComboBox.Items.Add("Неклассифицированные строки");
+
         }
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
