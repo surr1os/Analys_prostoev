@@ -27,9 +27,9 @@
                 <ComboBoxItem Name="NotAgreed" Content="Не согласован"/>
             </ComboBox>
             <ComboBox FontFamily="Brutal Type" x:Name="CB_Region" Height="37" Width="219" HorizontalAlignment="Left" Canvas.Left="119" Canvas.Top="128" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Width="220" Height="37" ValueChanged="GetPeriod"
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Width="220" Height="37" ValueChanged="GetPeriodForLable"
                                 HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="86" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Width="220" Height="37" ValueChanged="GetPeriod"
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Width="220" Height="37" ValueChanged="GetPeriodForLable"
                                  HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="44" VerticalAlignment="Center"/>
 
         </Canvas>

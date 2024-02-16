@@ -1,4 +1,5 @@
 ﻿using Analys_prostoev.Tables;
+using Microsoft.Office.Interop.Excel;
 using Npgsql;
 using OfficeOpenXml;
 using System;
@@ -17,12 +18,13 @@ using MessageBox = System.Windows.MessageBox;
 namespace Analys_prostoev
 {
 
-    public partial class MainWindow : Window
+    public partial class MainWindow : System.Windows.Window
     {
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             Edit_MenuItem.Visibility = Visibility.Collapsed;
             Delete_MenuItem.Visibility = Visibility.Collapsed;
+            Cancel_MenuItem.Visibility = Visibility.Collapsed;
 
             selectComboBox.Items.Add("Все участки");
 
@@ -55,44 +57,45 @@ namespace Analys_prostoev
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
-            long id = (long)item.Row["Id"];
+            if (item == null)
+            {
+                MessageBox.Show("Вы не выбрали простой!");
+                return;
+            }
+            SimpleDeletionHandler simpleDeletion = new SimpleDeletionHandler();
+            simpleDeletion.Delete();
+        }
+
+        public void CanselMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+            long id = Convert.ToInt64(item["Id"]);
+            string regionValue = item["region"].ToString();
 
             MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Аннулировать простой {id}?", "Аннулирование порстоя", MessageBoxButton.YesNo);
+
             if (result == MessageBoxResult.Yes)
             {
+                IGetHistory changeHistory = new GlobalChangeHistory(regionValue, id);
+
                 using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
                 {
                     connection.Open();
-
-
-                    if (item == null)
+                    using (NpgsqlCommand cancellationCommand = new NpgsqlCommand(DBContext.cancellationQuery, connection))
                     {
-                        MessageBox.Show("Вы не выбрали простой!");
-                        return;
-                    }
-                    else
-                    {
-                        DBContext.deleteQuery += $" \"Id\" = {id}";
+                        cancellationCommand.Parameters.AddWithValue("@Id", id);
+                        cancellationCommand.ExecuteNonQuery();
 
-                        using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                         {
-                            int rowsAffected = deleteCommand.ExecuteNonQuery();
-                            if (rowsAffected > 0)
-                            {
-                                MessageBox.Show("Запись аннулирована");
-                                DBContext.deleteQuery = "";
-                                DBContext.deleteQuery = $"DELETE FROM analysis WHERE";
-                            }
+                            changeHistory.HistoryForAnalysis(insertCommand, "Простой аннулирован");
                         }
-                        GetSortTable();
                     }
-
+                    GetSortTable();
                 }
             }
             else
-            {
                 return;
-            }
         }
 
         private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
@@ -100,6 +103,7 @@ namespace Analys_prostoev
             CreateTimeDown create = new CreateTimeDown();
             create.Show();
         }
+
         private void ChangeHistoryItem_Click(object sender, RoutedEventArgs e)
         {
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
@@ -115,6 +119,7 @@ namespace Analys_prostoev
                 history.Show();
             }
         }
+
         private void ChangeMenuItem_Click(object sender, RoutedEventArgs e)
         {
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
@@ -192,7 +197,7 @@ namespace Analys_prostoev
                     command.Parameters.AddRange(parameters.ToArray());
 
                     NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-                    DataTable dataTable = new DataTable();
+                    System.Data.DataTable dataTable = new System.Data.DataTable();
                     adapter.Fill(dataTable);
                     NpgsqlDataReader reader = command.ExecuteReader();
 
@@ -219,7 +224,6 @@ namespace Analys_prostoev
                 parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
             }
         }
-        
 
         private void SetNewColumnNames()
         {
@@ -326,11 +330,12 @@ namespace Analys_prostoev
                 DataGridTextColumn textColumn = column as DataGridTextColumn;
                 if (textColumn != null)
                 {
-                    textColumn.HeaderStyle = new Style(typeof(DataGridColumnHeader));
+                    textColumn.HeaderStyle = new System.Windows.Style(typeof(DataGridColumnHeader));
                     textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, System.Windows.HorizontalAlignment.Center));
                 }
             }
         }
+
         private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
             DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
@@ -371,6 +376,7 @@ namespace Analys_prostoev
                 }
             }
         }
+
         public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
         {
             // Получаем выделенную строку в таблице
@@ -483,6 +489,7 @@ namespace Analys_prostoev
             // Создание Excel файла
             CreateExcelFile(analysisList);
         }
+
         public void CreateExcelFile(List<Analysis> analysisList)
         {
             ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
@@ -541,7 +548,6 @@ namespace Analys_prostoev
             }
         }
 
-
         private void Button_Click_Excel(object sender, RoutedEventArgs e)
         {
             if (DataGridTable.Items.Count == 0)
@@ -569,6 +575,7 @@ namespace Analys_prostoev
 
                 if (categoryOne == null || categoryTwo == null || categoryThird == null)
                 {
+                    Cancel_MenuItem.Visibility = Visibility.Collapsed;
                     Edit_MenuItem.Visibility = Visibility.Collapsed;
                 }
                 if (manual == false)
@@ -586,6 +593,7 @@ namespace Analys_prostoev
                 if (categoryOne != null || categoryTwo != null || categoryThird != null)
                 {
                     Edit_MenuItem.Visibility = Visibility.Visible;
+                    Cancel_MenuItem.Visibility = Visibility.Visible;
                 }
                 else
                 {

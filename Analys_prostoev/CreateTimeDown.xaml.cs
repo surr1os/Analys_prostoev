@@ -10,6 +10,9 @@ namespace Analys_prostoev
     /// </summary>
     public partial class CreateTimeDown : Window
     {
+        private DateTime start_first_shift;
+        private DateTime end_first_shift;
+
         public CreateTimeDown()
         {
             InitializeComponent();
@@ -34,7 +37,113 @@ namespace Analys_prostoev
                 }
             }
         }
-        private void GetPeriod(object sender, RoutedEventArgs e)
+
+        private void CreateDownTime(object sender, RoutedEventArgs e)
+        {
+            DateTime? start = startDatePicker.Value;
+            DateTime? end = endDatePicker.Value;
+
+
+            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+            {
+                connection.Open();
+                ShiftRecordHandler.InitializeShifts(connection);
+                string status = GetStatusFromComboBox(CB_Status.Text); 
+
+                if (startDatePicker.Value != null && endDatePicker.Value != null)
+                {
+                    CheckingForDivision(start, end, connection, status);
+                }
+                MainWindow main = Application.Current.MainWindow as MainWindow;
+                main.GetSortTable();
+                Hide();
+            }
+        }
+
+        # region Division
+
+        private void CheckingForDivision(DateTime? start, DateTime? end, NpgsqlConnection connection, string status)
+        {
+            // добавляем простой если:
+            if ((start.Value > start.Value.Date.AddHours(8) && start.Value < start.Value.Date.AddHours(20)
+            && end.Value < start.Value.Date.AddHours(20)) //к концу утренней смены ничего не добавляем
+            || (start.Value > start.Value.Date.AddHours(20) && start.Value < start.Value.Date.AddDays(1).AddHours(8)
+            && end.Value < start.Value.Date.AddDays(1).AddHours(8))
+            || (start.Value > start.Value.Date && start.Value < start.Value.Date.AddHours(8)
+            && end.Value < start.Value.Date.AddHours(8))) //к концу ночной смены прибавляем 1 день.
+            {
+                ShiftRecordHandler.InsertShiftRecord(start.Value, end.Value, CB_Region.Text, GetPeriodForDivision(start, end), status, connection);
+            }
+            else
+            {
+                Division(start, end, connection, status);
+            }
+        }
+        private void Division(DateTime? start, DateTime? end, NpgsqlConnection connection, string status)
+        {
+            if (start.Value > start.Value.Date.AddHours(8) && start.Value < start.Value.Date.AddHours(20)
+                && end.Value > start.Value.Date.AddHours(20))
+            {
+                start_first_shift = start.Value.Date.AddHours(8);
+                end_first_shift = start_first_shift.AddHours(12);
+
+                DivisionСycle(start, end, connection, status);
+            }
+            else if ((start.Value > start.Value.Date.AddHours(20) && start.Value < start.Value.Date.AddDays(1).AddHours(8)
+                && end.Value > start.Value.Date.AddDays(1).AddHours(8)))
+            {
+                start_first_shift = start.Value.Date.AddHours(8);
+                end_first_shift = start_first_shift.AddHours(12);
+
+                DivisionСycle(start, end, connection, status);
+            }
+            else if ((start.Value > start.Value.Date && start.Value < start.Value.Date.AddHours(8)
+                && end.Value < start.Value.Date.AddHours(8)))
+            {
+                start_first_shift = start.Value.Date.AddHours(8);
+                end_first_shift = start_first_shift.AddHours(12);
+
+                DivisionСycle(start, end, connection, status);
+            }
+        }
+        private void DivisionСycle(DateTime? start, DateTime? end, NpgsqlConnection connection, string status)
+        {
+            ShiftRecordHandler.InsertShiftRecord(start.Value, end_first_shift, CB_Region.Text, GetPeriodForDivision(start, end_first_shift), status, connection);
+
+            start_first_shift = start_first_shift.AddHours(12);
+            end_first_shift = end_first_shift.AddHours(12);
+
+            while (end > end_first_shift)
+            {
+                ShiftRecordHandler.InsertShiftRecord(start_first_shift, end_first_shift, CB_Region.Text, 720, status, connection);
+
+                start_first_shift = start_first_shift.AddHours(12);
+                end_first_shift = end_first_shift.AddHours(12);
+            }
+            ShiftRecordHandler.InsertShiftRecord(start_first_shift, end.Value, CB_Region.Text, GetPeriodForDivision(start_first_shift, end), status, connection);
+        }
+        #endregion
+
+        #region GetParameters
+        private string GetStatusFromComboBox(string selectedStatus)
+        {
+            switch (selectedStatus)
+            {
+                case "Согласован":
+                    return AnalysisStatus.Approved.ToString();
+                case "Не согласован":
+                    return AnalysisStatus.NotApproved.ToString();
+                default:
+                    return AnalysisStatus.Nothing.ToString();
+            }
+        }
+        private int GetPeriodForDivision(DateTime? start, DateTime? end)
+        {
+            TimeSpan difference_intermedia_shifts = end.Value - start.Value;
+            int periodInMinutes = (int)difference_intermedia_shifts.TotalMinutes;
+            return periodInMinutes;
+        }
+        private void GetPeriodForLable(object sender, RoutedEventArgs e)
         {
             if (startDatePicker.Value != null && endDatePicker.Value != null)
             {
@@ -48,84 +157,6 @@ namespace Analys_prostoev
             }
             else return;
         }
-
-        private void CreateDownTime(object sender, RoutedEventArgs e)
-        {
-            DateTime? start = startDatePicker.Value;
-            DateTime? end = endDatePicker.Value;
-
-            TimeSpan difference = end.Value - start.Value;
-            int periodInMinutes = (int)difference.TotalMinutes;
-
-            using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
-            {
-                connection.Open();
-                MainWindow main = Application.Current.MainWindow as MainWindow;
-
-
-
-                using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertQuery, connection))
-                {
-                    insertCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
-                    insertCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
-                    insertCommand.Parameters.AddWithValue("@period", periodInMinutes);
-                    insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-
-                    if (CB_Status.Text == "Согласован")
-                    {
-                        AnalysisStatus status = AnalysisStatus.Approved;
-                        insertCommand.Parameters.AddWithValue("@status", status.ToString());
-                    }
-                    else if (CB_Status.Text == "Не согласован")
-                    {
-                        AnalysisStatus status = AnalysisStatus.NotApproved;
-                        insertCommand.Parameters.AddWithValue("@status", status.ToString());
-                    }
-                    else
-                    {
-                        AnalysisStatus status = AnalysisStatus.Nothing;
-                        insertCommand.Parameters.AddWithValue("@status", status.ToString());
-                    }
-
-                    insertCommand.Parameters.AddWithValue("@created_at", DateTime.Now);
-                    insertCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
-                    insertCommand.Parameters.AddWithValue("@is_manual", true);
-                    string selectedShift = CalculateShiftForDateTime(Convert.ToDateTime(startDatePicker.Value), Convert.ToDateTime(endDatePicker.Value), connection);
-                    insertCommand.Parameters.AddWithValue("@shift", selectedShift);
-                    insertCommand.ExecuteNonQuery();
-                    main.GetSortTable();
-                    Hide();
-                }
-            }
-        }
-
-        // Метод для определения подходящей смены на основе даты
-        private string CalculateShiftForDateTime(DateTime start, DateTime end, NpgsqlConnection connection)
-        {
-            SetShifts setShifts = new SetShifts();
-            var listShifts = setShifts.GetShiftsList(connection);
-            foreach (var time in listShifts)
-            {
-                if (start.Date == time.Day)
-                {
-                    if (time.TimeShiftId == 1
-                        && start.TimeOfDay >= TimeSpan.Parse("08:00:00")
-                        && end.TimeOfDay <= TimeSpan.Parse("20:00:00"))
-                    {
-                        return time.Letter;
-                    }
-
-                    if (time.TimeShiftId == 2
-                        && ((start.TimeOfDay >= TimeSpan.Parse("20:00:00")
-                        && start.TimeOfDay <= TimeSpan.Parse("23:59:59"))
-                        || (start.TimeOfDay >= TimeSpan.Parse("00:00:00")
-                        && start.TimeOfDay <= TimeSpan.Parse("08:00:00"))))
-                    {
-                        return time.Letter;
-                    }
-                }
-            }
-            return null; // Если не найдена подходящая смена, возвращаем null.
-        }
+        #endregion
     }
 }

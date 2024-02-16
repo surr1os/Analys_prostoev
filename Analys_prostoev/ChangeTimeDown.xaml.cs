@@ -10,6 +10,7 @@ namespace Analys_prostoev
     public partial class ChangeTimeDown : Window
     {
         readonly long _id;
+        private string RegionValue { get; set; }
         private string originalStatus;
         private DateTime? originalStartDate;
         private DateTime? originalEndDate;
@@ -23,6 +24,7 @@ namespace Analys_prostoev
             endDatePicker.Value = finish;
             Period.Text = period.ToString();
             CB_Region.SelectedItem = region;
+            RegionValue = region;
 
             CB_Status.SelectedItem = status == "Согласовано" ? Agreed : (object)NotAgreed;
 
@@ -109,6 +111,8 @@ namespace Analys_prostoev
 
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
+            IGetHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
+
             if (CB_Region.Text == string.Empty)
             {
                 Close();
@@ -176,28 +180,28 @@ namespace Analys_prostoev
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            GetHistoriForElements(insertCommand, $"Статус изменён на \"{CB_Status.Text}\"");
+                            changeHistory.HistoryForAnalysis(insertCommand, $"Статус изменён на \"{CB_Status.Text}\"");
                         }
                     }
                     if (isStartDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            GetHistoriForElements(insertCommand, $"Дата окончания изменена c \"{originalStartDate}\" на \"{startDatePicker.Value}\"");
+                            changeHistory.HistoryForAnalysis(insertCommand, $"Дата окончания изменена c \"{originalStartDate}\" на \"{startDatePicker.Value}\"");
                         }
                     }
                     if (isEndDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            GetHistoriForElements(insertCommand, $"Дата окончания изменена c \"{originalEndDate}\" на \"{endDatePicker.Value}\"");
+                            changeHistory.HistoryForAnalysis(insertCommand, $"Дата окончания изменена c \"{originalEndDate}\" на \"{endDatePicker.Value}\"");
                         }
                     }
                     if (isPeriodChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            GetHistoriForElements(insertCommand, $"Период изменён на \"{Period.Text}\"");
+                            changeHistory.HistoryForAnalysis(insertCommand, $"Период изменён на \"{Period.Text}\"");
                         }
                     }
 
@@ -205,15 +209,6 @@ namespace Analys_prostoev
 
                 Close();
             }
-        }
-
-        private void GetHistoriForElements(NpgsqlCommand insertCommand, string modifiedElement)
-        {
-            insertCommand.Parameters.AddWithValue("@region", CB_Region.Text);
-            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-            insertCommand.Parameters.AddWithValue("@modified_element", modifiedElement);    //$"Статус изменён на \"{CB_Status.Text}\""
-            insertCommand.ExecuteNonQuery();
         }
     }
 }

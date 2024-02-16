@@ -29,12 +29,12 @@
             <StackPanel Margin="20,0,0,0">
                 <Label FontFamily="Brutal Type" Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <ComboBox FontFamily="Brutal Type" x:Name="selectComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
-        IsReadOnly="True" Text="Выберите участок" Margin="5"/>
+            IsReadOnly="True" Text="Выберите участок" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
                 <Label FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
-        IsReadOnly="True" Text="Все строки" Margin="5"/>
+            IsReadOnly="True" Text="Все строки" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
                 <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
@@ -60,7 +60,7 @@
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Cancel_MenuItem" Header="Аннулировать" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Cancel_MenuItem" Header="Аннулировать" Click="CanselMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Delete_MenuItem" Header="Удалить" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>

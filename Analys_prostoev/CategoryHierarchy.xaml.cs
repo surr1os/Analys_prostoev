@@ -26,6 +26,7 @@ namespace Analys_prostoev
             originalCategoryTwo = CategoryTwo;
             originalCategoryThird = CategoryThird;
 
+
             List<Category> categories = GetCategories(DBContext.connectionString);
 
             TreeViewCategories.ItemsSource = categories;
@@ -39,6 +40,8 @@ namespace Analys_prostoev
             bool isCategoryTwoChange = CategoryTwo != originalCategoryTwo;
             bool isCategoryThirdChange = CategoryThird != originalCategoryThird;
 
+            IGetHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
+
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
@@ -47,35 +50,27 @@ namespace Analys_prostoev
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        GetHistoryForCategory(insertCommand, $"Категория 1 ур. изменена на \"{CategoryOne}\"");
+                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 1 ур. изменена на \"{CategoryOne}\"");
                     }
                 }
                 if (isCategoryTwoChange)
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        GetHistoryForCategory(insertCommand, $"Категория 2 ур. изменена на \"{CategoryTwo}\"");
+                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 2 ур. изменена на \"{CategoryTwo}\"");
                     }
                 }
                 if (isCategoryThirdChange)
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        GetHistoryForCategory(insertCommand, $"Категория 3 ур. изменена на \"{CategoryThird}\"");
+                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 3 ур. изменена на \"{CategoryThird}\"");
                     }
                 }
 
             }
         }
 
-        private void GetHistoryForCategory(NpgsqlCommand insertCommand, string modifiedElementegory)
-        {
-            insertCommand.Parameters.AddWithValue("@region", RegionValue);
-            insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
-            insertCommand.Parameters.AddWithValue("@id_pros", _id);
-            insertCommand.Parameters.AddWithValue("@modified_element", modifiedElementegory);  //$"Категория 1 ур. изменена на \"{Category}\""
-            insertCommand.ExecuteNonQuery();
-        }
 
         private List<Category> GetCategories(string connectionString)
         {
