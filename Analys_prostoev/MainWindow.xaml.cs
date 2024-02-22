@@ -1,5 +1,4 @@
 ﻿using Analys_prostoev.Tables;
-using Microsoft.Office.Interop.Excel;
 using Npgsql;
 using OfficeOpenXml;
 using System;
@@ -28,6 +27,8 @@ namespace Analys_prostoev
 
             selectComboBox.Items.Add("Все участки");
 
+            startDatePicker.Value = DateTime.Today.Date.AddHours(0);
+
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
             {
                 connection.Open();
@@ -52,7 +53,6 @@ namespace Analys_prostoev
             selectRowComboBox.Items.Add("Все строки");
             selectRowComboBox.Items.Add("Классифицированные строки");
             selectRowComboBox.Items.Add("Неклассифицированные строки");
-
         }
         private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
         {
@@ -64,38 +64,47 @@ namespace Analys_prostoev
             }
             SimpleDeletionHandler simpleDeletion = new SimpleDeletionHandler();
             simpleDeletion.Delete();
+
         }
 
         public void CanselMenuItem_Click(object sender, RoutedEventArgs e)
         {
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
-            long id = Convert.ToInt64(item["Id"]);
-            string regionValue = item["region"].ToString();
-
-            MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Аннулировать простой {id}?", "Аннулирование порстоя", MessageBoxButton.YesNo);
-
-            if (result == MessageBoxResult.Yes)
+            if (item != null)
             {
-                IGetHistory changeHistory = new GlobalChangeHistory(regionValue, id);
+                long id = Convert.ToInt64(item["Id"]);
+                string regionValue = item["region"].ToString();
 
-                using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+                MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Аннулировать простой {id}?", "Аннулирование порстоя", MessageBoxButton.YesNo);
+
+                if (result == MessageBoxResult.Yes)
                 {
-                    connection.Open();
-                    using (NpgsqlCommand cancellationCommand = new NpgsqlCommand(DBContext.cancellationQuery, connection))
-                    {
-                        cancellationCommand.Parameters.AddWithValue("@Id", id);
-                        cancellationCommand.ExecuteNonQuery();
+                    IGetHistory changeHistory = new GlobalChangeHistory(regionValue, id);
 
-                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
+                    using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+                    {
+                        connection.Open();
+                        using (NpgsqlCommand cancellationCommand = new NpgsqlCommand(DBContext.cancellationQuery, connection))
                         {
-                            changeHistory.HistoryForAnalysis(insertCommand, "Простой аннулирован");
+                            cancellationCommand.Parameters.AddWithValue("@Id", id);
+                            cancellationCommand.ExecuteNonQuery();
+
+                            using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
+                            {
+                                changeHistory.AddHistory(insertCommand, $"Простой аннулирован");
+                            }
                         }
+                        GetSortTable();
                     }
-                    GetSortTable();
                 }
+                else
+                    return;
             }
             else
+            {
+                MessageBox.Show("Вы не выбрали простой!");
                 return;
+            }
         }
 
         private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
@@ -114,8 +123,8 @@ namespace Analys_prostoev
             }
             else
             {
-                ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[5]),
-                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToInt64(item.Row.ItemArray[0]));
+                ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[6]),
+                               Convert.ToString(item.Row.ItemArray[5]), Convert.ToInt64(item.Row.ItemArray[0]));
                 history.Show();
             }
         }
@@ -131,8 +140,8 @@ namespace Analys_prostoev
             else
             {
                 ChangeTimeDown change = new ChangeTimeDown(Convert.ToInt64(item.Row.ItemArray[0]), Convert.ToDateTime(item.Row.ItemArray[1]),
-                               Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[5]),
-                               Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]), Convert.ToString(item.Row.ItemArray[13]));
+                               Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[6]),
+                               Convert.ToString(item.Row.ItemArray[5]), Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]));
 
                 change.Show();
             }
@@ -149,8 +158,8 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                string conclusion = "SELECT \"Id\", date_start, date_finish, status, region, period," +
-                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual, shifts FROM analysis WHERE 1=1 AND period >= 5";
+                string conclusion = "SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
+                    " category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5";
                 DBContext.queryString = conclusion;
                 List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
@@ -261,13 +270,13 @@ namespace Analys_prostoev
             if (date_start != null)
             {
                 date_start.Header = "Дата Начала";
-                date_start.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
+                date_start.Binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
             }
             DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_finish");
             if (date_finish != null)
             {
                 date_finish.Header = "Дата Финиша";
-                date_finish.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
+                date_finish.Binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
             }
             DataGridTextColumn period = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "period");
             if (period != null)
@@ -558,7 +567,6 @@ namespace Analys_prostoev
             {
                 ExportToExcel(DBContext.queryString);
             }
-
         }
 
         private void DataGridTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -567,11 +575,11 @@ namespace Analys_prostoev
             DataRowView item = (DataRowView)DataGridTable.SelectedItem;
             if (item != null)
             {
-                var status = item.Row.ItemArray.Length > 3 && item.Row.ItemArray[3] != DBNull.Value ? (string)item.Row.ItemArray[3] : null;
-                var categoryOne = item.Row.ItemArray.Length > 6 && item.Row.ItemArray[6] != DBNull.Value ? (string)item.Row.ItemArray[6] : null;
-                var categoryTwo = item.Row.ItemArray.Length > 7 && item.Row.ItemArray[7] != DBNull.Value ? (string)item.Row.ItemArray[7] : null;
-                var categoryThird = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
-                var manual = item.Row.ItemArray.Length > 12 && item.Row.ItemArray[12] != DBNull.Value ? (bool)item.Row.ItemArray[12] : (bool?)null;
+                var status = item.Row.ItemArray.Length > 4 && item.Row.ItemArray[4] != DBNull.Value ? (string)item.Row.ItemArray[4] : null;
+                var categoryOne = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
+                var categoryTwo = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (string)item.Row.ItemArray[9] : null;
+                var categoryThird = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[10] != DBNull.Value ? (string)item.Row.ItemArray[10] : null;
+                var manual = item.Row.ItemArray.Length > 13 && item.Row.ItemArray[13] != DBNull.Value ? (bool)item.Row.ItemArray[13] : (bool?)null;
 
                 if (categoryOne == null || categoryTwo == null || categoryThird == null)
                 {

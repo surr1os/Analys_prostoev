@@ -63,7 +63,7 @@ namespace Analys_prostoev
                     return shift.Letter;
                 }
             }
-            return "Unknown";
+            return null;
         }
     }
 }

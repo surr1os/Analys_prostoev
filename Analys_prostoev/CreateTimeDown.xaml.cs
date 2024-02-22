@@ -48,15 +48,21 @@ namespace Analys_prostoev
             {
                 connection.Open();
                 ShiftRecordHandler.InitializeShifts(connection);
-                string status = GetStatusFromComboBox(CB_Status.Text); 
+                string status = GetStatusFromComboBox(CB_Status.Text);
 
-                if (startDatePicker.Value != null && endDatePicker.Value != null)
+                if (startDatePicker.Value != null && endDatePicker.Value != null && CB_Region.SelectedItem != null)
                 {
                     CheckingForDivision(start, end, connection, status);
+                    MainWindow main = Application.Current.MainWindow as MainWindow;
+                    main.GetSortTable();
+                    Hide();
                 }
-                MainWindow main = Application.Current.MainWindow as MainWindow;
-                main.GetSortTable();
-                Hide();
+                else
+                {
+                    MessageBox.Show("Основные параметры не заполнены!");
+                    return;
+                }
+               
             }
         }
 

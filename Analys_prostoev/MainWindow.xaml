@@ -20,11 +20,11 @@
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1379">
             <StackPanel Margin="20,0,0,0">
                 <Label FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="185" MaxHeight="30" MinWidth="185" MinHeight="30" Margin="5"/>
+                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="210" MaxHeight="30" MinWidth="210" MinHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
                 <Label FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" MinWidth="185" MinHeight="30" MaxWidth="185" MaxHeight="30" Margin="5"/>
+                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" MinWidth="200" MinHeight="30" MaxWidth="200" MaxHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
                 <Label FontFamily="Brutal Type" Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
@@ -37,10 +37,10 @@
             IsReadOnly="True" Text="Все строки" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="153" Height="30"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="180" Height="30"/>
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="141" Height="30"/>
             </StackPanel>
         </StackPanel>
 
@@ -49,6 +49,15 @@
               MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" Grid.Row="1" FontFamily="Brutal Type">
             <DataGrid.Resources>
+                <Style TargetType="DataGridCell">
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True" >
+                            <Setter Property="Background" Value="#FFF046"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="Foreground" Value="Black"/>
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
                 <Style TargetType="DataGridColumnHeader">
                     <Setter Property="Background" Value="#C0C0C0"/>
                     <Setter Property="BorderBrush" Value="Black" />

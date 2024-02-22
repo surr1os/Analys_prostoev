@@ -50,21 +50,21 @@ namespace Analys_prostoev
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 1 ур. изменена на \"{CategoryOne}\"");
+                        changeHistory.AddHistory(insertCommand, $"Категория 1 ур. изменена на \"{CategoryOne}\"");
                     }
                 }
                 if (isCategoryTwoChange)
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 2 ур. изменена на \"{CategoryTwo}\"");
+                        changeHistory.AddHistory(insertCommand, $"Категория 2 ур. изменена на \"{CategoryTwo}\"");
                     }
                 }
                 if (isCategoryThirdChange)
                 {
                     using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
                     {
-                        changeHistory.HistoryForAnalysis(insertCommand, $"Категория 3 ур. изменена на \"{CategoryThird}\"");
+                        changeHistory.AddHistory(insertCommand, $"Категория 3 ур. изменена на \"{CategoryThird}\"");
                     }
                 }
 

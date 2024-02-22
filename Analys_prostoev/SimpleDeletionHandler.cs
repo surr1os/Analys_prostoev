@@ -62,6 +62,7 @@ namespace Analys_prostoev
                         DBContext.deleteQuery = $"DELETE FROM analysis WHERE";
                     }
                 }
+
                 main.GetSortTable();
             }
         }

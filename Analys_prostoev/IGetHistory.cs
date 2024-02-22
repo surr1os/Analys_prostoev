@@ -4,6 +4,6 @@ namespace Analys_prostoev
 {
     public interface IGetHistory
     {
-        void HistoryForAnalysis(NpgsqlCommand insertCommand, string modifiedElementegory);
+        void AddHistory(NpgsqlCommand insertCommand, string modifiedElementegory);
     }
 }

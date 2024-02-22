@@ -15,6 +15,7 @@ namespace Analys_prostoev
         private DateTime? originalStartDate;
         private DateTime? originalEndDate;
         private string originalPeriod;
+        private string originalShift;
 
         public ChangeTimeDown(long id, DateTime start, DateTime finish, int period, string region, string status, string shifts)
         {
@@ -34,6 +35,7 @@ namespace Analys_prostoev
             originalStartDate = start;
             originalEndDate = finish;
             originalPeriod = period.ToString();
+            originalShift = shifts;
         }
 
         private void SelectShifts(string shifts)
@@ -123,6 +125,7 @@ namespace Analys_prostoev
                 bool isStartDateChanged = startDatePicker.Value != originalStartDate;
                 bool isEndDateChanged = endDatePicker.Value != originalEndDate;
                 bool isPeriodChanged = Period.Text != originalPeriod;
+                bool isShiftChanged = Letter.Text != originalShift;
 
                 if (!isStatusChanged && !isStartDateChanged && !isEndDateChanged && !isPeriodChanged)
                 {
@@ -140,32 +143,33 @@ namespace Analys_prostoev
                         AnalysisStatus status = CB_Status.Text == "Согласован" ? AnalysisStatus.Approved : AnalysisStatus.NotApproved;
 
                         if (isStatusChanged)
-                        {
                             updateCommand.Parameters.AddWithValue("@status", (byte)status);
-                        }
-                        else updateCommand.Parameters.AddWithValue("@status", originalStatus);
+                        else
+                            updateCommand.Parameters.AddWithValue("@status", originalStatus);
 
                         if (isStartDateChanged)
-                        {
                             updateCommand.Parameters.AddWithValue("@dateStart", startDatePicker.Value);
-                        }
-                        else updateCommand.Parameters.AddWithValue("@dateStart", originalStartDate);
+                        else 
+                            updateCommand.Parameters.AddWithValue("@dateStart", originalStartDate);
 
                         if (isEndDateChanged)
-                        {
                             updateCommand.Parameters.AddWithValue("@dateFinish", endDatePicker.Value);
-                        }
-                        else updateCommand.Parameters.AddWithValue("@dateFinish", originalEndDate);
+                        else 
+                            updateCommand.Parameters.AddWithValue("@dateFinish", originalEndDate);
 
                         if (isPeriodChanged)
-                        {
                             updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(Period.Text));
-                        }
-                        else updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(originalPeriod));
+                        else 
+                            updateCommand.Parameters.AddWithValue("@period", Convert.ToInt32(originalPeriod));
+
+                        if (isShiftChanged) 
+                            updateCommand.Parameters.AddWithValue("@shifts", Letter.Text); 
+                        else 
+                            updateCommand.Parameters.AddWithValue("@shifts", originalShift);
 
                         updateCommand.Parameters.AddWithValue("@id", _id);
                         updateCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
-                        updateCommand.Parameters.AddWithValue("@shifts", Letter.Text);
+                        
                         updateCommand.ExecuteNonQuery();
 
                         main.GetSortTable();
@@ -180,28 +184,35 @@ namespace Analys_prostoev
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            changeHistory.HistoryForAnalysis(insertCommand, $"Статус изменён на \"{CB_Status.Text}\"");
+                            changeHistory.AddHistory(insertCommand, $"Статус изменён на \"{CB_Status.Text}\"");
                         }
                     }
                     if (isStartDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            changeHistory.HistoryForAnalysis(insertCommand, $"Дата окончания изменена c \"{originalStartDate}\" на \"{startDatePicker.Value}\"");
+                            changeHistory.AddHistory(insertCommand, $"Дата старта изменена c \"{originalStartDate}\" на \"{startDatePicker.Value}\"");
                         }
                     }
                     if (isEndDateChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            changeHistory.HistoryForAnalysis(insertCommand, $"Дата окончания изменена c \"{originalEndDate}\" на \"{endDatePicker.Value}\"");
+                            changeHistory.AddHistory(insertCommand, $"Дата окончания изменена c \"{originalEndDate}\" на \"{endDatePicker.Value}\"");
                         }
                     }
                     if (isPeriodChanged)
                     {
                         using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
                         {
-                            changeHistory.HistoryForAnalysis(insertCommand, $"Период изменён на \"{Period.Text}\"");
+                            changeHistory.AddHistory(insertCommand, $"Период изменён на \"{Period.Text}\"");
+                        }
+                    }
+                    if (isShiftChanged)
+                    {
+                        using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection2))
+                        {
+                            changeHistory.AddHistory(insertCommand, $"Смена изменёна с \"{originalShift}\" на \"{Letter.Text}\"");
                         }
                     }
 

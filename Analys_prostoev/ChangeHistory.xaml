@@ -10,7 +10,7 @@
         <DataGrid Margin="10,48,10,70" AutoGenerateColumns="True" FontFamily="Brutal Type"
               IsReadOnly="True" RowBackground="#CCCCCC" 
               AlternatingRowBackground="#C0C0C0" x:Name="HistoryTable" ColumnWidth="*">
-        </DataGrid> 
+        </DataGrid>
         <Button Content="Закрыть" Margin="90,0,90,25" Background="#FFF046" Height="33" VerticalAlignment="Bottom" Click="Button_Click" FontFamily="Brutal Type"/>
         <Label Content="" Margin="10,10,10,0" x:Name="namePros" Height="33" VerticalAlignment="Top" FontFamily="Brutal Type"/>
 

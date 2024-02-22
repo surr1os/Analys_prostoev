@@ -14,7 +14,7 @@ namespace Analys_prostoev
             RegionValue = regionValue;
         }
 
-        public void HistoryForAnalysis(NpgsqlCommand insertCommand, string modifiedElementegory)
+        public void AddHistory(NpgsqlCommand insertCommand, string modifiedElementegory)
         {
             insertCommand.Parameters.AddWithValue("@region", RegionValue);
             insertCommand.Parameters.AddWithValue("@date_change", DateTime.Now);
