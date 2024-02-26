@@ -5,7 +5,7 @@ using System.Windows;
 namespace Analys_prostoev
 {
     /// <summary>
-    /// Логика взаимодействия для ChangeTimeDown.xaml
+    /// Логика добавления простоя через Desktop приложение.
     /// </summary>
     public partial class ChangeTimeDown : Window
     {

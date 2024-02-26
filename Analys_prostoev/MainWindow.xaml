@@ -6,7 +6,99 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="Анализ простоев" Height="497" Width="922" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type" WindowState="Maximized">
+        Title="Анализ простоев" Height="497" Width="1577" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type" WindowState="Maximized">
+
+    <Window.Resources>
+
+        <Style x:Key="FocusVisual">
+            <Setter Property="Control.Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Rectangle Margin="2"
+                       SnapsToDevicePixels="true"
+                       Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"
+                       StrokeDashArray="1 2"
+                       StrokeThickness="1" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="ButtonNoFocusVisualStyle" TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <SolidColorBrush x:Key="Button.Static.Background"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Static.Border"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.MouseOver.Background"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.MouseOver.Border"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Pressed.Background"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Pressed.Border"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Disabled.Background"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Disabled.Border"
+                     Color="#FFDDDDDD" />
+        <SolidColorBrush x:Key="Button.Disabled.Foreground"
+                     Color="#FFDDDDDD" />
+
+        <Style x:Key="DefaultButtonStyle"
+           TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+            <Setter Property="Background" Value="{StaticResource Button.Static.Background}" />
+            <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}" />
+            <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border"
+                    Background="{TemplateBinding Background}"
+                    BorderBrush="{TemplateBinding BorderBrush}"
+                    BorderThickness="{TemplateBinding BorderThickness}"
+                    SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter"
+                                Margin="{TemplateBinding Padding}"
+                                HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                Focusable="False"
+                                RecognizesAccessKey="True"
+                                SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter TargetName="border" Property="BorderBrush" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter TargetName="border" Property="Background" Value="{x:Null}" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{x:Null}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter TargetName="border" Property="Background" Value="{StaticResource Button.Disabled.Background}" />
+                                <Setter TargetName="border" Property="BorderBrush" Value="{StaticResource Button.Disabled.Border}" />
+                                <Setter TargetName="contentPresenter" Property="TextElement.Foreground" Value="{StaticResource Button.Disabled.Foreground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
@@ -17,8 +109,8 @@
             <RowDefinition Height="97*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Height="66" Width="1379">
-            <StackPanel Margin="20,0,0,0">
+        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="66" HorizontalAlignment="Center" Width="1557">
+            <StackPanel Margin="20,0,0,0" Width="222">
                 <Label FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
                 <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="210" MaxHeight="30" MinWidth="210" MinHeight="30" Margin="5"/>
             </StackPanel>
@@ -36,14 +128,40 @@
                 <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
             IsReadOnly="True" Text="Все строки" Margin="5"/>
             </StackPanel>
-            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="153" Height="30"/>
+            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom" Width="103">
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="Button_Click" MaxWidth="252" MaxHeight="44" Margin="5" Width="92" Height="30"/>
             </StackPanel>
-            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="141" Height="30"/>
+            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom" Width="136">
+                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="126" Height="30"/>
+            </StackPanel>
+            <StackPanel Margin="20,0,0,0" Height="35" VerticalAlignment="Bottom" Width="30">
+                <Button x:Name="toggleButton" Width="30" Height="30" BorderBrush="{x:Null}" Click="toggle_Click" FocusVisualStyle="{x:Null}" 
+                        Style="{DynamicResource DefaultButtonStyle}">
+                    <Button.Background>
+                        <ImageBrush ImageSource="/Start.ico"/>
+                    </Button.Background>
+                    <Button.ToolTip>
+                        <ToolTip>
+                            <StackPanel>
+                                <TextBlock>Автоматически загружает таблицу.</TextBlock>
+                                <TextBlock>Изначальное значение: раз в 5 минут.</TextBlock>
+                            </StackPanel>
+                        </ToolTip>
+                    </Button.ToolTip>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Margin="20,0,0,0" Height="64" VerticalAlignment="Bottom" Width="145">
+                <Label Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="30"/>
+                <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="144" Height="30" FontFamily="Brutal Type">
+                    <ComboBoxItem Content="5 минут"/>
+                    <ComboBoxItem Content="10 минут"/>
+                    <ComboBoxItem Content="15 минут"/>
+                    <ComboBoxItem Content="30 минут"/>
+                    <ComboBoxItem Content="1 час"/>
+                </ComboBox>
             </StackPanel>
         </StackPanel>
-
 
         <DataGrid x:Name="DataGridTable" Margin="10,3,10,10" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
               MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" RowBackground="#CCCCCC" 

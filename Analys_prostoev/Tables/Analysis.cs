@@ -24,6 +24,8 @@ namespace Analys_prostoev.Tables
         public string CategoryTwo { get; set; }
         [Column("category_hird")]
         public string CategoryThird { get; set; }
+        [Column("reason")]
+        public string Reason { get; set; }
         [Column("status")]
         public int? Status { get; set; }
         [Column("is_manual")]

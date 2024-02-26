@@ -6,9 +6,13 @@ using System.Windows;
 
 namespace Analys_prostoev
 {
+    /// <summary>
+    /// Удаляет записи по выделению.
+    /// </summary>
     public class SimpleDeletionHandler
     {
         MainWindow main = Application.Current.MainWindow as MainWindow;
+        
         public void Delete()
         {
             if (main.DataGridTable.SelectedItems.Count == 1)
@@ -44,7 +48,10 @@ namespace Analys_prostoev
                     return;
             }
         }
-
+        /// <summary>
+        /// Логика деления.
+        /// </summary>
+        /// <param name="id">Номер простоя</param>
         private void DeleteLogic(long id)
         {
             using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
