@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -15,8 +14,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using MessageBox = System.Windows.MessageBox;
 
 
@@ -25,15 +22,11 @@ namespace Analys_prostoev
 
 	public partial class MainWindow : System.Windows.Window
 	{
-		#region const
-		private const string ResourcesFolder = "Resources";
-		#endregion
 		#region boolean
 		static bool isStartImage = true;
 		private bool isThreadRunning = false;
 		private bool stopRequested = false;
 		#endregion
-
 		private int selectedInterval;
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -71,6 +64,7 @@ namespace Analys_prostoev
 			selectRowComboBox.Items.Add("Классифицированные строки");
 			selectRowComboBox.Items.Add("Неклассифицированные строки");
 		}
+
 		private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			DataRowView item = (DataRowView)DataGridTable.SelectedItem;
@@ -492,7 +486,8 @@ namespace Analys_prostoev
 								CategoryOne = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
 								CategoryTwo = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
 								CategoryThird = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
-								Reason = reader.IsDBNull(reader.GetOrdinal("reason")) ? string.Empty : reader.GetString(reader.GetOrdinal("reason"))
+								Reason = reader.IsDBNull(reader.GetOrdinal("reason")) ? string.Empty : reader.GetString(reader.GetOrdinal("reason")),
+								Shifts = reader.IsDBNull(reader.GetOrdinal("shifts")) ? string.Empty : reader.GetString(reader.GetOrdinal("shifts"))
 							};
 							analysisList.Add(analysis);
 						}
@@ -533,7 +528,7 @@ namespace Analys_prostoev
 					ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Analysis");
 
 					// Установка заголовков столбцов
-					string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур", "Причина" };
+					string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур", "Причина", "Смена"};
 					for (int i = 0; i < headers.Length; i++)
 					{
 						worksheet.Cells[1, i + 1].Value = headers[i];
@@ -559,6 +554,7 @@ namespace Analys_prostoev
 						worksheet.Cells[row, 7].Value = analysis.CategoryTwo;
 						worksheet.Cells[row, 8].Value = analysis.CategoryThird;
 						worksheet.Cells[row, 9].Value = analysis.Reason;
+						worksheet.Cells[row, 10].Value = analysis.Shifts;
 					}
 
 					// Автоматическое подгонка ширины столбцов
@@ -635,27 +631,23 @@ namespace Analys_prostoev
 
 		private void ToggleLogic(ref bool isStartImage)
 		{
-			var currentLocation = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);
-			var pathStopFile = Path.Combine(currentLocation, ResourcesFolder, "Stop.ico");
-			var pathStartFile = Path.Combine(currentLocation, ResourcesFolder, "Start.ico");
-
 			switch (isStartImage)
 			{
 				case false:
 					isStartImage = true;
 					isThreadRunning = false;
 					stopRequested = true;
-					toggleButton.Background = new ImageBrush(new BitmapImage(new Uri(pathStartFile)));
+					toggleButton.Content = FindResource("Play");
 					break;
 
 				case true:
 					isStartImage = false;
 					if (!isThreadRunning)
 					{
-						toggleButton.Background = new ImageBrush(new BitmapImage(new Uri(pathStopFile)));
+						toggleButton.Content = FindResource("Stop");
 						isThreadRunning = true;
 						stopRequested = false;
-						selectedInterval = GetSelectedInterval(); // Получаем выбранный интервал времени
+						selectedInterval = GetSelectedInterval(); 
 						Thread thread = new Thread(Timer);
 						thread.Start();
 					}

@@ -59,25 +59,5 @@ namespace Analys_prostoev.Properties {
                 resourceCulture = value;
             }
         }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
-        /// </summary>
-        public static System.Drawing.Icon Start {
-            get {
-                object obj = ResourceManager.GetObject("Start", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Поиск локализованного ресурса типа System.Drawing.Icon, аналогичного (Значок).
-        /// </summary>
-        public static System.Drawing.Icon Stop {
-            get {
-                object obj = ResourceManager.GetObject("Stop", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
     }
 }
