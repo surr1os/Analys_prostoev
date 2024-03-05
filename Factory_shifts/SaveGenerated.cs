@@ -1,5 +1,5 @@
 ﻿using Analys_prostoev;
-using Factory_shifts.Tables;
+using Factory_shifts.Data;
 using Npgsql;
 
 namespace Factory_shifts

@@ -67,7 +67,6 @@ namespace Analys_prostoev
         }
 
         # region Division
-
         private void CheckingForDivision(DateTime? start, DateTime? end, NpgsqlConnection connection, string status)
         {
             // добавляем простой если:

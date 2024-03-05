@@ -30,7 +30,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>14</ApplicationRevision>
+    <ApplicationRevision>16</ApplicationRevision>
     <ApplicationVersion>1.1.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -221,6 +221,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CancelMenuItemHehdler.cs" />
     <Compile Include="Data\Category.cs" />
     <Compile Include="CategoryHierarchy.xaml.cs">
       <DependentUpon>CategoryHierarchy.xaml</DependentUpon>
@@ -228,10 +229,16 @@
     <Compile Include="CreateTimeDown.xaml.cs">
       <DependentUpon>CreateTimeDown.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Data\Shifts.cs" />
+    <Compile Include="ExportToExcel.cs" />
     <Compile Include="GlobalChangeHistory.cs" />
+    <Compile Include="ICancelMenuItemHendler.cs" />
+    <Compile Include="IExportToExcel.cs" />
     <Compile Include="IGetHistory.cs" />
     <Compile Include="Data\SubcategoryOne.cs" />
     <Compile Include="Data\SubcategorySecond.cs" />
+    <Compile Include="INewColumnsNames.cs" />
+    <Compile Include="NewColumnsNames.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -239,10 +246,8 @@
     </Compile>
     <Compile Include="ShiftRecordHandler.cs" />
     <Compile Include="SimpleDeletionHandler.cs" />
-    <Compile Include="Tables\Analysis.cs" />
-    <Compile Include="Tables\CompletedShifts.cs" />
-    <Compile Include="Tables\Shift.cs" />
-    <Compile Include="Tables\TimeShifts.cs" />
+    <Compile Include="Data\Analysis.cs" />
+    <Compile Include="Data\CompletedShifts.cs" />
     <Page Include="ChangeHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

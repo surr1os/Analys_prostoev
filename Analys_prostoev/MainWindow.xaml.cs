@@ -1,18 +1,13 @@
 ﻿using Analys_prostoev.Tables;
 using Npgsql;
 using NpgsqlTypes;
-using OfficeOpenXml;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Controls.Primitives;
-using System.Windows.Forms;
 using System.Windows.Input;
 using MessageBox = System.Windows.MessageBox;
 
@@ -22,12 +17,26 @@ namespace Analys_prostoev
 
 	public partial class MainWindow : System.Windows.Window
 	{
+		#region Data
 		#region boolean
 		static bool isStartImage = true;
 		private bool isThreadRunning = false;
 		private bool stopRequested = false;
 		#endregion
+		#region integer
 		private int selectedInterval;
+		#endregion
+		IExportToExcel _excel;
+		INewColumnsNames _columnsNames;
+		ICancelMenuItemHendler _cancelMenuItemHendler;
+		#endregion
+		public MainWindow()
+		{
+			InitializeComponent();
+			_excel = new ExportToExcel();
+			_columnsNames = new NewColumnsNames();
+			_cancelMenuItemHendler = new CancelMenuItemHehdler();
+		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
@@ -35,14 +44,17 @@ namespace Analys_prostoev
 			Delete_MenuItem.Visibility = Visibility.Collapsed;
 			Cancel_MenuItem.Visibility = Visibility.Collapsed;
 
-			selectComboBox.Items.Add("Все участки");
-
 			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
+			GetRegionName();
+			CreateSelectRowCB();
+		}
 
+		private void GetRegionName()
+		{
+			selectComboBox.Items.Add("Все участки");
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
-
 				using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
 				{
 					using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
@@ -54,8 +66,6 @@ namespace Analys_prostoev
 					}
 				}
 			}
-
-			CreateSelectRowCB();
 		}
 
 		private void CreateSelectRowCB()
@@ -75,47 +85,11 @@ namespace Analys_prostoev
 			}
 			SimpleDeletionHandler simpleDeletion = new SimpleDeletionHandler();
 			simpleDeletion.Delete();
-
 		}
 
 		public void CanselMenuItem_Click(object sender, RoutedEventArgs e)
 		{
-			DataRowView item = (DataRowView)DataGridTable.SelectedItem;
-			if (item != null)
-			{
-				long id = Convert.ToInt64(item["Id"]);
-				string regionValue = item["region"].ToString();
-
-				MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Аннулировать простой {id}?", "Аннулирование порстоя", MessageBoxButton.YesNo);
-
-				if (result == MessageBoxResult.Yes)
-				{
-					IGetHistory changeHistory = new GlobalChangeHistory(regionValue, id);
-
-					using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
-					{
-						connection.Open();
-						using (NpgsqlCommand cancellationCommand = new NpgsqlCommand(DBContext.cancellationQuery, connection))
-						{
-							cancellationCommand.Parameters.AddWithValue("@Id", id);
-							cancellationCommand.ExecuteNonQuery();
-
-							using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertHistory, connection))
-							{
-								changeHistory.AddHistory(insertCommand, $"Простой аннулирован");
-							}
-						}
-						GetSortTable();
-					}
-				}
-				else
-					return;
-			}
-			else
-			{
-				MessageBox.Show("Вы не выбрали простой!");
-				return;
-			}
+			_cancelMenuItemHendler.CancellationOfCategories(DataGridTable);
 		}
 
 		private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
@@ -236,120 +210,9 @@ namespace Analys_prostoev
 
 					DataGridTable.ItemsSource = dataTable.DefaultView;
 
-					SetNewColumnNames();
+					_columnsNames.SetNewColumnNames(DataGridTable);
 				}
 				DBContext.queryString = conclusion;
-			}
-		}
-
-		private void SetNewColumnNames()
-		{
-			DataGridTextColumn category_level_one = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_one");
-			if (category_level_one != null)
-			{
-				category_level_one.Width = new DataGridLength(300);
-				category_level_one.Header = "Категория Уровень 1";
-			}
-			DataGridTextColumn Id = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "Id");
-			if (Id != null)
-			{
-				Id.Header = "Номер";
-			}
-			DataGridTextColumn category_level_two = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_two");
-			if (category_level_two != null)
-			{
-				category_level_two.Width = new DataGridLength(300);
-				category_level_two.Header = "Категория Уровень 2";
-			}
-			DataGridTextColumn category_level_third = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "category_third");
-			if (category_level_third != null)
-			{
-				category_level_third.Width = new DataGridLength(300);
-				category_level_third.Header = "Категория Уровень 3";
-			}
-			DataGridTextColumn reason = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "reason");
-			if (reason != null)
-			{
-				reason.Width = new DataGridLength(600);
-				reason.Header = "Причина";
-			}
-
-			DataGridTextColumn date_start = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_start");
-			if (date_start != null)
-			{
-				date_start.Header = "Дата Начала";
-				date_start.Binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
-			}
-			DataGridTextColumn date_finish = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "date_finish");
-			if (date_finish != null)
-			{
-				date_finish.Header = "Дата Финиша";
-				date_finish.Binding.StringFormat = "dd-MM-yyyy HH:mm:ss";
-			}
-			DataGridTextColumn period = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "period");
-			if (period != null)
-			{
-				period.Header = "Период";
-			}
-			DataGridTextColumn region = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "region");
-			if (region != null)
-			{
-				region.Header = "Участок";
-			}
-			DataGridTextColumn status = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "status");
-			if (status != null)
-			{
-				status.Header = "Статус";
-			}
-			DataGridTextColumn shifts = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "shifts");
-			if (shifts != null)
-			{
-				shifts.Header = "Смена";
-			}
-			foreach (DataRowView row in DataGridTable.Items)
-			{
-				DataRow dataRow = row.Row;
-				string statusValue = dataRow["status"].ToString();
-
-				if (statusValue == "1")
-				{
-					dataRow["status"] = "Согласовано";
-				}
-				else if (statusValue == "0")
-				{
-					dataRow["status"] = "Не согласовано";
-				}
-				else
-				{
-					dataRow["status"] = "";
-				}
-			}
-
-			DataGridTextColumn created_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "created_at");
-			if (created_at != null)
-			{
-				created_at.Header = "Создано";
-				created_at.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
-			}
-			DataGridTextColumn change_at = (DataGridTextColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "change_at");
-			if (change_at != null)
-			{
-				change_at.Header = "Изменено";
-				change_at.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
-			}
-			DataGridCheckBoxColumn is_manual = (DataGridCheckBoxColumn)DataGridTable.Columns.FirstOrDefault(c => c.Header.ToString() == "is_manual");
-			if (is_manual != null)
-			{
-				is_manual.Header = " Создано вручную ";
-			}
-			foreach (DataGridColumn column in DataGridTable.Columns)
-			{
-				DataGridTextColumn textColumn = column as DataGridTextColumn;
-				if (textColumn != null)
-				{
-					textColumn.HeaderStyle = new System.Windows.Style(typeof(DataGridColumnHeader));
-					textColumn.HeaderStyle.Setters.Add(new Setter(HorizontalContentAlignmentProperty, System.Windows.HorizontalAlignment.Center));
-				}
 			}
 		}
 
@@ -365,12 +228,9 @@ namespace Analys_prostoev
 			{
 				var columnValue = column.Header.ToString();
 
-				// Проверяем, что столбец имеет заголовок "category"
 				if (columnValue == "Категория Уровень 1" || columnValue == "Категория Уровень 2" || columnValue == "Категория Уровень 3" || columnValue == "Причина")
 				{
-					// Получаем объект данных
 					DataRowView rowView = (DataRowView)cellInfo.Item;
-					// Получаем значения ячеек выбранной строки
 					long id = Convert.ToInt64(rowView["Id"]);
 					string reason = rowView["reason"].ToString();
 					string regionValue = rowView["region"].ToString();
@@ -378,13 +238,10 @@ namespace Analys_prostoev
 					string categoryTwoValue = rowView["category_two"].ToString();
 					string categoryThirdValue = rowView["category_third"].ToString();
 
-					// Создаем экземпляр окна CategoryHierarchy
 					var newWindow = new CategoryHierarchy(regionValue, id, categoryOneValue, categoryTwoValue, categoryThirdValue);
 					newWindow.ParentWindow = this;
-					// Открываем окно CategoryHierarchy
 					newWindow.Show();
 
-					// Установка значений других полей в окне CategoryHierarchy
 					newWindow.categoryOneTextB.Text = categoryOneValue;
 					newWindow.categoryTwoTextB.Text = categoryTwoValue;
 					newWindow.categoryThirdTextB.Text = categoryThirdValue;
@@ -396,18 +253,15 @@ namespace Analys_prostoev
 
 		public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
 		{
-			// Получаем выделенную строку в таблице
 			DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
 			if (selectedItem != null)
 			{
-				// Обновляем значения ячеек выбранной строки
 
 				selectedItem["category_one"] = categoryOneValue;
 				selectedItem["category_two"] = categoryTwoValue;
 				selectedItem["category_third"] = categoryThirdValue;
 				selectedItem["reason"] = reasonValue;
 
-				// Обновляем строку в базе данных
 				using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 				{
 					connection.Open();
@@ -435,136 +289,10 @@ namespace Analys_prostoev
 			}
 		}
 
-		public List<Analysis> GetAnalysisList(string queryString)
-		{
-			List<Analysis> analysisList = new List<Analysis>();
-
-			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
-			{
-				connection.Open();
-				List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-				if (startDatePicker.Value.HasValue)
-				{
-					DBContext.queryString += " AND date_start >= @startDate";
-					parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
-				}
-
-				if (endDatePicker.Value.HasValue)
-				{
-					DBContext.queryString += " AND date_start <= @endDate";
-					parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
-				}
-
-				if (selectComboBox.SelectedItem != null)
-				{
-					string selectedRegion = selectComboBox.SelectedItem.ToString();
-					DBContext.queryString += $" AND region = @selectedRegionCurrent";
-					parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
-					parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
-				}
-
-
-				// Execute SQL Query and fetch data
-				using (NpgsqlCommand command = new NpgsqlCommand(queryString, connection))
-				{
-					command.Parameters.AddRange(parameters.ToArray());
-					using (NpgsqlDataReader reader = command.ExecuteReader())
-					{
-						// Fetch data and populate the list
-						while (reader.Read())
-						{
-							Analysis analysis = new Analysis
-							{
-								DateStart = reader.GetDateTime(reader.GetOrdinal("date_start")),
-								DateFinish = reader.GetDateTime(reader.GetOrdinal("date_finish")),
-								Id = reader.GetInt32(reader.GetOrdinal("id")),
-								Region = reader.IsDBNull(reader.GetOrdinal("region")) ? string.Empty : reader.GetString(reader.GetOrdinal("region")),
-								Period = reader.GetInt32(reader.GetOrdinal("period")),
-								CategoryOne = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
-								CategoryTwo = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
-								CategoryThird = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
-								Reason = reader.IsDBNull(reader.GetOrdinal("reason")) ? string.Empty : reader.GetString(reader.GetOrdinal("reason")),
-								Shifts = reader.IsDBNull(reader.GetOrdinal("shifts")) ? string.Empty : reader.GetString(reader.GetOrdinal("shifts"))
-							};
-							analysisList.Add(analysis);
-						}
-					}
-				}
-			}
-
-			return analysisList;
-		}
-
 		public void ExportToExcel(string queryString)
 		{
-			// Заполнение списка
-			List<Analysis> analysisList = GetAnalysisList(queryString);
-
-			// Создание Excel файла
-			CreateExcelFile(analysisList);
-		}
-
-		public void CreateExcelFile(List<Analysis> analysisList)
-		{
-			ExcelPackage.LicenseContext = LicenseContext.NonCommercial;
-
-			// Открытие диалогового окна для сохранения файла
-			SaveFileDialog saveFileDialog = new SaveFileDialog();
-			saveFileDialog.Filter = "Excel files (*.xlsx)|*.xlsx";
-			saveFileDialog.FilterIndex = 1;
-			saveFileDialog.RestoreDirectory = true;
-
-			if (saveFileDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK) // Используйте DialogResult.OK
-			{
-				string fileName = saveFileDialog.FileName;
-
-				// Создание нового Excel пакета
-				using (ExcelPackage package = new ExcelPackage())
-				{
-					// Создание нового листа
-					ExcelWorksheet worksheet = package.Workbook.Worksheets.Add("Analysis");
-
-					// Установка заголовков столбцов
-					string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур", "Причина", "Смена"};
-					for (int i = 0; i < headers.Length; i++)
-					{
-						worksheet.Cells[1, i + 1].Value = headers[i];
-					}
-
-					// Заполнение данных из списка анализов
-					for (int i = 0; i < analysisList.Count; i++)
-					{
-						Analysis analysis = analysisList[i];
-						int row = i + 2; // Начинаем заполнение с 2 строки
-
-						worksheet.Cells[row, 1].Value = analysis.Id;
-
-						worksheet.Cells[row, 2].Value = analysis.DateStart;
-						worksheet.Cells[row, 2].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
-
-						worksheet.Cells[row, 3].Value = analysis.DateFinish;
-						worksheet.Cells[row, 3].Style.Numberformat.Format = "yyyy-mm-dd HH:MM:SS";
-
-						worksheet.Cells[row, 4].Value = analysis.Period;
-						worksheet.Cells[row, 5].Value = analysis.Region;
-						worksheet.Cells[row, 6].Value = analysis.CategoryOne;
-						worksheet.Cells[row, 7].Value = analysis.CategoryTwo;
-						worksheet.Cells[row, 8].Value = analysis.CategoryThird;
-						worksheet.Cells[row, 9].Value = analysis.Reason;
-						worksheet.Cells[row, 10].Value = analysis.Shifts;
-					}
-
-					// Автоматическое подгонка ширины столбцов
-					worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
-
-					// Сохранение файла Excel
-					FileInfo file = new FileInfo(fileName);
-					package.SaveAs(file);
-				}
-			}
+			List<Analysis> analysisList = _excel.GetAnalysisList(queryString);
+			_excel.CreateExcelFile(analysisList);
 		}
 
 		private void Button_Click_Excel(object sender, RoutedEventArgs e)
@@ -598,15 +326,15 @@ namespace Analys_prostoev
 				}
 				if (manual == false)
 				{
-					Delete_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку удаления у автоматических простоев
+					Delete_MenuItem.Visibility = Visibility.Collapsed;
 				}
 				if (status == "Не согласованно" && manual == false)
 				{
-					Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения у не автоматических простоев
+					Edit_MenuItem.Visibility = Visibility.Visible;
 				}
 				if (manual == true)
 				{
-					Delete_MenuItem.Visibility = Visibility.Visible;// показываем кнопку изменения и уаления
+					Delete_MenuItem.Visibility = Visibility.Visible;
 				}
 				if (categoryOne != null || categoryTwo != null || categoryThird != null)
 				{
@@ -615,12 +343,12 @@ namespace Analys_prostoev
 				}
 				else
 				{
-					Edit_MenuItem.Visibility = Visibility.Collapsed; // скрываем кнопку изменения
+					Edit_MenuItem.Visibility = Visibility.Collapsed;
 				}
 			}
 			else
 			{
-				Edit_MenuItem.Visibility = Visibility.Visible; // показываем кнопку изменения
+				Edit_MenuItem.Visibility = Visibility.Visible;
 			}
 		}
 
@@ -647,8 +375,9 @@ namespace Analys_prostoev
 						toggleButton.Content = FindResource("Stop");
 						isThreadRunning = true;
 						stopRequested = false;
-						selectedInterval = GetSelectedInterval(); 
+						selectedInterval = GetSelectedInterval();
 						Thread thread = new Thread(Timer);
+						thread.IsBackground = true;
 						thread.Start();
 					}
 					break;
@@ -659,10 +388,7 @@ namespace Analys_prostoev
 		{
 			while (isThreadRunning)
 			{
-				Dispatcher.Invoke(() =>
-				{
-					GetSortTable();
-				});
+				Dispatcher.Invoke(GetSortTable);
 				Thread.Sleep(selectedInterval);
 			}
 		}

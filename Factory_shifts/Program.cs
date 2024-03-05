@@ -1,8 +1,5 @@
 ﻿using Factory_shifts;
 using Factory_shifts.Data;
-using Factory_shifts.Tables;
-
-
 
 internal class Program
 {

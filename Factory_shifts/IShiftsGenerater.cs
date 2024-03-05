@@ -1,5 +1,4 @@
 ﻿using Factory_shifts.Data;
-using Factory_shifts.Tables;
 
 namespace Factory_shifts
 {
