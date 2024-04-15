@@ -1,10 +1,8 @@
 ﻿using Analys_prostoev.Tables;
 using Npgsql;
-using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -15,7 +13,7 @@ using MessageBox = System.Windows.MessageBox;
 namespace Analys_prostoev
 {
 
-	public partial class MainWindow : System.Windows.Window
+	public partial class MainWindow : Window
 	{
 		#region Data
 		#region boolean
@@ -26,16 +24,20 @@ namespace Analys_prostoev
 		#region integer
 		private int selectedInterval;
 		#endregion
+		#region Interfase
 		IExportToExcel _excel;
 		INewColumnsNames _columnsNames;
 		ICancelMenuItemHendler _cancelMenuItemHendler;
 		#endregion
+		#endregion
+
 		public MainWindow()
 		{
 			InitializeComponent();
 			_excel = new ExportToExcel();
 			_columnsNames = new NewColumnsNames();
-			_cancelMenuItemHendler = new CancelMenuItemHehdler();
+			_cancelMenuItemHendler = new CanselMenuItemHehdler();
+			
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -45,6 +47,8 @@ namespace Analys_prostoev
 			Cancel_MenuItem.Visibility = Visibility.Collapsed;
 
 			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
+			ChangeTheme.Items.Add("Светлая тема");
+			ChangeTheme.Items.Add("Тёмная тема");
 			GetRegionName();
 			CreateSelectRowCB();
 		}
@@ -132,90 +136,18 @@ namespace Analys_prostoev
 			}
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void GetTable(object sender, RoutedEventArgs e)
 		{
-			GetSortTable();
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			sortingTable.GetSortTable();
+		}
+		public void GetTable()
+		{
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			sortingTable.GetSortTable();
 		}
 
-		public void GetSortTable()
-		{
-			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
-			{
-				connection.Open();
-
-				StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
-					" category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
-
-				string original = queryBuilder.ToString();
-
-				List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
-
-				if (selectComboBox.SelectedItem != null)
-				{
-					string selectedRegion = selectComboBox.SelectedItem.ToString();
-					if (selectedRegion != "Все участки")
-					{
-						if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
-						{
-							queryBuilder.Append(" AND region ILIKE @selectedRegion");
-							parameters.Add(new NpgsqlParameter("selectedRegion", NpgsqlDbType.Varchar));
-							parameters[parameters.Count - 1].Value = selectedRegion + " %";
-						}
-						else
-						{
-							queryBuilder.Append(" AND region = @selectedRegionCurrent");
-							parameters.Add(new NpgsqlParameter("selectedRegionCurrent", NpgsqlDbType.Varchar));
-							parameters[parameters.Count - 1].Value = selectedRegion;
-						}
-					}
-				}
-
-				if (selectRowComboBox.SelectedItem != null)
-				{
-					string rowSelect = selectRowComboBox.SelectedItem.ToString();
-					if (rowSelect == "Классифицированные строки")
-					{
-						queryBuilder.Append(" AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''");
-					}
-					else if (rowSelect == "Неклассифицированные строки")
-					{
-						queryBuilder.Append(" AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL");
-					}
-				}
-
-				if (startDatePicker.Value.HasValue)
-				{
-					queryBuilder.Append(" AND (date_start >= @startDate OR date_finish >= @startDate)");
-					parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = startDatePicker.Value.Value;
-				}
-
-				if (endDatePicker.Value.HasValue)
-				{
-					queryBuilder.Append(" AND (date_finish <= @endDate OR date_start <= @endDate)");
-					parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = endDatePicker.Value.Value;
-				}
-
-				string conclusion = queryBuilder.ToString();
-				conclusion += " ORDER BY \"Id\" DESC";
-
-				using (NpgsqlCommand command = new NpgsqlCommand(conclusion, connection))
-				{
-					command.Parameters.AddRange(parameters.ToArray());
-
-					NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(command);
-					DataTable dataTable = new DataTable();
-					adapter.Fill(dataTable);
-
-					DataGridTable.ItemsSource = dataTable.DefaultView;
-
-					_columnsNames.SetNewColumnNames(DataGridTable);
-				}
-				DBContext.queryString = conclusion;
-			}
-		}
-
+		//refactor
 		private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
@@ -250,7 +182,7 @@ namespace Analys_prostoev
 				}
 			}
 		}
-
+		//refactor
 		public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
 		{
 			DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
@@ -291,7 +223,7 @@ namespace Analys_prostoev
 
 		public void ExportToExcel(string queryString)
 		{
-			List<Analysis> analysisList = _excel.GetAnalysisList(queryString);
+			List<Analysis> analysisList = _excel.GetAnalysisList(queryString, startDatePicker, endDatePicker, selectComboBox);
 			_excel.CreateExcelFile(analysisList);
 		}
 
@@ -306,7 +238,7 @@ namespace Analys_prostoev
 				ExportToExcel(DBContext.queryString);
 			}
 		}
-
+		//refactor
 		private void DataGridTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 
@@ -388,7 +320,10 @@ namespace Analys_prostoev
 		{
 			while (isThreadRunning)
 			{
-				Dispatcher.Invoke(GetSortTable);
+				Dispatcher.Invoke(()=>{
+					SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+					sortingTable.GetSortTable();
+				});
 				Thread.Sleep(selectedInterval);
 			}
 		}
@@ -403,6 +338,30 @@ namespace Analys_prostoev
 				case 3: return 30 * 60 * 1000;
 				case 4: return 60 * 60 * 1000;
 				default: return 5 * 60 * 1000;
+			}
+		}
+
+		private void ChangeTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			switch (ChangeTheme.SelectedIndex)
+			{
+				case 0:
+					var whiteUri = new Uri(@"Themes/WhiteTheme.xaml", UriKind.Relative);
+					ResourceDictionary whiteResource = Application.LoadComponent(whiteUri) as ResourceDictionary;
+					Application.Current.Resources.Clear();
+					Application.Current.Resources.MergedDictionaries.Add(whiteResource);
+					
+					sortingTable.GetSortTable();
+					break;
+				case 1:
+					var darkUri = new Uri(@"Themes/DarkTheme.xaml", UriKind.Relative);
+					ResourceDictionary darkResource = Application.LoadComponent(darkUri) as ResourceDictionary;
+					Application.Current.Resources.Clear();
+					Application.Current.Resources.MergedDictionaries.Add(darkResource);
+
+					sortingTable.GetSortTable();
+					break;
 			}
 		}
 	}

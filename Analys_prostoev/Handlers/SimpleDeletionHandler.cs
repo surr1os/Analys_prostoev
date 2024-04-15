@@ -70,7 +70,7 @@ namespace Analys_prostoev
                     }
                 }
 
-                main.GetSortTable();
+                main.GetTable();
             }
         }
     }

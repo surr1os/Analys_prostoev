@@ -61,13 +61,21 @@ namespace Analys_prostoev
                 date_change.Header = "Дата изменения";
                 date_change.Binding.StringFormat = "yyyy-MM-dd HH:mm:ss";
                 date_change.Width = new DataGridLength(120);
-            }
+				Style headerStyle = new Style(typeof(DataGridColumnHeader));
+				headerStyle.BasedOn = (Style)Application.Current.FindResource("DataGridHeaderStyle");
+				headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+				date_change.HeaderStyle = headerStyle;
+			}
             DataGridTextColumn modified_element = (DataGridTextColumn)HistoryTable.Columns.FirstOrDefault(c => c.Header.ToString() == "modified_element");
             if (modified_element != null)
             {
-
                 modified_element.Header = "Изменения";
-            }
+				Style headerStyle = new Style(typeof(DataGridColumnHeader));
+				headerStyle.BasedOn = (Style)Application.Current.FindResource("DataGridHeaderStyle");
+				headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+                modified_element.HeaderStyle = headerStyle;
+
+			}
             foreach (DataGridColumn column in HistoryTable.Columns)
             {
                 DataGridTextColumn textColumn = column as DataGridTextColumn;

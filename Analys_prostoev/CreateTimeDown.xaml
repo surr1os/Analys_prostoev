@@ -7,7 +7,7 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Создание простоя" Height="433" Width="382" WindowStartupLocation="CenterScreen">
-    <Grid>
+    <Grid Style="{DynamicResource GridStyle}">
 
 
         <Border BorderThickness="0" 
@@ -16,10 +16,10 @@
         Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" />
 
         <Canvas HorizontalAlignment="Center" Height="255" VerticalAlignment="Top" Width="338" Margin="0,64,0,0">
-            <Label FontFamily="Brutal Type" Height="37" Content="Дата начала *" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label FontFamily="Brutal Type" Height="37" Content="Дата финиша *" Canvas.Top="86" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label FontFamily="Brutal Type" Height="37" Content="Участок *" Canvas.Top="129" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label FontFamily="Brutal Type" Height="37" Content="Состояние" Canvas.Top="170" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center" />
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Дата начала *" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Дата финиша *" Canvas.Top="86" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Участок *" Canvas.Top="129" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Состояние" Canvas.Top="170" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center" />
 
             <ComboBox FontFamily="Brutal Type" x:Name="CB_Status" Height="37" Width="219" HorizontalAlignment="Left" Canvas.Left="119" Canvas.Top="170" VerticalAlignment="Center">
                 <ComboBoxItem Name="Nothing" Content="Без статуса"/>
@@ -36,7 +36,7 @@
 
         <Button FontFamily="Brutal Type" x:Name="Save" Content="Сохранить" Click="CreateDownTime" Margin="173,0,23,50" Background="#FFF046" Height="28" VerticalAlignment="Bottom"/>
         <TextBox FontFamily="Brutal Type" x:Name="Period" Text="" Height="28" TextAlignment="Center" VerticalAlignment="Bottom" Width="40" HorizontalAlignment="Left" Margin="118,0,0,50"/>
-        <Label FontFamily="Brutal Type" Content="Период (мин.)" Height="38" VerticalAlignment="Bottom" Width="110" HorizontalAlignment="Left" Margin="22,0,0,43"/>
+        <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Период (мин.)" Height="38" VerticalAlignment="Bottom" Width="110" HorizontalAlignment="Left" Margin="22,0,0,43"/>
 
     </Grid>
 </Window>

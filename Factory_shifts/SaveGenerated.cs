@@ -1,5 +1,6 @@
 ﻿using Analys_prostoev;
 using Factory_shifts.Data;
+using Factory_shifts.Intefaces;
 using Npgsql;
 
 namespace Factory_shifts

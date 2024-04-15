@@ -55,6 +55,7 @@ namespace Analys_prostoev
 				string columnHeader = kvp.Value;
 
 				ChangeColumnHeader(columnName, columnHeader, dataGrid);
+				SetStyles(dataGrid);
 			}
 
 			foreach (DataRowView row in dataGrid.Items)
@@ -110,7 +111,37 @@ namespace Analys_prostoev
 			DataGridColumn reasonColumn = dataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == "Причина");
 			if (reasonColumn != null)
 			{
-				reasonColumn.Width = 600;
+				reasonColumn.Width = 400;
+			}
+		}
+
+		public void SetStyles(DataGrid dataGrid)
+		{
+			dataGrid.Style = (Style)Application.Current.FindResource("DataGridStyle");
+
+			foreach (DataGridColumn column in dataGrid.Columns)
+			{
+				if (column is DataGridTextColumn textColumn)
+				{
+					Style headerStyle = new Style(typeof(DataGridColumnHeader));
+					headerStyle.BasedOn = (Style)Application.Current.FindResource("DataGridHeaderStyle");
+					headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+					
+
+					textColumn.HeaderStyle = headerStyle;
+				}
+				else if (column is DataGridCheckBoxColumn checkBoxColumn)
+				{
+					Style headerStyle = new Style(typeof(DataGridColumnHeader));
+					headerStyle.BasedOn = (Style)Application.Current.FindResource("DataGridHeaderStyle");
+					headerStyle.Setters.Add(new Setter(Control.HorizontalContentAlignmentProperty, HorizontalAlignment.Center));
+					
+
+					checkBoxColumn.HeaderStyle = headerStyle;
+
+					Style elementStyle = new Style(typeof(CheckBox));
+					elementStyle.Setters.Add(new Setter(Control.HorizontalAlignmentProperty, HorizontalAlignment.Center));
+				}
 			}
 		}
 	}

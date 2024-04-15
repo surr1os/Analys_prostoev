@@ -221,7 +221,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CancelMenuItemHehdler.cs" />
+    <Compile Include="Handlers\CancelMenuItemHehdler.cs" />
     <Compile Include="Data\Category.cs" />
     <Compile Include="CategoryHierarchy.xaml.cs">
       <DependentUpon>CategoryHierarchy.xaml</DependentUpon>
@@ -230,24 +230,25 @@
       <DependentUpon>CreateTimeDown.xaml</DependentUpon>
     </Compile>
     <Compile Include="Data\Shifts.cs" />
-    <Compile Include="ExportToExcel.cs" />
-    <Compile Include="GlobalChangeHistory.cs" />
-    <Compile Include="ICancelMenuItemHendler.cs" />
-    <Compile Include="IExportToExcel.cs" />
-    <Compile Include="IGetHistory.cs" />
+    <Compile Include="Handlers\ExportToExcel.cs" />
+    <Compile Include="Handlers\GlobalChangeHistory.cs" />
+    <Compile Include="Interfaces\ICancelMenuItemHendler.cs" />
+    <Compile Include="Interfaces\IExportToExcel.cs" />
+    <Compile Include="Interfaces\IGetHistory.cs" />
     <Compile Include="Data\SubcategoryOne.cs" />
     <Compile Include="Data\SubcategorySecond.cs" />
-    <Compile Include="INewColumnsNames.cs" />
-    <Compile Include="NewColumnsNames.cs" />
+    <Compile Include="Interfaces\INewColumnsNames.cs" />
+    <Compile Include="Handlers\NewColumnsNames.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ShiftRecordHandler.cs" />
-    <Compile Include="SimpleDeletionHandler.cs" />
+    <Compile Include="Handlers\ShiftRecordHandler.cs" />
+    <Compile Include="Handlers\SimpleDeletionHandler.cs" />
     <Compile Include="Data\Analysis.cs" />
     <Compile Include="Data\CompletedShifts.cs" />
+    <Compile Include="Handlers\SortingTable.cs" />
     <Page Include="ChangeHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -257,6 +258,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CreateTimeDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\DarkTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -280,6 +285,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="CategoryHierarchy.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\WhiteTheme.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

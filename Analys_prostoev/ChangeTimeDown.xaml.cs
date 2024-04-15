@@ -29,7 +29,8 @@ namespace Analys_prostoev
 
             CB_Status.SelectedItem = status == "Согласовано" ? Agreed : (object)NotAgreed;
 
-            SelectShifts(shifts);
+
+			SelectShifts(shifts);
 
             originalStatus = status;
             originalStartDate = start;
@@ -172,7 +173,7 @@ namespace Analys_prostoev
                         
                         updateCommand.ExecuteNonQuery();
 
-                        main.GetSortTable();
+                        main.GetTable();
                     }
                 }
 

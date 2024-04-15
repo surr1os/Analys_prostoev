@@ -54,7 +54,7 @@ namespace Analys_prostoev
                 {
                     CheckingForDivision(start, end, connection, status);
                     MainWindow main = Application.Current.MainWindow as MainWindow;
-                    main.GetSortTable();
+                    main.GetTable();
                     Hide();
                 }
                 else

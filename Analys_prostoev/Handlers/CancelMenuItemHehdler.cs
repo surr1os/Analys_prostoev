@@ -9,8 +9,9 @@ namespace Analys_prostoev
 	/// <summary>
 	/// Представляет собой класс для отмены категорий простоя.
 	/// </summary>
-	public class CancelMenuItemHehdler : ICancelMenuItemHendler
+	public class CanselMenuItemHehdler : ICancelMenuItemHendler
 	{
+		MainWindow main = Application.Current.MainWindow as MainWindow;
 		public void CancellationOfCategories(DataGrid dataGrid)
 		{
 			DataRowView item = (DataRowView)dataGrid.SelectedItem;
@@ -50,6 +51,7 @@ namespace Analys_prostoev
 						}
 					}
 				}
+				main.GetTable();
 			}
 			else
 				return;

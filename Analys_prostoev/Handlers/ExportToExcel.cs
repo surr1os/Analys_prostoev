@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.IO;
 using System.Windows;
 using System.Windows.Forms;
-using Application = System.Windows.Application;
 
 namespace Analys_prostoev
 {
 	public class ExportToExcel : IExportToExcel
 	{
-		MainWindow main = Application.Current.MainWindow as MainWindow;
-
 		#region Get
-		public List<Analysis> GetAnalysisList(string queryString)
+		public List<Analysis> GetAnalysisList(string queryString, 
+												Xceed.Wpf.Toolkit.DateTimePicker startDateTime,
+												Xceed.Wpf.Toolkit.DateTimePicker endDateTime,
+												System.Windows.Controls.ComboBox selectComboBox)
 		{
 			List<Analysis> analysisList = new List<Analysis>();
 
@@ -23,21 +23,21 @@ namespace Analys_prostoev
 				connection.Open();
 				List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
-				if (main.startDatePicker.Value.HasValue)
+				if (startDateTime.Value != null)
 				{
 					parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = main.startDatePicker.Value.Value;
+					parameters[parameters.Count - 1].Value = startDateTime.Value;
 				}
 
-				if (main.endDatePicker.Value.HasValue)
+				if (endDateTime.Value != null)
 				{
 					parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
-					parameters[parameters.Count - 1].Value = main.endDatePicker.Value.Value;
+					parameters[parameters.Count - 1].Value = endDateTime.Value;
 				}
 
-				if (main.selectComboBox.SelectedItem != null)
+				if (selectComboBox.SelectedItem != null)
 				{
-					string selectedRegion = main.selectComboBox.SelectedItem.ToString();
+					string selectedRegion = selectComboBox.SelectedItem.ToString();
 					parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
 					parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
 				}

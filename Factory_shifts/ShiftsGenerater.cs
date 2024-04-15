@@ -1,8 +1,9 @@
 ﻿using Factory_shifts.Data;
+using Factory_shifts.Intefaces;
 
 namespace Factory_shifts
 {
-	public class ShiftsGenerater : IShiftsGenerater
+    public class ShiftsGenerater : IShiftsGenerater
 	{
 		private List<Shift> generatedShifts;
 		private List<string> literals = new List<string> { "А", "В", "С", "Д" };
