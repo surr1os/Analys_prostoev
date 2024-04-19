@@ -29,6 +29,7 @@ namespace Analys_prostoev
 		INewColumnsNames _columnsNames;
 		ICancelMenuItemHendler _cancelMenuItemHendler;
 		#endregion
+		
 		#endregion
 
 		public MainWindow()
@@ -55,19 +56,39 @@ namespace Analys_prostoev
 
 		private void GetRegionName()
 		{
-			selectComboBox.Items.Add("Все участки");
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
+				List<string> hptItems = new List<string>();
+				List<string> hptrItems = new List<string>();
+
 				using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
 				{
 					using (NpgsqlDataReader reader = selectCommand.ExecuteReader())
 					{
 						while (reader.Read())
 						{
-							selectComboBox.Items.Add(reader["region"].ToString());
+							string region = reader["region"].ToString();
+
+							if (region.StartsWith("ХПТ ") || region.StartsWith("HPT_"))
+								hptItems.Add(region);
+							if (region.StartsWith("ХПТР "))
+								hptrItems.Add(region);
 						}
 					}
+				}
+
+				hptItems.Sort();
+				hptrItems.Sort();
+
+				foreach (string item in hptItems)
+				{
+					RegionsLB.Items.Add(item);
+				}
+
+				foreach (string item in hptrItems)
+				{
+					RegionsLB.Items.Add(item);
 				}
 			}
 		}
@@ -138,16 +159,15 @@ namespace Analys_prostoev
 
 		private void GetTable(object sender, RoutedEventArgs e)
 		{
-			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			sortingTable.GetSortTable();
 		}
 		public void GetTable()
 		{
-			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			sortingTable.GetSortTable();
 		}
 
-		//refactor
 		private void DataGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
 		{
 			DataGridCellInfo cellInfo = DataGridTable.CurrentCell;
@@ -182,7 +202,7 @@ namespace Analys_prostoev
 				}
 			}
 		}
-		//refactor
+
 		public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
 		{
 			DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
@@ -223,7 +243,7 @@ namespace Analys_prostoev
 
 		public void ExportToExcel(string queryString)
 		{
-			List<Analysis> analysisList = _excel.GetAnalysisList(queryString, startDatePicker, endDatePicker, selectComboBox);
+			List<Analysis> analysisList = _excel.GetAnalysisList(queryString, startDatePicker, endDatePicker, RegionsLB);
 			_excel.CreateExcelFile(analysisList);
 		}
 
@@ -238,7 +258,7 @@ namespace Analys_prostoev
 				ExportToExcel(DBContext.queryString);
 			}
 		}
-		//refactor
+
 		private void DataGridTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 
@@ -321,7 +341,7 @@ namespace Analys_prostoev
 			while (isThreadRunning)
 			{
 				Dispatcher.Invoke(()=>{
-					SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+					SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 					sortingTable.GetSortTable();
 				});
 				Thread.Sleep(selectedInterval);
@@ -343,7 +363,7 @@ namespace Analys_prostoev
 
 		private void ChangeTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
-			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, selectComboBox, selectRowComboBox, DataGridTable);
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			switch (ChangeTheme.SelectedIndex)
 			{
 				case 0:

@@ -21,26 +21,21 @@
             <ColumnDefinition Width="35*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="15*"/>
-            <RowDefinition Height="97*"/>
+            <RowDefinition Height="25*"/>
+            <RowDefinition Height="237*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Height="66" HorizontalAlignment="Center" Width="1557">
+        <StackPanel Orientation="Horizontal" Height="66" VerticalAlignment="Center" HorizontalAlignment="Left" Width="1250" Margin="10,0,0,0">
             <StackPanel Margin="20,0,0,0" Width="222">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                 <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="210" MaxHeight="30" MinWidth="210" MinHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                 <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="200" MinHeight="30" MaxWidth="200" MaxHeight="30" Margin="5"/>
             </StackPanel>
             <StackPanel Margin="20,0,0,0">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Выбор агрегата/участка" HorizontalAlignment="Center" FontWeight="Bold"/>
-                <ComboBox FontFamily="Brutal Type" x:Name="selectComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
-			IsReadOnly="True" Text="Выберите участок" Margin="5"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold"/>
+                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
                 <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
 			IsReadOnly="True" Text="Все строки" Margin="5" Background="White"/>
             </StackPanel>
@@ -65,7 +60,7 @@
             </StackPanel>
 
             <StackPanel Margin="20,0,0,0" Height="64" VerticalAlignment="Bottom" Width="145">
-                <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="30"/>
+                <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
                 <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="144" Height="30" FontFamily="Brutal Type">
                     <ComboBoxItem Content="5 минут"/>
                     <ComboBoxItem Content="10 минут"/>
@@ -76,8 +71,8 @@
             </StackPanel>
         </StackPanel>
 
-        <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="DataGridTable" Margin="10,3,10,51" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
-			 MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" Grid.Row="1" FontFamily="Brutal Type">
+        <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="DataGridTable" Margin="187,10,17,72" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
+			 MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" FontFamily="Brutal Type" Grid.Row="1">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
@@ -88,14 +83,18 @@
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
-        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,12,10" Grid.Row="1" Background="#FFF046" Height="36" VerticalAlignment="Bottom"/>
-        <ComboBox x:Name="ChangeTheme" 
-					Margin="0,0,17,16" 
-					Grid.Row="1" Height="23" 
-					VerticalAlignment="Bottom" 
-					HorizontalAlignment="Right" 
-					Width="268" 
-					SelectionChanged="ChangeTheme_SelectionChanged" BorderBrush="#FF131010"/>
+
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,12,10" Grid.Row="1" Background="#FFF046" Height="57" VerticalAlignment="Bottom">
+            <ComboBox x:Name="ChangeTheme" 
+				SelectionChanged="ChangeTheme_SelectionChanged" BorderBrush="#FF131010" Margin="1323,0,9,0" Height="36" VerticalAlignment="Center"/>
+        </Border>
+
+        <ListBox Style="{DynamicResource ListBoxStyle}" x:Name="RegionsLB" 
+                 SelectionMode="Multiple"
+                 Margin="10,10,0,72" Grid.Row="1" 
+                 HorizontalAlignment="Left" Width="172">
+        </ListBox>
+        <Image Height="60" Margin="0,13,22,2" Source="/cyberkot.png" HorizontalAlignment="Right" Width="111"/>
 
     </Grid>
 </Window>

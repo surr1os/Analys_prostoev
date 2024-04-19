@@ -2,10 +2,11 @@
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Data;
-using Xceed.Wpf.Toolkit;
+using System.Linq;
+using System.Text;
 using System.Windows.Controls;
+using Xceed.Wpf.Toolkit;
 
 namespace Analys_prostoev
 {
@@ -13,28 +14,39 @@ namespace Analys_prostoev
 	{
 		#region Data
 		INewColumnsNames _columnsNames;
-		private object _selectRow {  get; set; }
-		private object _selectComboBox {  get; set; }
+		private object[] _selectedRegions { get; set; }
 		private DateTime? _startDate { get; set; }
 		private DateTime? _endDate { get; set; }
 		private DataGrid _source { get; set; }
+		private ComboBox _selectedRow { get; set; }
 		#endregion
 
 		public SortingTable(DateTimePicker startDateTime,
-							DateTimePicker endDateTime, 
-							ComboBox selectComboBox, 
-							ComboBox selectRowComboBox,
-							DataGrid dataGridTable) 
+					DateTimePicker endDateTime,
+					ListBox selectListBox,
+					ComboBox selectRowComboBox,
+					DataGrid dataGridTable)
 		{
-			_selectComboBox = selectComboBox.SelectedItem;
+			_selectedRegions = selectListBox.SelectedItems.Cast<string>().ToArray();
 			_startDate = startDateTime.Value;
 			_endDate = endDateTime.Value;
-			_selectRow = selectRowComboBox.SelectedItem;
 			_source = dataGridTable;
 			_columnsNames = new NewColumnsNames();
+			_selectedRow = selectRowComboBox;
+
+			List<string> selectedItemsList = new List<string>();
+
+			foreach (var item in selectListBox.SelectedItems)
+			{
+				selectedItemsList.Add(item.ToString());
+			}
+
+			_selectedRegions = selectedItemsList.ToArray();
 		}
+
 		public void GetSortTable()
 		{
+
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
@@ -71,23 +83,32 @@ namespace Analys_prostoev
 
 		private void RegionFilter(StringBuilder queryBuilder, List<NpgsqlParameter> parameters)
 		{
-			if (_selectComboBox != null)
+			if (_selectedRegions != null && _selectedRegions.Length > 0)
 			{
-				string selectedRegion = _selectComboBox.ToString();
-				if (selectedRegion != "Все участки")
+				if (_selectedRegions.Length == 1)
 				{
-					if (selectedRegion == "ХПТ" || selectedRegion == "ХПТР")
+					string selectedRegion = _selectedRegions[0].ToString();
+
+					queryBuilder.Append(" AND region ILIKE @selectedRegion");
+					parameters.Add(new NpgsqlParameter("selectedRegion", NpgsqlDbType.Varchar));
+					parameters[parameters.Count - 1].Value = selectedRegion;
+
+				}
+				else
+				{
+					queryBuilder.Append(" AND (");
+					for (int i = 0; i < _selectedRegions.Length; i++)
 					{
-						queryBuilder.Append(" AND region ILIKE @selectedRegion");
-						parameters.Add(new NpgsqlParameter("selectedRegion", NpgsqlDbType.Varchar));
-						parameters[parameters.Count - 1].Value = selectedRegion + " %";
-					}
-					else
-					{
-						queryBuilder.Append(" AND region = @selectedRegionCurrent");
-						parameters.Add(new NpgsqlParameter("selectedRegionCurrent", NpgsqlDbType.Varchar));
+						string selectedRegion = _selectedRegions[i].ToString();
+						if (i > 0)
+							queryBuilder.Append(" OR ");
+
+						queryBuilder.Append("region ILIKE @selectedRegion" + i);
+						parameters.Add(new NpgsqlParameter($"selectedRegion{i}", NpgsqlDbType.Varchar));
 						parameters[parameters.Count - 1].Value = selectedRegion;
+
 					}
+					queryBuilder.Append(")");
 				}
 			}
 		}
@@ -111,9 +132,9 @@ namespace Analys_prostoev
 
 		private void CategoryFilter(StringBuilder queryBuilder)
 		{
-			if (_selectRow != null)
+			if (_selectedRow != null)
 			{
-				string rowSelect = _selectRow.ToString();
+				string rowSelect = _selectedRow.ToString();
 				if (rowSelect == "Классифицированные строки")
 				{
 					queryBuilder.Append(" AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''");

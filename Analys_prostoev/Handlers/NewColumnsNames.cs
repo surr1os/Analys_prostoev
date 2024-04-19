@@ -102,16 +102,21 @@ namespace Analys_prostoev
 			foreach (var header in headers)
 			{
 				DataGridColumn column = dataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == header);
-				if (column != null)
-				{
-					column.Width = new DataGridLength(300, DataGridLengthUnitType.Star);
-				}
+				if (column != null && (string)column.Header == "Категория Уровень 1")
+					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
+
+				if(column != null && (string)column.Header == "Категория Уровень 2")
+					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
+
+				if (column != null && (string)column.Header == "Категория Уровень 3")
+					column.Width = new DataGridLength(450, DataGridLengthUnitType.Star);
+
 			}
 
 			DataGridColumn reasonColumn = dataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == "Причина");
 			if (reasonColumn != null)
 			{
-				reasonColumn.Width = 400;
+				reasonColumn.Width = 150;
 			}
 		}
 

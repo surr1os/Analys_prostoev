@@ -14,7 +14,7 @@ namespace Analys_prostoev
 		public List<Analysis> GetAnalysisList(string queryString, 
 												Xceed.Wpf.Toolkit.DateTimePicker startDateTime,
 												Xceed.Wpf.Toolkit.DateTimePicker endDateTime,
-												System.Windows.Controls.ComboBox selectComboBox)
+												System.Windows.Controls.ListBox selectedRegions) 
 		{
 			List<Analysis> analysisList = new List<Analysis>();
 
@@ -35,9 +35,9 @@ namespace Analys_prostoev
 					parameters[parameters.Count - 1].Value = endDateTime.Value;
 				}
 
-				if (selectComboBox.SelectedItem != null)
+				if (selectedRegions.SelectedItem != null)
 				{
-					string selectedRegion = selectComboBox.SelectedItem.ToString();
+					string selectedRegion = selectedRegions.SelectedItem.ToString();
 					parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
 					parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
 				}
@@ -131,7 +131,5 @@ namespace Analys_prostoev
 				worksheet.Cells[row, 10].Value = analysis.Shifts;
 			}
 		}
-
-		
 	}
 }

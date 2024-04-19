@@ -16,13 +16,25 @@
         <Setter Property="ScrollViewer.Background" Value="#F2F2F2"/>
         <Setter Property="IsReadOnly" Value="True"/>
     </Style>
+
+    <Style x:Key="ListBoxStyle" TargetType="ListBox">
+        <Setter Property="Background" Value="#F2F2F2"/>
+        <Setter Property="Foreground" Value="Black"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="FontFamily" Value="Brutal Type"/>
+    </Style>
+
+    <Style x:Name="ListBoxItemsStyle" TargetType="ListBoxItem">
+        <Setter Property="Margin" Value="2"/>
+        <Setter Property="Padding" Value="5"/>
+    </Style>
+
     <Style x:Key="DataGridHeaderStyle" TargetType="DataGridColumnHeader">
         <Setter Property="Background" Value="#F2F2F2"/>
         <Setter Property="Foreground" Value="Black"/>
         <Setter Property="Height" Value="30"/>
     </Style>
     
-
     <Style x:Key="TreeViewItemStyle" TargetType="TreeViewItem">
         <Setter Property="Foreground" Value="Black"/>
         <Setter Property="Background" Value="White"/>
