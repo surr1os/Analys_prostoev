@@ -14,12 +14,8 @@
 		<Setter Property="Background" Value="#333333"/>
 		<Setter Property="Foreground" Value="White"/>
 		<Setter Property="RowBackground" Value="#444447"/>
-		<Setter Property="AlternatingRowBackground" Value="#555557"/>
-		<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.Background" Value="#1E1E1E"/>
-		<Setter Property="IsReadOnly" Value="True"/>
+        <Setter Property="AlternatingRowBackground" Value="#555557"/>
+        <Setter Property="IsReadOnly" Value="True"/>
 	</Style>
 
 	<Style x:Key="ListBoxStyle" TargetType="ListBox">
@@ -27,6 +23,8 @@
         <Setter Property="Foreground" Value="LightGray"/>
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="FontFamily" Value="Brutal Type"/>
+        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
     </Style>
 
     <Style x:Name="ListBoxItemsStyle" TargetType="ListBoxItem">

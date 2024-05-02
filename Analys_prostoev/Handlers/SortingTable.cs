@@ -59,8 +59,8 @@ namespace Analys_prostoev
 				List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
 				RegionFilter(queryBuilder, parameters);
-				CategoryFilter(queryBuilder);
 				DateTimeFilter(queryBuilder, parameters);
+				CategoryFilter(queryBuilder, _selectedRow);
 
 				string conclusion = queryBuilder.ToString();
 				conclusion += " ORDER BY \"Id\" DESC";
@@ -73,7 +73,9 @@ namespace Analys_prostoev
 					DataTable dataTable = new DataTable();
 					adapter.Fill(dataTable);
 
+					_source.ItemsSource = null;
 					_source.ItemsSource = dataTable.DefaultView;
+					_source.Items.Refresh();
 
 					_columnsNames.SetNewColumnNames(_source);
 				}
@@ -130,18 +132,18 @@ namespace Analys_prostoev
 			}
 		}
 
-		private void CategoryFilter(StringBuilder queryBuilder)
+		private void CategoryFilter(StringBuilder queryBuilder, ComboBox selectedRow)
 		{
-			if (_selectedRow != null)
+			if (selectedRow != null && selectedRow.SelectedItem != null)
 			{
-				string rowSelect = _selectedRow.ToString();
+				string rowSelect = selectedRow.SelectedItem.ToString();
 				if (rowSelect == "Классифицированные строки")
 				{
-					queryBuilder.Append(" AND category_one IS NOT NULL AND category_one <> '' AND category_two IS NOT NULL AND category_two <> '' AND category_third IS NOT NULL AND category_third <> ''");
+					queryBuilder.Append(" AND category_one IS NOT NULL AND category_two IS NOT NULL AND category_third IS NOT NULL");
 				}
 				else if (rowSelect == "Неклассифицированные строки")
 				{
-					queryBuilder.Append(" AND category_one IS NULL AND category_two IS NULL AND category_third IS NULL");
+					queryBuilder.Append(" AND (category_one IS NULL OR category_two IS NULL OR category_third IS NULL)");
 				}
 			}
 		}

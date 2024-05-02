@@ -3,6 +3,7 @@ using Npgsql;
 using OfficeOpenXml;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 
@@ -11,39 +12,68 @@ namespace Analys_prostoev
 	public class ExportToExcel : IExportToExcel
 	{
 		#region Get
-		public List<Analysis> GetAnalysisList(string queryString, 
-												Xceed.Wpf.Toolkit.DateTimePicker startDateTime,
-												Xceed.Wpf.Toolkit.DateTimePicker endDateTime,
-												System.Windows.Controls.ListBox selectedRegions) 
+		public List<Analysis> GetAnalysisList(string queryString,
+									  Xceed.Wpf.Toolkit.DateTimePicker startDateTime,
+									  Xceed.Wpf.Toolkit.DateTimePicker endDateTime,
+									  System.Windows.Controls.ListBox selectedRegions,
+									  System.Windows.Controls.ComboBox selectedRow)
 		{
 			List<Analysis> analysisList = new List<Analysis>();
+
+			StringBuilder queryBuilder = new StringBuilder(queryString);
 
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
 				List<NpgsqlParameter> parameters = new List<NpgsqlParameter>();
 
-				if (startDateTime.Value != null)
+				if (!string.IsNullOrEmpty(startDateTime.Value.ToString()))
 				{
 					parameters.Add(new NpgsqlParameter("startDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
 					parameters[parameters.Count - 1].Value = startDateTime.Value;
+					queryBuilder.Append(" AND date_start >= @startDate");
 				}
 
-				if (endDateTime.Value != null)
+				if (!string.IsNullOrEmpty(endDateTime.Value.ToString()))
 				{
 					parameters.Add(new NpgsqlParameter("endDate", NpgsqlTypes.NpgsqlDbType.Timestamp));
 					parameters[parameters.Count - 1].Value = endDateTime.Value;
+					queryBuilder.Append(" AND date_finish <= @endDate");
 				}
 
-				if (selectedRegions.SelectedItem != null)
+				if (selectedRegions.SelectedItems != null && selectedRegions.SelectedItems.Count > 0)
 				{
-					string selectedRegion = selectedRegions.SelectedItem.ToString();
-					parameters.Add(new NpgsqlParameter("selectedRegionCurrent", selectedRegion));
-					parameters.Add(new NpgsqlParameter("selectedRegion", selectedRegion + " %"));
+					queryBuilder.Append(" AND (");
+					for (int i = 0; i < selectedRegions.SelectedItems.Count; i++)
+					{
+						string selectedRegion = selectedRegions.SelectedItems[i].ToString();
+						if (i > 0)
+							queryBuilder.Append(" OR ");
+
+						parameters.Add(new NpgsqlParameter("selectedRegion" + i, selectedRegion));
+						queryBuilder.Append("region ILIKE @selectedRegion" + i);
+					}
+					queryBuilder.Append(")");
 				}
-				ExecuteSQLAndFetchData(queryString, analysisList, connection, parameters);
+
+				if (selectedRow != null)
+				{
+					string rowSelect = selectedRow.SelectedItem.ToString();
+					if (rowSelect == "Классифицированные строки")
+					{
+						queryBuilder.Append(" AND category_one IS NOT NULL AND category_two IS NOT NULL AND category_third IS NOT NULL");
+					}
+					else if (rowSelect == "Неклассифицированные строки")
+					{
+						queryBuilder.Append(" AND (category_one IS NULL OR category_two IS NULL OR category_third IS NULL)");
+					}
+				}
+				queryBuilder.Append(" AND period >= 5"); // Добавляем условие для минимального периода
+
+				ExecuteSQLAndFetchData(queryBuilder.ToString(), analysisList, connection, parameters);
+
+				return analysisList;
 			}
-			return analysisList;
 		}
 		private static void GetHeaders(ExcelWorksheet worksheet)
 		{
@@ -102,7 +132,6 @@ namespace Analys_prostoev
 					FillData(analysisList, worksheet);
 					worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
 
-					// Сохранение файла Excel
 					FileInfo file = new FileInfo(fileName);
 					package.SaveAs(file);
 					System.Windows.MessageBox.Show("Экспорт завершён!", "Окончание работы", MessageBoxButton.OK);

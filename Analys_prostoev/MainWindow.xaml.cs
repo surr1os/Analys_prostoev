@@ -3,6 +3,8 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices.ComTypes;
+using System.Text;
 using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
@@ -48,8 +50,6 @@ namespace Analys_prostoev
 			Cancel_MenuItem.Visibility = Visibility.Collapsed;
 
 			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
-			ChangeTheme.Items.Add("Светлая тема");
-			ChangeTheme.Items.Add("Тёмная тема");
 			GetRegionName();
 			CreateSelectRowCB();
 		}
@@ -243,7 +243,9 @@ namespace Analys_prostoev
 
 		public void ExportToExcel(string queryString)
 		{
-			List<Analysis> analysisList = _excel.GetAnalysisList(queryString, startDatePicker, endDatePicker, RegionsLB);
+			StringBuilder queryBuilder = new StringBuilder("SELECT * FROM analysis WHERE 1=1");
+
+			List<Analysis> analysisList = _excel.GetAnalysisList(queryBuilder.ToString(), startDatePicker, endDatePicker, RegionsLB, selectRowComboBox);
 			_excel.CreateExcelFile(analysisList);
 		}
 
@@ -361,28 +363,26 @@ namespace Analys_prostoev
 			}
 		}
 
-		private void ChangeTheme_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		private void Button_Click(object sender, RoutedEventArgs e)
 		{
 			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
-			switch (ChangeTheme.SelectedIndex)
-			{
-				case 0:
-					var whiteUri = new Uri(@"Themes/WhiteTheme.xaml", UriKind.Relative);
-					ResourceDictionary whiteResource = Application.LoadComponent(whiteUri) as ResourceDictionary;
-					Application.Current.Resources.Clear();
-					Application.Current.Resources.MergedDictionaries.Add(whiteResource);
-					
-					sortingTable.GetSortTable();
-					break;
-				case 1:
-					var darkUri = new Uri(@"Themes/DarkTheme.xaml", UriKind.Relative);
-					ResourceDictionary darkResource = Application.LoadComponent(darkUri) as ResourceDictionary;
-					Application.Current.Resources.Clear();
-					Application.Current.Resources.MergedDictionaries.Add(darkResource);
+			var whiteUri = new Uri(@"Themes/WhiteTheme.xaml", UriKind.Relative);
+			ResourceDictionary whiteResource = Application.LoadComponent(whiteUri) as ResourceDictionary;
+			Application.Current.Resources.Clear();
+			Application.Current.Resources.MergedDictionaries.Add(whiteResource);
 
-					sortingTable.GetSortTable();
-					break;
-			}
+			sortingTable.GetSortTable();
+		}
+
+		private void Button_Click_1(object sender, RoutedEventArgs e)
+		{
+			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
+			var darkUri = new Uri(@"Themes/DarkTheme.xaml", UriKind.Relative);
+			ResourceDictionary darkResource = Application.LoadComponent(darkUri) as ResourceDictionary;
+			Application.Current.Resources.Clear();
+			Application.Current.Resources.MergedDictionaries.Add(darkResource);
+
+			sortingTable.GetSortTable();
 		}
 	}
 }

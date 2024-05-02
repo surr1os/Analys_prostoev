@@ -84,17 +84,31 @@
             </DataGrid.ContextMenu>
         </DataGrid>
 
-        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,12,10" Grid.Row="1" Background="#FFF046" Height="57" VerticalAlignment="Bottom">
-            <ComboBox x:Name="ChangeTheme" 
-				SelectionChanged="ChangeTheme_SelectionChanged" BorderBrush="#FF131010" Margin="1323,0,9,0" Height="36" VerticalAlignment="Center"/>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,17,10" Grid.Row="1" Background="#FFF046" Height="57" VerticalAlignment="Bottom">
+
         </Border>
+        <Button Margin="0,0,31,18" Background="#FF333333" Grid.Row="1" Click="Button_Click_1" HorizontalAlignment="Right" Width="40" Height="40" VerticalAlignment="Bottom">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Ellipse Fill="#FF333333" Stroke="#FF1E1E1E" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
+
+        <Button Margin="0,0,79,18" Background="#FFEAEAEA" Content="" Grid.Row="1" Click="Button_Click" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40">
+            <Button.Template>
+                <ControlTemplate TargetType="Button">
+                    <Ellipse Fill="#FFEAEAEA" Stroke="#FFACACAC" />
+                </ControlTemplate>
+            </Button.Template>
+        </Button>
 
         <ListBox Style="{DynamicResource ListBoxStyle}" x:Name="RegionsLB" 
                  SelectionMode="Multiple"
                  Margin="10,10,0,72" Grid.Row="1" 
                  HorizontalAlignment="Left" Width="172">
         </ListBox>
-        <Image Height="60" Margin="0,13,22,2" Source="/cyberkot.png" HorizontalAlignment="Right" Width="111"/>
+        <Image Margin="0,19,17,2" Source="/cyberkot.png" HorizontalAlignment="Right" Width="138" Stretch="Fill"/>
 
     </Grid>
 </Window>

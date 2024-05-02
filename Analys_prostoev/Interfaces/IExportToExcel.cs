@@ -7,7 +7,11 @@ namespace Analys_prostoev
 {
 	public interface IExportToExcel
 	{
-		List<Analysis> GetAnalysisList(string queryString, DateTimePicker startDateTime, DateTimePicker endDateTime, ListBox selectedRegions);
+		List<Analysis> GetAnalysisList(string queryString, 
+			DateTimePicker startDateTime, 
+			DateTimePicker endDateTime, 
+			ListBox selectedRegions,
+			ComboBox selectedRow);
 		void CreateExcelFile(List<Analysis> analysisList);
 	}
 }
