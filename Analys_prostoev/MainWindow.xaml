@@ -7,7 +7,7 @@
 		xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
 		mc:Ignorable="d"
 		Style="{DynamicResource WindowStyle}"
-		Title="Анализ простоев" Height="802" Width="1577" MinWidth="1500" MinHeight="800" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type" WindowState="Maximized">
+		Title="Анализ простоев" Height="802" Width="1577" MinWidth="1000" WindowStartupLocation="CenterScreen" FontFamily="Brutal Type" WindowState="Maximized">
 
     <Window.Resources>
 
@@ -21,57 +21,63 @@
             <ColumnDefinition Width="35*"/>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="25*"/>
-            <RowDefinition Height="237*"/>
+            <RowDefinition Height="73*"/>
+            <RowDefinition Height="713*"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Orientation="Horizontal" Height="66" VerticalAlignment="Center" HorizontalAlignment="Left" Width="1250" Margin="10,0,0,0">
-            <StackPanel Margin="20,0,0,0" Width="222">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-                <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" MaxWidth="210" MaxHeight="30" MinWidth="210" MinHeight="30" Margin="5"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-                <xctk:DateTimePicker x:Name="endDatePicker" MinWidth="200" MinHeight="30" MaxWidth="200" MaxHeight="30" Margin="5"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0">
-                <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-                <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" MinWidth="230" MinHeight="30" MaxWidth="230" MaxHeight="30" IsEditable="True"
-			IsReadOnly="True" Text="Все строки" Margin="5" Background="White"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom" Width="103">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="GetTable" MaxWidth="252" MaxHeight="44" Margin="5" Width="92" Height="30"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0" Height="40" VerticalAlignment="Bottom" Width="136">
-                <Button FontFamily="Brutal Type" Background="#FFF046" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Margin="5" Width="126" Height="30"/>
-            </StackPanel>
-            <StackPanel Margin="20,0,0,0" Height="35" VerticalAlignment="Bottom" Width="30">
-                <Button x:Name="toggleButton" Width="30" Height="30" BorderBrush="{x:Null}" Click="toggle_Click" Background="{x:Null}">
-                    <DynamicResource ResourceKey="Play"/>
-                    <Button.ToolTip>
-                        <ToolTip>
-                            <StackPanel>
-                                <TextBlock>Автоматически загружает таблицу.</TextBlock>
-                                <TextBlock>Изначальное значение: раз в 5 минут.</TextBlock>
-                            </StackPanel>
-                        </ToolTip>
-                    </Button.ToolTip>
-                </Button>
-            </StackPanel>
 
-            <StackPanel Margin="20,0,0,0" Height="64" VerticalAlignment="Bottom" Width="145">
-                <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="30" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
-                <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="144" Height="30" FontFamily="Brutal Type">
-                    <ComboBoxItem Content="5 минут"/>
-                    <ComboBoxItem Content="10 минут"/>
-                    <ComboBoxItem Content="15 минут"/>
-                    <ComboBoxItem Content="30 минут"/>
-                    <ComboBoxItem Content="1 час"/>
-                </ComboBox>
-            </StackPanel>
+        <StackPanel  Width="184" Margin="10,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="5" Width="169" Height="35"/>
+        </StackPanel>
+        <StackPanel Width="184" Margin="199,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Margin="5" Width="174" Height="32"/>
+        </StackPanel>
+        <StackPanel  Width="228" Margin="383,11,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
+            <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" IsEditable="True"
+			IsReadOnly="True" Text="Все строки" Margin="5" Background="White" Width="217" Height="32" RenderTransformOrigin="0.5,0.5">
+                <ComboBox.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform/>
+                        <SkewTransform AngleX="-0.387"/>
+                        <RotateTransform/>
+                        <TranslateTransform X="-0.118"/>
+                    </TransformGroup>
+                </ComboBox.RenderTransform>
+            </ComboBox>
         </StackPanel>
 
-        <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="DataGridTable" Margin="187,10,17,72" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
+        <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="GetTable" Margin="629,38,0,0" Width="92" Height="35" VerticalAlignment="Top" HorizontalAlignment="Left"/>
+
+
+
+        <Button x:Name="toggleButton" Width="30" BorderBrush="{x:Null}" Click="toggle_Click" Background="{x:Null}" Content="{DynamicResource Play}" Margin="735,40,0,0" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top">
+            <Button.ToolTip>
+                <ToolTip>
+                    <StackPanel>
+                        <TextBlock><Run Text="Автоматически загружает таблицу."/></TextBlock>
+                        <TextBlock><Run Text="Изначальное значение: раз в 5 минут."/></TextBlock>
+                    </StackPanel>
+                </ToolTip>
+            </Button.ToolTip>
+        </Button>
+
+
+        <StackPanel Margin="765,9,0,0" Height="62" HorizontalAlignment="Left" Width="126" VerticalAlignment="Top">
+            <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.484,0.318"/>
+            <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="114" Height="32" FontFamily="Brutal Type">
+                <ComboBoxItem Content="5 минут"/>
+                <ComboBoxItem Content="10 минут"/>
+                <ComboBoxItem Content="15 минут"/>
+                <ComboBoxItem Content="30 минут"/>
+                <ComboBoxItem Content="1 час"/>
+            </ComboBox>
+        </StackPanel>
+
+
+        <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="DataGridTable" Margin="145,10,10,63" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
 			 MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" FontFamily="Brutal Type" Grid.Row="1">
             <DataGrid.ContextMenu>
                 <ContextMenu>
@@ -84,10 +90,11 @@
             </DataGrid.ContextMenu>
         </DataGrid>
 
-        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,17,10" Grid.Row="1" Background="#FFF046" Height="57" VerticalAlignment="Bottom">
-
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,0,10,10" Grid.Row="1" Background="#FFF046" Height="48" VerticalAlignment="Bottom">
+            <Button FontFamily="Brutal Type" Background="#FFABADB3" Content="Выгрузить в Excel" Click="Button_Click_Excel" MaxWidth="252" MaxHeight="44" Width="126" Height="30" Margin="9,8,0,8" HorizontalAlignment="Left" HorizontalContentAlignment="Center" Foreground="#FF1E1E1E"/>
         </Border>
-        <Button Margin="0,0,31,18" Background="#FF333333" Grid.Row="1" Click="Button_Click_1" HorizontalAlignment="Right" Width="40" Height="40" VerticalAlignment="Bottom">
+        <Label  FontFamily="Brutal Type" Content="Сменить тему:" Margin="0,0,106,21" Grid.Row="1" HorizontalContentAlignment="Center" FontWeight="Bold" Height="25" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="104"/>
+        <Button Margin="0,0,26,16" Background="#FF333333" Grid.Row="1" Click="DarkThemeButton_Click" HorizontalAlignment="Right" Width="35" Height="35" VerticalAlignment="Bottom">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Ellipse Fill="#FF333333" Stroke="#FF1E1E1E" />
@@ -95,7 +102,7 @@
             </Button.Template>
         </Button>
 
-        <Button Margin="0,0,79,18" Background="#FFEAEAEA" Content="" Grid.Row="1" Click="Button_Click" Height="40" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40">
+        <Button Margin="0,0,66,16" Background="#FFEAEAEA" Content="" Grid.Row="1" Click="WhiteThemeButton_Click" Height="35" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="35">
             <Button.Template>
                 <ControlTemplate TargetType="Button">
                     <Ellipse Fill="#FFEAEAEA" Stroke="#FFACACAC" />
@@ -105,10 +112,10 @@
 
         <ListBox Style="{DynamicResource ListBoxStyle}" x:Name="RegionsLB" 
                  SelectionMode="Multiple"
-                 Margin="10,10,0,72" Grid.Row="1" 
-                 HorizontalAlignment="Left" Width="172">
+                 Margin="10,10,0,63" Grid.Row="1" 
+                 HorizontalAlignment="Left" Width="130">
         </ListBox>
-        <Image Margin="0,19,17,2" Source="/cyberkot.png" HorizontalAlignment="Right" Width="138" Stretch="Fill"/>
+        <Image Margin="0,30,10,0" x:Name="Logo" Source="/cyberkot.png" HorizontalAlignment="Right" Width="73" Stretch="Fill" Height="43" VerticalAlignment="Top"/>
 
     </Grid>
 </Window>

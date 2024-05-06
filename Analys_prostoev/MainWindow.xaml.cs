@@ -363,7 +363,7 @@ namespace Analys_prostoev
 			}
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void WhiteThemeButton_Click(object sender, RoutedEventArgs e)
 		{
 			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			var whiteUri = new Uri(@"Themes/WhiteTheme.xaml", UriKind.Relative);
@@ -374,7 +374,7 @@ namespace Analys_prostoev
 			sortingTable.GetSortTable();
 		}
 
-		private void Button_Click_1(object sender, RoutedEventArgs e)
+		private void DarkThemeButton_Click(object sender, RoutedEventArgs e)
 		{
 			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			var darkUri = new Uri(@"Themes/DarkTheme.xaml", UriKind.Relative);
