@@ -31,7 +31,12 @@ namespace Analys_prostoev
                     {
                         while (reader.Read())
                         {
-                            CB_Region.Items.Add(reader["region"].ToString());
+                            if (reader["region"] != null 
+                                && reader["region"].ToString() != "ХПТ" 
+                                && reader["region"].ToString() != "ХПТР")
+                            {
+                                CB_Region.Items.Add(reader["region"].ToString());
+                            }
                         }
                     }
                 }

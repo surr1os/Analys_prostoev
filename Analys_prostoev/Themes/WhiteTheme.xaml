@@ -56,12 +56,17 @@
             <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesSecond}">
                 <TextBlock Text="{Binding SubcategoryOneName}" Margin="5"/>
                 <HierarchicalDataTemplate.ItemTemplate>
-                    <DataTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesThird}">
                         <TextBlock Text="{Binding SubcategorySecondName}" Margin="5"/>
-                    </DataTemplate>
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SubcategoryThirdName}" Margin="5"/>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                    </HierarchicalDataTemplate>
                 </HierarchicalDataTemplate.ItemTemplate>
             </HierarchicalDataTemplate>
         </HierarchicalDataTemplate.ItemTemplate>
     </HierarchicalDataTemplate>
-    
+
 </ResourceDictionary>

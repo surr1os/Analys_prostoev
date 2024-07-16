@@ -13,7 +13,7 @@
                 HorizontalAlignment="Center" 
                 Margin="0,18,0,0" 
                 Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" >
-            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Margin="10,0,10,0" x:Name="info" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            <Label FontFamily="Brutal Type" Margin="10,0,10,0" x:Name="info" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
         </Border>
 
         <Canvas HorizontalAlignment="Center" Height="278" VerticalAlignment="Top" Width="338" Margin="0,59,0,0">

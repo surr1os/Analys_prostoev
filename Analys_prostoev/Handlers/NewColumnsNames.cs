@@ -20,9 +20,10 @@ namespace Analys_prostoev
 			Dictionary<string, string> columnHeaders = new Dictionary<string, string>
 			{
 				{ "Id", "Номер" },
-				{ "category_one", "Категория Уровень 1" },
-				{ "category_two", "Категория Уровень 2" },
-				{ "category_third", "Категория Уровень 3" },
+				{ "category_one", "Категория ур. 1" },
+				{ "category_two", "Категория ур. 2" },
+				{ "category_third", "Категория ур. 3" },
+				{ "category_fourth", "Категория ур. 4" },
 				{ "reason", "Причина" },
 				{ "date_start", "Дата Начала" },
 				{ "date_finish", "Дата Финиша" },
@@ -98,18 +99,21 @@ namespace Analys_prostoev
 				}
 			}
 
-			string[] headers = new string[3] { "Категория Уровень 1", "Категория Уровень 2", "Категория Уровень 3" };
+			string[] headers = { "Категория ур. 1", "Категория ур. 2", "Категория ур. 3", "Категория ур. 4" };
 			foreach (var header in headers)
 			{
 				DataGridColumn column = dataGrid.Columns.FirstOrDefault(c => c.Header.ToString() == header);
-				if (column != null && (string)column.Header == "Категория Уровень 1")
+				if (column != null && (string)column.Header == headers[0])
 					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
 
-				if(column != null && (string)column.Header == "Категория Уровень 2")
+				if (column != null && (string)column.Header == headers[1])
 					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
 
-				if (column != null && (string)column.Header == "Категория Уровень 3")
-					column.Width = new DataGridLength(450, DataGridLengthUnitType.Star);
+				if (column != null && (string)column.Header == headers[2])
+					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
+
+				if (column != null && (string)column.Header == headers[3])
+					column.Width = new DataGridLength(225, DataGridLengthUnitType.Star);
 
 			}
 

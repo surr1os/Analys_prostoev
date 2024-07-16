@@ -16,7 +16,7 @@
 		<Setter Property="RowBackground" Value="#444447"/>
         <Setter Property="AlternatingRowBackground" Value="#555557"/>
         <Setter Property="IsReadOnly" Value="True"/>
-	</Style>
+    </Style>
 
 	<Style x:Key="ListBoxStyle" TargetType="ListBox">
 		<Setter Property="Background" Value="#FF1E1E1E"/>
@@ -51,20 +51,26 @@
 		<Setter Property="BorderBrush" Value="Transparent"/>
 		<Setter Property="BorderThickness" Value="1"/>
 		<Setter Property="Padding" Value="5"/>
-	</Style>
+    </Style>
 
-	<HierarchicalDataTemplate x:Key="TreeViewItemTemplate" ItemsSource="{Binding SubcategoriesOne}">
-		<TextBlock Text="{Binding CategoryName}" />
-		<HierarchicalDataTemplate.ItemTemplate>
-			<HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesSecond}">
-				<TextBlock Text="{Binding SubcategoryOneName}" Margin="5"/>
-				<HierarchicalDataTemplate.ItemTemplate>
-					<DataTemplate>
-						<TextBlock Text="{Binding SubcategorySecondName}" Margin="5"/>
-					</DataTemplate>
-				</HierarchicalDataTemplate.ItemTemplate>
-			</HierarchicalDataTemplate>
-		</HierarchicalDataTemplate.ItemTemplate>
-	</HierarchicalDataTemplate>
+
+    <HierarchicalDataTemplate x:Key="TreeViewItemTemplate" ItemsSource="{Binding SubcategoriesOne}">
+        <TextBlock Text="{Binding CategoryName}" />
+        <HierarchicalDataTemplate.ItemTemplate>
+            <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesSecond}">
+                <TextBlock Text="{Binding SubcategoryOneName}" Margin="5"/>
+                <HierarchicalDataTemplate.ItemTemplate>
+                    <HierarchicalDataTemplate ItemsSource="{Binding SubcategoriesThird}">
+                        <TextBlock Text="{Binding SubcategorySecondName}" Margin="5"/>
+                        <HierarchicalDataTemplate.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding SubcategoryThirdName}" Margin="5"/>
+                            </DataTemplate>
+                        </HierarchicalDataTemplate.ItemTemplate>
+                    </HierarchicalDataTemplate>
+                </HierarchicalDataTemplate.ItemTemplate>
+            </HierarchicalDataTemplate>
+        </HierarchicalDataTemplate.ItemTemplate>
+    </HierarchicalDataTemplate>
 
 </ResourceDictionary>

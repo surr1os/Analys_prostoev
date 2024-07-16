@@ -3,7 +3,6 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -31,7 +30,7 @@ namespace Analys_prostoev
 		INewColumnsNames _columnsNames;
 		ICancelMenuItemHendler _cancelMenuItemHendler;
 		#endregion
-		
+
 		#endregion
 
 		public MainWindow()
@@ -40,7 +39,7 @@ namespace Analys_prostoev
 			_excel = new ExportToExcel();
 			_columnsNames = new NewColumnsNames();
 			_cancelMenuItemHendler = new CanselMenuItemHehdler();
-			
+
 		}
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -120,7 +119,7 @@ namespace Analys_prostoev
 		private void CreateMenuItem_Click(object sender, RoutedEventArgs e)
 		{
 			CreateTimeDown create = new CreateTimeDown();
-			create.Show();
+			create.ShowDialog();
 		}
 
 		private void ChangeHistoryItem_Click(object sender, RoutedEventArgs e)
@@ -135,7 +134,7 @@ namespace Analys_prostoev
 			{
 				ChangeHistory history = new ChangeHistory(Convert.ToInt32(item.Row.ItemArray[6]),
 							   Convert.ToString(item.Row.ItemArray[5]), Convert.ToInt64(item.Row.ItemArray[0]));
-				history.Show();
+				history.ShowDialog();
 			}
 		}
 
@@ -153,7 +152,7 @@ namespace Analys_prostoev
 							   Convert.ToDateTime(item.Row.ItemArray[2]), Convert.ToInt32(item.Row.ItemArray[6]),
 							   Convert.ToString(item.Row.ItemArray[5]), Convert.ToString(item.Row.ItemArray[4]), Convert.ToString(item.Row.ItemArray[3]));
 
-				change.Show();
+				change.ShowDialog();
 			}
 		}
 
@@ -180,7 +179,7 @@ namespace Analys_prostoev
 			{
 				var columnValue = column.Header.ToString();
 
-				if (columnValue == "Категория Уровень 1" || columnValue == "Категория Уровень 2" || columnValue == "Категория Уровень 3" || columnValue == "Причина")
+				if (columnValue == "Категория ур. 1" || columnValue == "Категория ур. 2" || columnValue == "Категория ур. 3" || columnValue == "Категория ур. 4" || columnValue == "Причина")
 				{
 					DataRowView rowView = (DataRowView)cellInfo.Item;
 					long id = Convert.ToInt64(rowView["Id"]);
@@ -189,21 +188,23 @@ namespace Analys_prostoev
 					string categoryOneValue = rowView["category_one"].ToString();
 					string categoryTwoValue = rowView["category_two"].ToString();
 					string categoryThirdValue = rowView["category_third"].ToString();
+					string categoryFourthValue = rowView["category_fourth"].ToString();
 
-					var newWindow = new CategoryHierarchy(regionValue, id, categoryOneValue, categoryTwoValue, categoryThirdValue);
+					var newWindow = new CategoryHierarchy(regionValue, id, categoryOneValue, categoryTwoValue, categoryThirdValue, categoryFourthValue);
 					newWindow.ParentWindow = this;
-					newWindow.Show();
+					newWindow.ShowDialog();
 
 					newWindow.categoryOneTextB.Text = categoryOneValue;
 					newWindow.categoryTwoTextB.Text = categoryTwoValue;
 					newWindow.categoryThirdTextB.Text = categoryThirdValue;
+					newWindow.categoryFourthTextB.Text = categoryFourthValue;
 					newWindow.reasonTextB.Text = reason;
 
 				}
 			}
 		}
 
-		public void UpdateSelectedRowValues(string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
+		public void UpdateSelectedRowValues(string categoryFourthValue, string categoryOneValue, string categoryTwoValue, string categoryThirdValue, string reasonValue)
 		{
 			DataRowView selectedItem = DataGridTable.SelectedItem as DataRowView;
 			if (selectedItem != null)
@@ -212,6 +213,7 @@ namespace Analys_prostoev
 				selectedItem["category_one"] = categoryOneValue;
 				selectedItem["category_two"] = categoryTwoValue;
 				selectedItem["category_third"] = categoryThirdValue;
+				selectedItem["category_fourth"] = categoryFourthValue;
 				selectedItem["reason"] = reasonValue;
 
 				using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
@@ -222,6 +224,8 @@ namespace Analys_prostoev
 						updateCommand.Parameters.AddWithValue("categoryOne", categoryOneValue);
 						updateCommand.Parameters.AddWithValue("categoryTwo", categoryTwoValue);
 						updateCommand.Parameters.AddWithValue("categoryThird", categoryThirdValue);
+						updateCommand.Parameters.AddWithValue("categoryFourth", categoryFourthValue);
+
 						updateCommand.Parameters.AddWithValue("reason_new", reasonValue);
 
 						long id = Convert.ToInt64(selectedItem["Id"]);
@@ -271,7 +275,7 @@ namespace Analys_prostoev
 				var categoryOne = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
 				var categoryTwo = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (string)item.Row.ItemArray[9] : null;
 				var categoryThird = item.Row.ItemArray.Length > 10 && item.Row.ItemArray[10] != DBNull.Value ? (string)item.Row.ItemArray[10] : null;
-				var manual = item.Row.ItemArray.Length > 13 && item.Row.ItemArray[13] != DBNull.Value ? (bool)item.Row.ItemArray[13] : (bool?)null;
+				var manual = item.Row.ItemArray.Length > 14 && item.Row.ItemArray[14] != DBNull.Value ? (bool)item.Row.ItemArray[14] : (bool?)null;
 
 				if (categoryOne == null || categoryTwo == null || categoryThird == null)
 				{
@@ -342,7 +346,8 @@ namespace Analys_prostoev
 		{
 			while (isThreadRunning)
 			{
-				Dispatcher.Invoke(()=>{
+				Dispatcher.Invoke(() =>
+				{
 					SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 					sortingTable.GetSortTable();
 				});

@@ -7,6 +7,7 @@ namespace Analys_prostoev
         public class SubcategoryOne
         {
             public string SubcategoryOneName { get; set; }
+
             public List<SubcategorySecond> SubcategoriesSecond { get; set; }
         }
     }

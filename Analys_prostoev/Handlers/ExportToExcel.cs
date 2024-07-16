@@ -58,7 +58,7 @@ namespace Analys_prostoev
 
 				if (selectedRow != null)
 				{
-					string rowSelect = selectedRow.SelectedItem.ToString();
+					string rowSelect = selectedRow.Text;
 					if (rowSelect == "Классифицированные строки")
 					{
 						queryBuilder.Append(" AND category_one IS NOT NULL AND category_two IS NOT NULL AND category_third IS NOT NULL");
@@ -77,7 +77,7 @@ namespace Analys_prostoev
 		}
 		private static void GetHeaders(ExcelWorksheet worksheet)
 		{
-			string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур", "Причина", "Смена" };
+			string[] headers = { "ID", "Дата начала", "Дата окончания", "Период", "Участок", "Категория 1 ур", "Категория 2 ур", "Категория 3 ур", "Категория 4 ур", "Причина", "Смена" };
 			for (int i = 0; i < headers.Length; i++)
 			{
 				worksheet.Cells[1, i + 1].Value = headers[i];
@@ -104,6 +104,7 @@ namespace Analys_prostoev
 							CategoryOne = reader.IsDBNull(reader.GetOrdinal("category_one")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_one")),
 							CategoryTwo = reader.IsDBNull(reader.GetOrdinal("category_two")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_two")),
 							CategoryThird = reader.IsDBNull(reader.GetOrdinal("category_third")) ? string.Empty : reader.GetString(reader.GetOrdinal("category_third")),
+							CategoryFourth = reader.IsDBNull(reader.GetOrdinal("category_fourth")) ? string.Empty: reader.GetString(reader.GetOrdinal("category_fourth")),
 							Reason = reader.IsDBNull(reader.GetOrdinal("reason")) ? string.Empty : reader.GetString(reader.GetOrdinal("reason")),
 							Shifts = reader.IsDBNull(reader.GetOrdinal("shifts")) ? string.Empty : reader.GetString(reader.GetOrdinal("shifts"))
 						};
@@ -156,8 +157,9 @@ namespace Analys_prostoev
 				worksheet.Cells[row, 6].Value = analysis.CategoryOne;
 				worksheet.Cells[row, 7].Value = analysis.CategoryTwo;
 				worksheet.Cells[row, 8].Value = analysis.CategoryThird;
-				worksheet.Cells[row, 9].Value = analysis.Reason;
-				worksheet.Cells[row, 10].Value = analysis.Shifts;
+				worksheet.Cells[row, 9].Value = analysis.CategoryFourth;
+				worksheet.Cells[row, 10].Value = analysis.Reason;
+				worksheet.Cells[row, 11].Value = analysis.Shifts;
 			}
 		}
 	}

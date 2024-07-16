@@ -51,8 +51,11 @@ namespace Analys_prostoev
 			{
 				connection.Open();
 
+				//StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
+				//	" category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
+
 				StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
-					" category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
+					" category_one, category_two, category_third, category_fourth, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
 
 				string original = queryBuilder.ToString();
 
