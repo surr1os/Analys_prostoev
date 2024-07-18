@@ -250,6 +250,9 @@
     <Compile Include="Data\Analysis.cs" />
     <Compile Include="Data\CompletedShifts.cs" />
     <Compile Include="Handlers\SortingTable.cs" />
+    <Compile Include="CreateCategory.xaml.cs">
+      <DependentUpon>CreateCategory.xaml</DependentUpon>
+    </Compile>
     <Page Include="ChangeHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -290,6 +293,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\WhiteTheme.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CreateCategory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

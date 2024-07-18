@@ -37,15 +37,7 @@
         <StackPanel  Width="228" Margin="383,11,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
             <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" IsEditable="True"
-			IsReadOnly="True" Text="Все строки" Margin="5" Background="White" Width="217" Height="32" RenderTransformOrigin="0.5,0.5">
-                <ComboBox.RenderTransform>
-                    <TransformGroup>
-                        <ScaleTransform/>
-                        <SkewTransform AngleX="-0.387"/>
-                        <RotateTransform/>
-                        <TranslateTransform X="-0.118"/>
-                    </TransformGroup>
-                </ComboBox.RenderTransform>
+			IsReadOnly="True" Text="Все строки" Margin="5" Background="White" Width="217" Height="32">
             </ComboBox>
         </StackPanel>
 
