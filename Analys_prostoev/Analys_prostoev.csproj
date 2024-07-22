@@ -221,6 +221,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CheckServerOperation.cs" />
     <Compile Include="Data\SubcategoryThird.cs" />
     <Compile Include="Handlers\CancelMenuItemHehdler.cs" />
     <Compile Include="Data\Category.cs" />

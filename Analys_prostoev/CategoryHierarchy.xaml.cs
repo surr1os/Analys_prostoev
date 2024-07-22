@@ -167,22 +167,22 @@ namespace Analys_prostoev
 				if (regionValue.StartsWith("ХПТР"))
 				{
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name" +
-						" FROM subcategory_scnd_hptr WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL";
+						" FROM subcategory_scnd_hptr WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
 				}
 				else if (regionValue.StartsWith("ХПТ "))
 				{
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name " +
-						"FROM subcategory_scnd_hpt WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL";
+						"FROM subcategory_scnd_hpt WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
 				}
 				else if (regionValue.StartsWith("HPT_1045") && !regionValue.EndsWith("4514"))
 				{
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name " +
-						"FROM subcategory_scnd_hpt_1045 WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL";
+						"FROM subcategory_scnd_hpt_1045 WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
 				}
 				else
 				{
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name " +
-						"FROM subcategory_scnd_hpt_104514 WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL";
+						"FROM subcategory_scnd_hpt_104514 WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
 				}
 
 				using (NpgsqlCommand subcategorySecondCommand = new NpgsqlCommand(subcategorySecondQuery, connection))
@@ -227,25 +227,25 @@ namespace Analys_prostoev
 				{
 					subcategoryThirdQuery = "SELECT subcategory_third_name" +
 						" FROM subcategory_third_hptr WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
-						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL";
+						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL and is_removed = false";
 				}
 				else if (regionValue.StartsWith("ХПТ "))
 				{
 					subcategoryThirdQuery = "SELECT subcategory_third_name " +
 						"FROM subcategory_third_hpt WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
-						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL";
+						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL and is_removed = false";
 				}
 				else if (regionValue.StartsWith("HPT_1045") && !regionValue.EndsWith("4514"))
 				{
 					subcategoryThirdQuery = "SELECT subcategory_third_name " +
 						"FROM subcategory_third_hpt_1045 WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
-						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL";
+						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL and is_removed = false";
 				}
 				else
 				{
 					subcategoryThirdQuery = "SELECT subcategory_third_name " +
 						"FROM subcategory_third_hpt_104514 WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
-						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL";
+						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL and is_removed = false";
 				}
 
 				using (NpgsqlCommand subcategoryThirdCommand = new NpgsqlCommand(subcategoryThirdQuery, connection))
@@ -388,7 +388,14 @@ namespace Analys_prostoev
 
 			}
 		}
-	}
+
+		private void CreateNewCategory_Click(object sender, RoutedEventArgs e)
+		{
+			CreateCategory createCategory = new CreateCategory();
+			createCategory.ShowDialog();
+			Close();
+		}
+    }
 }
 
 

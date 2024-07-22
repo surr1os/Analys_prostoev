@@ -13,7 +13,13 @@
         </Grid.ColumnDefinitions>
         <TreeView Style="{DynamicResource TreeViewStyle}" FontSize="14" x:Name="TreeViewCategories" SelectedItemChanged="TreeViewCategories_SelectedItemChanged" FontFamily="Brutal Type"
           ItemContainerStyle="{StaticResource TreeViewItemStyle}"
-          ItemTemplate="{StaticResource TreeViewItemTemplate}" Margin="0,0,10,0"/>
+          ItemTemplate="{StaticResource TreeViewItemTemplate}" Margin="0,0,10,0">
+            <TreeView.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="CreateNewCategory" Header="Добавить новую категорию" FontFamily="Brutal Type" Click="CreateNewCategory_Click"/>
+                </ContextMenu>
+            </TreeView.ContextMenu>
+        </TreeView>
 
         <TextBox FontFamily="Brutal Type" Name="categoryOneTextB" TextWrapping="Wrap" Text="" Margin="136,0,0,318" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" IsReadOnly="True" Grid.Column="1" HorizontalAlignment="Left" Width="270" Height="40" VerticalAlignment="Bottom"/>
         <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Уровень 1" Margin="54,0,0,318" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Column="1" HorizontalAlignment="Left" Width="77" Height="40" VerticalAlignment="Bottom"/>

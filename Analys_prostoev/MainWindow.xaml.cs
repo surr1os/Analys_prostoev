@@ -44,6 +44,11 @@ namespace Analys_prostoev
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			if (CheckServerOperation.PingHost())
+			{
+				MessageBox.Show("Проблема в работе сервера, данные в программе могут быть не актуальны.\nЗа решением проблемы обращайтесь к Кожанову Р.М.\n", "Info");
+			}
+
 			Edit_MenuItem.Visibility = Visibility.Collapsed;
 			Delete_MenuItem.Visibility = Visibility.Collapsed;
 			Cancel_MenuItem.Visibility = Visibility.Collapsed;
@@ -388,6 +393,13 @@ namespace Analys_prostoev
 			Application.Current.Resources.MergedDictionaries.Add(darkResource);
 
 			sortingTable.GetSortTable();
+		}
+
+		private void Button_Click(object sender, RoutedEventArgs e)
+		{
+			CreateCategory createCategory = new CreateCategory();
+
+			createCategory.ShowDialog();
 		}
 	}
 }
