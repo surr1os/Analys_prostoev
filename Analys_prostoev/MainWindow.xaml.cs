@@ -44,7 +44,7 @@ namespace Analys_prostoev
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
-			if (CheckServerOperation.PingHost())
+			if (!CheckServerOperation.PingHost())
 			{
 				MessageBox.Show("Проблема в работе сервера, данные в программе могут быть не актуальны.\nЗа решением проблемы обращайтесь к Кожанову Р.М.\n", "Info");
 			}
