@@ -14,6 +14,9 @@ namespace Analys_prostoev
 
 		#region Boolean
 		private bool not_changed { get; set; }
+
+		private bool existsThirdCategory { get; set; }
+
 		#endregion
 
 		#region String
@@ -27,8 +30,10 @@ namespace Analys_prostoev
 		private string nameFourthCategoriesTable { get; set; }
 
 		private string createNewCategoryThird { get; set; }
+		private string createNewCategoryFourth { get; set; }
 
 		private string selectedCategoryThird { get; set; }
+		private string selectedCategoryFourth { get; set; }
 		#endregion
 
 		#endregion
@@ -40,6 +45,8 @@ namespace Analys_prostoev
 
 		private void Window_Loaded(object sender, RoutedEventArgs e)
 		{
+			CategotyFourthTB.IsEnabled = false;
+
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
@@ -48,6 +55,8 @@ namespace Analys_prostoev
 				GetCategoriesOne(connection);
 			}
 		}
+
+		#region Tree Logic
 
 		private void AddRegionsType()
 		{
@@ -142,6 +151,8 @@ namespace Analys_prostoev
 		/// </summary>
 		private void categoryThirdLB_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
+			CategotyFourthTB.IsEnabled = true;
+
 			categoryFourthLB.Items.Clear();
 			categoryFourthLB.SelectedItem = null;
 
@@ -158,6 +169,8 @@ namespace Analys_prostoev
 				connection.Open();
 				AddCategoryOne(connection, selectCategoryFourth, categoryFourthLB);
 			}
+
+			CategoryThirdTB.Text = (string)categoryThirdLB.SelectedItem;
 		}
 
 		private void AddCategoryOne(NpgsqlConnection connection, string command, ComboBox currentComboBox)
@@ -208,6 +221,8 @@ namespace Analys_prostoev
 		{
 			categoryThirdLB.Items.Clear();
 			categoryFourthLB.Items.Clear();
+			CategoryThirdTB.Clear();
+			CategotyFourthTB.Clear();
 
 			currentRegionsType = (string)regionsType.SelectedItem;
 		}
@@ -279,12 +294,17 @@ namespace Analys_prostoev
 			}
 		}
 
+		#endregion
+
+		#region Create
+
 		private void CreateThird_Click(object sender, RoutedEventArgs e)
 		{
-			if (string.IsNullOrEmpty(CategoryThirdTB.Text) || CategoryThirdTB.Text == "" ||
+			if (string.IsNullOrEmpty(CategoryThirdTB.Text) ||
 				categoryTwoLB.SelectedItem == null || categoryOneLB.SelectedItem == null ||
 				categoryTwoCB.SelectedItem == null || categoryOneCB.SelectedItem == null)
 			{
+				MessageBox.Show("Вы не заполнили одну и категорий!", "info");
 				return;
 			}
 
@@ -312,6 +332,70 @@ namespace Analys_prostoev
 			categoryTwoLB.SelectedItem = null;
 		}
 
+		private void CreateFourth_Click(object sender, RoutedEventArgs e)
+		{
+			if (string.IsNullOrEmpty(CategotyFourthTB.Text) ||
+				string.IsNullOrEmpty(CategoryThirdTB.Text) || CategoryThirdTB.Text == "" ||
+				categoryTwoLB.SelectedItem == null || categoryOneLB.SelectedItem == null ||
+				categoryTwoCB.SelectedItem == null || categoryOneCB.SelectedItem == null)
+			{
+				MessageBox.Show("Вы не заполнили одну и категорий!", "info");
+				return;
+			}
+
+			selectedCategoryThird = (string)categoryThirdLB.SelectedItem;
+
+			CategoryThirdTB.Text = selectedCategoryThird;
+
+			createNewCategoryFourth = DBContext.createCategoryFourth;
+
+			createNewCategoryFourth += $"{GetNameCategoriesFourthTable(currentRegionsType)}" +
+				$"(category_name, subcategory_one_name, subcategory_scnd_name, subcategory_third_name, not_changeable) " +
+				$"values('{(string)categoryOneLB.SelectedItem}', '{(string)categoryTwoLB.SelectedItem}', '{CategoryThirdTB.Text}', '{CategotyFourthTB.Text}', false)";
+
+			
+			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+			{
+				connection.Open();
+
+				using (NpgsqlCommand createCommand = new NpgsqlCommand(createNewCategoryFourth, connection))
+				{
+					createCommand.ExecuteNonQuery();
+				}
+			}
+
+			MessageBox.Show("Успешно добавлена категория 4-го уровня!", "info");
+
+			CategoryThirdTB.Clear();
+			CategotyFourthTB.Clear();
+
+			categoryFourthLB.Items.Clear();
+			categoryThirdLB.SelectedItem = null;
+			CategotyFourthTB.IsEnabled = false;
+		}
+
+		private void CreateCategoryBtn_Click(object sender, RoutedEventArgs e)
+		{
+			if (string.IsNullOrEmpty(CategoryThirdTB.Text) && string.IsNullOrEmpty(CategotyFourthTB.Text))
+			{
+				MessageBox.Show("Введите названия для необходимых категорий!", "info");
+				return;
+			}
+
+			if (!string.IsNullOrEmpty(CategoryThirdTB.Text) && string.IsNullOrEmpty(CategotyFourthTB.Text))
+			{
+				CreateThird_Click(sender, e);
+			}
+			else if (!string.IsNullOrEmpty(CategoryThirdTB.Text) && !string.IsNullOrEmpty(CategotyFourthTB.Text))
+			{
+				CreateFourth_Click(sender, e);
+			}
+
+		}
+		#endregion
+
+		#region Change
+
 		private void ChangeThird_Click(object sender, RoutedEventArgs e)
 		{
 			//для обновления нужно выбрать элемент и его родителей.
@@ -320,16 +404,130 @@ namespace Analys_prostoev
 				MessageBox.Show("Вы не выбрали категорию для изменения", "Info");
 			}
 
+			selectedCategoryFourth = null;
+
 			CreateCategoryBtn.Visibility = Visibility.Collapsed;
 			ChangeCategoryBtn.Visibility = Visibility.Visible;
 			Cansel.Visibility = Visibility.Visible;
 
-			categoryOneCB.IsEnabled = false; 
+			categoryOneCB.IsEnabled = false;
 			categoryTwoCB.IsEnabled = false;
 
 			selectedCategoryThird = (string)categoryThirdLB.SelectedItem;
 			CategoryThirdTB.Text = selectedCategoryThird;
 		}
+
+		private void ChangeFourth_Click(object sender, RoutedEventArgs e)
+		{
+			//для обновления нужно выбрать элемент и его родителей.
+			if (categoryFourthLB.SelectedItem == null)
+			{
+				MessageBox.Show("Вы не выбрали категорию для изменения", "Info");
+			}
+
+			CreateCategoryBtn.Visibility = Visibility.Collapsed;
+			ChangeCategoryBtn.Visibility = Visibility.Visible;
+			Cansel.Visibility = Visibility.Visible;
+
+			categoryOneCB.IsEnabled = false;
+			categoryTwoCB.IsEnabled = false;
+
+			selectedCategoryThird = (string)categoryThirdLB.SelectedItem;
+			selectedCategoryFourth = (string)categoryFourthLB.SelectedItem;
+			CategoryThirdTB.Text = selectedCategoryThird;
+			CategotyFourthTB.Text = selectedCategoryFourth;
+		}
+
+		private void ChangeCategoryBtn_Click(object sender, RoutedEventArgs e)
+		{
+			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+			{
+				connection.Open();
+
+				if (!string.IsNullOrEmpty(selectedCategoryThird) && string.IsNullOrEmpty(selectedCategoryFourth))
+				{
+					CheckNotChangedThird(connection);
+
+					if (not_changed)
+					{
+						MessageBox.Show("Категории из первоначального списка изменять нельзя!", "info");
+						return;
+					}
+
+					using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.UpdateCategoryThirdCommand(
+						GetNameCategoriesThirdsTable(currentRegionsType),
+						(string)categoryOneCB.SelectedItem,
+						(string)categoryTwoCB.SelectedItem,
+						selectedCategoryThird,
+						CategoryThirdTB.Text),
+						connection))
+					{
+						updateCommand.ExecuteNonQuery();
+					}
+
+					CheckThirdCategory(connection);
+
+					if (existsThirdCategory)
+					{
+						using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.UpdateCategoryThirdInCategoryFourthTableCommand(
+						GetNameCategoriesFourthTable(currentRegionsType),
+						(string)categoryOneCB.SelectedItem,
+						(string)categoryTwoCB.SelectedItem,
+						selectedCategoryThird,
+						CategoryThirdTB.Text),
+						connection))
+						{
+							updateCommand.ExecuteNonQuery();
+						}
+					}
+
+					MessageBox.Show("Категория успешно обновлена!", "info");
+
+					categoryThirdLB.Items.Clear();
+					categoryTwoLB.SelectedItem = null;
+
+					CategoryThirdTB.Clear();
+
+					Cansel_Click(sender, e);
+
+				}
+				else if (!string.IsNullOrEmpty(selectedCategoryThird) && !string.IsNullOrEmpty(selectedCategoryFourth))
+				{
+					CheckNotChangedFourth(connection);
+
+					if (not_changed)
+					{
+						MessageBox.Show("Категории из первоначального списка изменять нельзя!", "info");
+						return;
+					}
+
+					using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.UpdateCategoryFourth(
+						GetNameCategoriesFourthTable(currentRegionsType),
+						(string)categoryOneCB.SelectedItem,
+						(string)categoryTwoCB.SelectedItem,
+						selectedCategoryThird,
+						selectedCategoryFourth,
+						CategotyFourthTB.Text),
+						connection))
+					{
+						updateCommand.ExecuteNonQuery();
+					}
+
+					MessageBox.Show("Категория успешно обновлена!", "info");
+
+					categoryFourthLB.Items.Clear();
+					categoryThirdLB.SelectedItem = null;
+
+					CategotyFourthTB.Clear();
+
+					Cansel_Click(sender, e);
+				}
+			}
+		}
+
+		#endregion
+
+		#region Remove
 
 		private void RemoveThird_Click(object sender, RoutedEventArgs e)
 		{
@@ -362,6 +560,17 @@ namespace Analys_prostoev
 					removeCommand.ExecuteNonQuery();
 				}
 
+				CheckThirdCategory(connection);
+
+				if (existsThirdCategory)
+				{
+					RemoveThirdCategoryInFourthTable(connection,
+													selectedCategoryThird,
+													(string)categoryTwoCB.SelectedItem,
+													(string)categoryOneCB.SelectedItem);
+				}
+			
+				
 				MessageBox.Show($"Категория {selectedCategoryThird} удалена", "Info");
 
 				categoryThirdLB.Items.Clear();
@@ -369,18 +578,118 @@ namespace Analys_prostoev
 			}
 		}
 
-		private void CheckNotChangedThird(NpgsqlConnection connection)
+		private void RemoveThirdCategoryInFourthTable(NpgsqlConnection connection, string selectedCategoryThird, string selectedCategoryTwo, string selectedCategoryOne)
 		{
-			if (categoryThirdLB.SelectedItem == null)
+			using (NpgsqlCommand removeCommand = new NpgsqlCommand(DBContext.RemoveCategoryThirdInFourthTable(
+				GetNameCategoriesFourthTable(currentRegionsType),
+				selectedCategoryOne,
+				selectedCategoryTwo,
+				selectedCategoryThird),
+				connection))
+			{
+				removeCommand.ExecuteNonQuery();
+			}
+		}
+
+		private void RemoveFourth_Click(object sender, RoutedEventArgs e)
+		{
+
+			selectedCategoryThird = (string)categoryThirdLB.SelectedItem;
+
+			selectedCategoryFourth = (string)categoryFourthLB.SelectedItem;
+
+
+			if (string.IsNullOrEmpty(selectedCategoryThird) && string.IsNullOrEmpty(selectedCategoryFourth))
 			{
 				MessageBox.Show("Вы не выбрали категорию для удаления", "Info");
+				return;
 			}
 
+
+			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+			{
+				connection.Open();
+
+				CheckNotChangedFourth(connection);
+
+				if (not_changed)
+				{
+					MessageBox.Show("Категории из первоначального списка удалять нельзя!", "info");
+				}
+
+				using (NpgsqlCommand removeCommand = new NpgsqlCommand(DBContext.RemoveCategoryFourth(
+					GetNameCategoriesFourthTable(currentRegionsType),
+					(string)categoryOneCB.SelectedItem,
+					(string)categoryTwoCB.SelectedItem,
+					selectedCategoryThird,
+					selectedCategoryFourth),
+					connection))
+				{
+					removeCommand.ExecuteNonQuery();
+				}
+
+				MessageBox.Show($"Категория {selectedCategoryFourth} удалена", "Info");
+
+				categoryFourthLB.Items.Clear();
+				categoryThirdLB.SelectedItem = null;
+			}
+		}
+
+		#endregion
+
+		#region Helpers
+
+		private void CheckThirdCategory(NpgsqlConnection connection)
+		{
+			existsThirdCategory = false;
+
+			using (NpgsqlCommand checkRemoved = new NpgsqlCommand(DBContext.SearchThirdCategory(
+				GetNameCategoriesFourthTable(currentRegionsType),
+				(string)categoryOneCB.SelectedItem,
+				(string)categoryTwoCB.SelectedItem,
+				selectedCategoryThird),
+				connection))
+			{
+				using (NpgsqlDataReader reader = checkRemoved.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						if (reader != null)
+						{
+							existsThirdCategory = true;
+						}
+					}
+				}
+			}
+		}
+
+		private void CheckNotChangedThird(NpgsqlConnection connection)
+		{
 			using (NpgsqlCommand notChange = new NpgsqlCommand(DBContext.NotChangeThirdCommand(
 				GetNameCategoriesThirdsTable(currentRegionsType),
 				(string)categoryOneCB.SelectedItem,
 				(string)categoryTwoCB.SelectedItem,
 				selectedCategoryThird),
+				connection))
+			{
+				using (NpgsqlDataReader reader = notChange.ExecuteReader())
+				{
+					while (reader.Read())
+					{
+						not_changed = reader.GetBoolean(0);
+					}
+				}
+			}
+		}
+
+		private void CheckNotChangedFourth(NpgsqlConnection connection)
+		{
+			using (NpgsqlCommand notChange = new NpgsqlCommand(DBContext.NotChangeFourthCommand(
+				GetNameCategoriesFourthTable(currentRegionsType),
+				(string)categoryOneCB.SelectedItem,
+				(string)categoryTwoCB.SelectedItem,
+				selectedCategoryThird,
+				selectedCategoryFourth),
 				connection))
 			{
 				using (NpgsqlDataReader reader = notChange.ExecuteReader())
@@ -399,62 +708,34 @@ namespace Analys_prostoev
 			ChangeCategoryBtn.Visibility = Visibility.Collapsed;
 			Cansel.Visibility = Visibility.Collapsed;
 			CategoryThirdTB.Clear();
+			CategotyFourthTB.Clear();
 
 			categoryOneCB.IsEnabled = true;
 			categoryTwoCB.IsEnabled = true;
 		}
 
-		private void CreateCategoryBtn_Click(object sender, RoutedEventArgs e)
+		#endregion
+
+		#region Copy
+
+		private void Copy_Click(object sender, RoutedEventArgs e)
 		{
-			if (string.IsNullOrEmpty(CategoryThirdTB.Text) && string.IsNullOrEmpty(CategotyFourthTB.Text))
+			if (categoryFourthLB.SelectedItem != null)
 			{
-				MessageBox.Show("Введите названия для необходимых категорий!", "info");
-				return;
+				string selectedText = (string)categoryFourthLB.SelectedItem;
+				Clipboard.SetText(selectedText);
 			}
-
-			if (!string.IsNullOrEmpty(CategoryThirdTB.Text) && string.IsNullOrEmpty(CategotyFourthTB.Text))
-			{
-				CreateThird_Click(sender, e);
-			}
-			else if (!string.IsNullOrEmpty(CategoryThirdTB.Text) && !string.IsNullOrEmpty(CategotyFourthTB.Text))
-			{
-				//todo: сделать добавление для категорий 4-го уровня
-			}
-
 		}
 
-		private void ChangeCategoryBtn_Click(object sender, RoutedEventArgs e)
+		private void CopyParent_Click(object sender, RoutedEventArgs e)
 		{
-			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
+			if (categoryThirdLB.SelectedItem != null)
 			{
-				connection.Open();
-
-				CheckNotChangedThird(connection);
-
-				if (not_changed)
-				{
-					MessageBox.Show("Категории из первоначального списка удалить нельзя!", "info");
-					return;
-				}
-
-				using (NpgsqlCommand updateCommand = new NpgsqlCommand(DBContext.UpdateCategoryThirdCommand(
-					GetNameCategoriesThirdsTable(currentRegionsType),
-					(string)categoryOneCB.SelectedItem,
-					(string)categoryTwoCB.SelectedItem,
-					selectedCategoryThird,
-					CategoryThirdTB.Text),
-					connection))
-				{
-					updateCommand.ExecuteNonQuery();
-				}
+				string selectedText = (string)categoryThirdLB.SelectedItem;
+				Clipboard.SetText(selectedText);
 			}
-
-			MessageBox.Show("Категория успешно обновлена!", "info");
-
-			categoryThirdLB.Items.Clear();
-			categoryTwoLB.SelectedItem = null;
-
-			Cansel_Click(sender, e);
 		}
+
+		#endregion
 	}
 }

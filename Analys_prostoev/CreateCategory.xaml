@@ -45,7 +45,7 @@
         <ListBox x:Name="categoryThirdLB" Style="{DynamicResource ListBoxStyle}" Margin="453,10,0,158" Grid.RowSpan="2" SelectionChanged="categoryThirdLB_SelectionChanged" HorizontalAlignment="Left" Width="250">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить категорию 3-го ур." x:Name="CreateThird" FontFamily="Brutal Type" Click="CreateThird_Click"/>
+                    <MenuItem Header="Скопировать" x:Name="CopyParent" FontFamily="Brutal Type" Click="CopyParent_Click"/>
                     <MenuItem Header="Изменить" x:Name="ChangeThird" FontFamily="Brutal Type" Click="ChangeThird_Click"/>
                     <MenuItem Header="Удалить" x:Name="RemoveThird" FontFamily="Brutal Type" Click="RemoveThird_Click"/>
                 </ContextMenu>
@@ -54,9 +54,9 @@
         <ListBox x:Name="categoryFourthLB" Style="{DynamicResource ListBoxStyle}" Margin="708,10,10,158" Grid.RowSpan="2" Grid.ColumnSpan="2">
             <ListBox.ContextMenu>
                 <ContextMenu>
-                    <MenuItem Header="Добавить категорию 4-го ур." x:Name="CreateFourth" FontFamily="Brutal Type"/>
-                    <MenuItem Header="Изменить" x:Name="ChangeFourth" FontFamily="Brutal Type"/>
-                    <MenuItem Header="Удалить" x:Name="RemoveFourth" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Скопировать" x:Name="Copy" FontFamily="Brutal Type" Click="Copy_Click"/>
+                    <MenuItem Header="Изменить" x:Name="ChangeFourth" FontFamily="Brutal Type" Click="ChangeFourth_Click"/>
+                    <MenuItem Header="Удалить" x:Name="RemoveFourth" FontFamily="Brutal Type" Click="RemoveFourth_Click"/>
                 </ContextMenu>
             </ListBox.ContextMenu>
         </ListBox>

@@ -36,23 +36,64 @@ namespace Analys_prostoev
         static public string UpdateCategoryThirdCommand(string tableName, string categoryOne, string categoryTwo, string changedCategory, string newCategoryName)
         {
             string updateCommand = $"update {tableName} set subcategory_scnd_name = '{newCategoryName}' where subcategory_scnd_name = '{changedCategory}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and is_removed = false";
+           
             return updateCommand;
+		}
 
-		} 
-        static public string updateCategoryFourth = "";
+		static public string UpdateCategoryThirdInCategoryFourthTableCommand(string tableName, string categoryOne, string categoryTwo, string changedCategory, string newCategoryName)
+		{
+			string updateCommand = $"update {tableName} set subcategory_scnd_name = '{newCategoryName}' where subcategory_scnd_name = '{changedCategory}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and is_removed = false";
 
-        static public string NotChangeThirdCommand(string tableName, string categoryOne, string categoryTwo, string categoryThird)
+			return updateCommand;
+		}
+
+		static public string UpdateCategoryFourth(string tableName, string categoryOne, string categoryTwo, string categoryThird, string changedCategory, string newCategoryName)
+		{
+			string updateCommand = $"update {tableName} set subcategory_third_name = '{newCategoryName}' where subcategory_third_name = '{changedCategory}' and subcategory_scnd_name = '{categoryThird}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and is_removed = false";
+			
+            return updateCommand;
+		}
+
+		static public string NotChangeThirdCommand(string tableName, string categoryOne, string categoryTwo, string categoryThird)
         {
             string notChange = $"select not_changeable from {tableName} where category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and subcategory_scnd_name = '{categoryThird}' and is_removed = false";
 
             return notChange;
         }
 
-        static public string RemoveCategoryThird(string tableName, string categoryOne, string categoryTwo, string categoryThird)
+		static public string NotChangeFourthCommand(string tableName, string categoryOne, string categoryTwo, string categoryThird, string categoryFourth)
+		{
+			string notChange = $"select not_changeable from {tableName} where category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and subcategory_scnd_name = '{categoryThird}' and subcategory_third_name = '{categoryFourth}' and is_removed = false";
+
+			return notChange;
+		}
+
+		static public string RemoveCategoryThird(string tableName, string categoryOne, string categoryTwo, string categoryThird)
         {
             string removeCommand = $"update {tableName} set is_removed = true where subcategory_scnd_name = '{categoryThird}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and not_changeable = false";
 
 			return removeCommand;
         }
+
+		static public string SearchThirdCategory(string tableName, string categoryOne, string categoryTwo, string categoryThird)
+        {
+            string removedCategoryCommand = $"select subcategory_scnd_name from {tableName} where category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and subcategory_scnd_name = '{categoryThird}' and is_removed = false";
+
+            return removedCategoryCommand;
+        }
+
+		static public string RemoveCategoryThirdInFourthTable(string tableName, string categoryOne, string categoryTwo, string categoryThird)
+        {
+			string removedThirdCategoryCommand = $"update {tableName} set is_removed = true where subcategory_scnd_name = '{categoryThird}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and not_changeable = false";
+
+			return removedThirdCategoryCommand;
+		}
+
+		static public string RemoveCategoryFourth(string tableName, string categoryOne, string categoryTwo, string categoryThird, string categoryFourth)
+		{
+			string removeCommand = $"update {tableName} set is_removed = true where subcategory_third_name = '{categoryFourth}' and subcategory_scnd_name = '{categoryThird}' and category_name = '{categoryOne}' and subcategory_one_name = '{categoryTwo}' and not_changeable = false";
+
+			return removeCommand;
+		}
 	}
 }
