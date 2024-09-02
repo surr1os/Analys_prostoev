@@ -65,6 +65,7 @@ namespace Analys_prostoev
 				connection.Open();
 				List<string> hptItems = new List<string>();
 				List<string> hptrItems = new List<string>();
+				List<string> UKVItem = new List<string>();
 
 				using (NpgsqlCommand selectCommand = new NpgsqlCommand(DBContext.selectQuery, connection))
 				{
@@ -74,10 +75,12 @@ namespace Analys_prostoev
 						{
 							string region = reader["region"].ToString();
 
-							if (region.StartsWith("ХПТ ") || region.StartsWith("HPT_"))
+							if (region.StartsWith("ХПТ ") || region.StartsWith("HPT_") || region.StartsWith("LG"))
 								hptItems.Add(region);
 							if (region.StartsWith("ХПТР "))
 								hptrItems.Add(region);
+							if (region.StartsWith("УКВ"))
+								UKVItem.Add(region);
 						}
 					}
 				}
@@ -89,8 +92,11 @@ namespace Analys_prostoev
 				{
 					RegionsLB.Items.Add(item);
 				}
-
 				foreach (string item in hptrItems)
+				{
+					RegionsLB.Items.Add(item);
+				}
+				foreach (string item in UKVItem)
 				{
 					RegionsLB.Items.Add(item);
 				}
@@ -353,6 +359,11 @@ namespace Analys_prostoev
 			{
 				Dispatcher.Invoke(() =>
 				{
+					if (!CheckServerOperation.PingHost())
+					{
+						MessageBox.Show("Проблема в работе сервера, данные в программе могут быть не актуальны.\nЗа решением проблемы обращайтесь к Кожанову Р.М.\n", "Info");
+					}
+
 					SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 					sortingTable.GetSortTable();
 				});

@@ -169,7 +169,7 @@ namespace Analys_prostoev
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name" +
 						" FROM subcategory_scnd_hptr WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
 				}
-				else if (regionValue.StartsWith("ХПТ "))
+				else if (regionValue.StartsWith("ХПТ ") || regionValue.StartsWith("LG"))
 				{
 					subcategorySecondQuery = $"SELECT subcategory_scnd_name " +
 						"FROM subcategory_scnd_hpt WHERE subcategory_one_name = @SubcategoryOneName AND category_name = @CategoryName AND subcategory_scnd_name IS NOT NULL and is_removed = false";
@@ -229,7 +229,7 @@ namespace Analys_prostoev
 						" FROM subcategory_third_hptr WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
 						" AND category_name = @CategoryName AND subcategory_third_name IS NOT NULL and is_removed = false";
 				}
-				else if (regionValue.StartsWith("ХПТ "))
+				else if (regionValue.StartsWith("ХПТ ") || regionValue.StartsWith("LG"))
 				{
 					subcategoryThirdQuery = "SELECT subcategory_third_name " +
 						"FROM subcategory_third_hpt WHERE subcategory_scnd_name = @SubcategoryScndName AND subcategory_one_name = @SubcategoryOneName" +
