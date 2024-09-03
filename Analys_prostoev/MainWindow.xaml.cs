@@ -282,6 +282,7 @@ namespace Analys_prostoev
 			DataRowView item = (DataRowView)DataGridTable.SelectedItem;
 			if (item != null)
 			{
+				var dateFinish = item.Row.ItemArray.Length > 2 && item.Row.ItemArray[2] != DBNull.Value ? item.Row.ItemArray[2] : null;
 				var status = item.Row.ItemArray.Length > 4 && item.Row.ItemArray[4] != DBNull.Value ? (string)item.Row.ItemArray[4] : null;
 				var categoryOne = item.Row.ItemArray.Length > 8 && item.Row.ItemArray[8] != DBNull.Value ? (string)item.Row.ItemArray[8] : null;
 				var categoryTwo = item.Row.ItemArray.Length > 9 && item.Row.ItemArray[9] != DBNull.Value ? (string)item.Row.ItemArray[9] : null;
@@ -309,6 +310,14 @@ namespace Analys_prostoev
 				{
 					Edit_MenuItem.Visibility = Visibility.Visible;
 					Cancel_MenuItem.Visibility = Visibility.Visible;
+				}
+				if (dateFinish == null)
+				{
+					Edit_MenuItem.Visibility = Visibility.Collapsed;
+				}
+				if (dateFinish != null)
+				{
+					Edit_MenuItem.Visibility = Visibility.Visible;
 				}
 				else
 				{
@@ -411,6 +420,14 @@ namespace Analys_prostoev
 			CreateCategory createCategory = new CreateCategory();
 
 			createCategory.ShowDialog();
+		}
+
+		private void Button_Click_1(object sender, RoutedEventArgs e)
+		{
+			RegionsLB.SelectedItem = null;
+			selectRowComboBox.SelectedItem = selectRowComboBox.Items[0];
+			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
+			endDatePicker.Value = null;
 		}
 	}
 }

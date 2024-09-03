@@ -65,6 +65,9 @@ namespace Analys_prostoev
 				DateTimeFilter(queryBuilder, parameters);
 				CategoryFilter(queryBuilder, _selectedRow);
 
+				// Add condition to filter records where date_finish is null
+				queryBuilder.Append(" or date_finish IS NULL");
+
 				string conclusion = queryBuilder.ToString();
 				conclusion += " ORDER BY \"Id\" DESC";
 
@@ -129,7 +132,7 @@ namespace Analys_prostoev
 
 			if (_endDate.HasValue)
 			{
-				queryBuilder.Append(" AND (date_finish <= @endDate OR date_start <= @endDate)");
+				queryBuilder.Append(" AND case when date_finish is not null then date_finish <= @endDate else date_start <= @endDate end");
 				parameters.Add(new NpgsqlParameter("endDate", NpgsqlDbType.Timestamp));
 				parameters[parameters.Count - 1].Value = _endDate.Value;
 			}
