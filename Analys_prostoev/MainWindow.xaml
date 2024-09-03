@@ -26,11 +26,11 @@
         </Grid.RowDefinitions>
         <StackPanel  Width="184" Margin="119,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="5" Width="169" Height="35" Format="Custom" FormatString="dd.MM.yyyy    HH:mm"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="5" Width="169" Height="35" Format="Custom" FormatString="dd.MM.yyyy HH:mm"/>
         </StackPanel>
         <StackPanel Width="184" Margin="308,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Margin="5" Width="174" Height="32" Format="Custom" FormatString="dd.MM.yyyy    HH:mm"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Margin="5" Width="174" Height="32" Format="Custom" FormatString="dd.MM.yyyy HH:mm"/>
         </StackPanel>
         <StackPanel  Width="228" Margin="492,11,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
@@ -43,7 +43,7 @@
 
 
 
-        <Button x:Name="toggleButton" Width="30" BorderBrush="{x:Null}" Click="toggle_Click" Background="{x:Null}" Content="{DynamicResource Play}" Margin="839,40,0,0" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top">
+        <Button x:Name="toggleButton" Width="30" BorderBrush="{x:Null}" Click="toggle_Click" Background="{x:Null}" Content="{DynamicResource Play}" Margin="831,40,0,0" HorizontalAlignment="Left" Height="30" VerticalAlignment="Top">
             <Button.ToolTip>
                 <ToolTip>
                     <StackPanel>
@@ -55,7 +55,7 @@
         </Button>
 
 
-        <StackPanel Margin="874,9,0,0" Height="62" HorizontalAlignment="Left" Width="126" VerticalAlignment="Top">
+        <StackPanel Margin="866,9,0,0" Height="62" HorizontalAlignment="Left" Width="126" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.484,0.318"/>
             <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="114" Height="34" FontFamily="Brutal Type">
                 <ComboBoxItem Content="5 минут"/>
@@ -109,7 +109,7 @@
         </ListBox>
         <Image Margin="0,30,10,0" x:Name="Logo" Source="/cyberkot.png" HorizontalAlignment="Right" Width="73" Stretch="Fill" Height="43" VerticalAlignment="Top"/>
         <Button Content="Добавить новую категорию" HorizontalAlignment="Left" Margin="152,0,0,19" Grid.Row="1" Width="177"  Background="#FFABADB3" Click="Button_Click" Height="30" VerticalAlignment="Bottom"/>
-        
+
         <Button FontFamily="Brutal Type" Background="#FFF046" Content="Очистить" HorizontalAlignment="Left" Height="33" Margin="14,40,0,0" VerticalAlignment="Top" Width="100" Click="Button_Click_1"/>
 
     </Grid>
