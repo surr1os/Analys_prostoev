@@ -26,11 +26,11 @@
         </Grid.RowDefinitions>
         <StackPanel  Width="184" Margin="119,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время начала" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="5" Width="169" Height="35" Format="Custom" FormatString="dd.MM.yyyy HH:mm"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="5" Width="169" Height="35" Format="Custom" FormatString="dd.MM.yyyy HH:mm:ss"/>
         </StackPanel>
         <StackPanel Width="184" Margin="308,10,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Время окончания" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Margin="5" Width="174" Height="32" Format="Custom" FormatString="dd.MM.yyyy HH:mm"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Margin="5" Width="174" Height="32" Format="Custom" FormatString="dd.MM.yyyy HH:mm:ss"/>
         </StackPanel>
         <StackPanel  Width="228" Margin="492,11,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
@@ -107,7 +107,7 @@
                  Margin="10,10,0,63" Grid.Row="1" 
                  HorizontalAlignment="Left" Width="130">
         </ListBox>
-        <Image Margin="0,30,10,0" x:Name="Logo" Source="/cyberkot.png" HorizontalAlignment="Right" Width="73" Stretch="Fill" Height="43" VerticalAlignment="Top"/>
+        <Image Margin="0,0,215,12" x:Name="Logo" Source="/cyberkot.png" HorizontalAlignment="Right" Width="83" Stretch="Fill" Grid.Row="1" Height="43" VerticalAlignment="Bottom"/>
         <Button Content="Добавить новую категорию" HorizontalAlignment="Left" Margin="152,0,0,19" Grid.Row="1" Width="177"  Background="#FFABADB3" Click="Button_Click" Height="30" VerticalAlignment="Bottom"/>
 
         <Button FontFamily="Brutal Type" Background="#FFF046" Content="Очистить" HorizontalAlignment="Left" Height="33" Margin="14,40,0,0" VerticalAlignment="Top" Width="100" Click="Button_Click_1"/>
