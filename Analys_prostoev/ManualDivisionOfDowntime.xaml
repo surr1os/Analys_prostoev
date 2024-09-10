@@ -1,0 +1,40 @@
+﻿<Window x:Class="Analys_prostoev.ManualDivisionOfDowntime"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:local="clr-namespace:Analys_prostoev"
+        mc:Ignorable="d"
+        Style="{DynamicResource WindowStyle}"
+        Title="Ручное деление простоев" Height="374" Width="446" Loaded="Window_Loaded" WindowStartupLocation="CenterScreen">
+
+    <Grid Style="{DynamicResource GridStyle}">
+
+        <Border BorderBrush="Black" BorderThickness="1" Margin="10,10,10,0" Background="#FFF046" Height="48" VerticalAlignment="Top"/>
+
+        <Label FontFamily="Brutal Type"
+               Content="Номер простоя:" HorizontalAlignment="Left" Height="26" Margin="19,21,0,0" VerticalAlignment="Top" Width="100" FontWeight="Bold"/>
+
+        <Label FontFamily="Brutal Type"
+               Content="Test" x:Name="DowntimeId" HorizontalAlignment="Left" Height="26" Margin="124,21,0,0" VerticalAlignment="Top" Width="180" FontWeight="Bold"/>
+
+        <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type"
+               Content="Точка деления простоя" HorizontalAlignment="Left" Margin="10,76,0,0" Width="152" Height="26" VerticalAlignment="Top"/>
+
+        <xctk:DateTimePicker x:Name="DivisionPoint" FontFamily="Brutal Type" Margin="10,107,223,0" Height="35" Format="Custom" FormatString="dd.MM.yyyy HH:mm:ss" 
+                             VerticalAlignment="Top" ValueChanged="DivisionPoint_ValueChanged"/>
+
+        <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type"
+            Content="Итоговые записи:" HorizontalAlignment="Left" Margin="10,149,0,0" Width="152" Height="24" VerticalAlignment="Top"/>
+
+        <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="resultTable" IsReadOnly="True" Margin="10,178,10,75" RowHeaderWidth="0" ColumnHeaderHeight="0" AutoGenerateColumns="True"/>
+
+        <Button Content="Сохранить" FontFamily="Brutal Type"
+                HorizontalAlignment="Left" Background="#FFF046" Margin="10,0,0,19" Width="180" Click="Button_Click" Height="41" VerticalAlignment="Bottom"/>
+        <Button Content="Отмена" FontFamily="Brutal Type" Background="#FFF046" Margin="0,0,10,19"  Height="41" VerticalAlignment="Bottom" Click="Escape" HorizontalAlignment="Right" Width="180"/>
+
+
+
+    </Grid>
+</Window>

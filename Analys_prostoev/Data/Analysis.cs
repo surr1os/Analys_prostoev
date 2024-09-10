@@ -9,7 +9,7 @@ namespace Analys_prostoev.Tables
     {
         [Key]
         [Column("id")]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [Column("date_start")]
         public DateTime DateStart { get; set; }
         [Column("date_finish")]

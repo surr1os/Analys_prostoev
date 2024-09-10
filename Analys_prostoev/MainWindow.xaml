@@ -68,7 +68,7 @@
 
 
         <DataGrid Style="{DynamicResource DataGridStyle}" x:Name="DataGridTable" Margin="145,10,10,63" AutoGenerateColumns="True" SelectionChanged="DataGridTable_SelectionChanged"
-			 MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" FontFamily="Brutal Type" Grid.Row="1">
+			 MouseDoubleClick="DataGrid_MouseDoubleClick" IsReadOnly="True" FontFamily="Brutal Type" Grid.Row="1" RowHeaderWidth="0">
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
@@ -76,6 +76,7 @@
                     <MenuItem x:Name="Cancel_MenuItem" Header="Аннулировать" Click="CanselMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Delete_MenuItem" Header="Удалить" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Manual_Division" Header="Разделить" Click="Manual_Division_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

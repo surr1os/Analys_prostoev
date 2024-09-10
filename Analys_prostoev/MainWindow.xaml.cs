@@ -429,5 +429,32 @@ namespace Analys_prostoev
 			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
 			endDatePicker.Value = null;
 		}
+
+		private void Manual_Division_Click(object sender, RoutedEventArgs e)
+		{
+			DataRowView item = (DataRowView)DataGridTable.SelectedItem;
+
+			if (item != null && Convert.ToInt32(item.Row.ItemArray[6]) > 10)
+			{
+				Analysis analysis = new Analysis
+				{  
+					Id = (long)item.Row.ItemArray[0],
+					DateStart = Convert.ToDateTime(item.Row.ItemArray[1]),
+					DateFinish = Convert.ToDateTime(item.Row.ItemArray[2]),
+					Region = Convert.ToString(item.Row.ItemArray[5]),
+					Period = Convert.ToInt32(item.Row.ItemArray[6]),
+					Shifts = Convert.ToString(item.Row.ItemArray[3])
+				};
+
+				ManualDivisionOfDowntime manualDivision = new ManualDivisionOfDowntime(analysis);
+
+				manualDivision.ShowDialog();
+			}
+			else
+			{
+				MessageBox.Show("Данный простой делению не подлежит.\nОдна из его половин будет меньше пяти минут.");
+				return;
+			}
+		}
 	}
 }

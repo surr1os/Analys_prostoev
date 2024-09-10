@@ -1,11 +1,13 @@
-﻿using System.Windows.Navigation;
+﻿using System;
+using System.Reflection.Emit;
+using System.Windows.Navigation;
 
 namespace Analys_prostoev
 {
     public class DBContext
     {
-        static public string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-		//static public string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
+        //static public string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
+		static public string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
 
 		static public string cancellationQuery = "UPDATE public.analysis SET category_one = NULL, category_two = NULL, category_third = NULL, category_fourth = NULL, reason = NULL WHERE \"Id\" = @Id;";
         static public string deleteQuery = $"DELETE FROM analysis WHERE";
@@ -95,5 +97,20 @@ namespace Analys_prostoev
 
 			return removeCommand;
 		}
+
+        static public string UpdateHalf(DateTime date_finish, int period, string shift, long id)
+        {
+            string updateHalf = $"update analysis SET date_finish = \'{date_finish}\', period = {period}, shifts = \'{shift}\', change_at = CURRENT_TIMESTAMP, processed = false WHERE \"Id\" = {id}";
+
+            return updateHalf;
+        }
+
+        static public string InsertHalf(DateTime date_start, DateTime date_finish, int period, string region, string shift)
+        {
+            string inserthalf = $"INSERT INTO analysis (date_start, date_finish, status, period, region, is_manual, created_at, change_at, shifts) " +
+                $"VALUES (\'{date_start}\', \'{date_finish}\', null, {period}, \'{region}\',  true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, \'{shift}\')";
+
+            return inserthalf;
+        } 
 	}
 }

@@ -222,6 +222,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="CheckServerOperation.cs" />
+    <Compile Include="Data\DowntimeForDivision.cs" />
     <Compile Include="Data\SubcategoryThird.cs" />
     <Compile Include="Handlers\CancelMenuItemHehdler.cs" />
     <Compile Include="Data\Category.cs" />
@@ -241,6 +242,9 @@
     <Compile Include="Data\SubcategorySecond.cs" />
     <Compile Include="Interfaces\INewColumnsNames.cs" />
     <Compile Include="Handlers\NewColumnsNames.cs" />
+    <Compile Include="ManualDivisionOfDowntime.xaml.cs">
+      <DependentUpon>ManualDivisionOfDowntime.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -263,6 +267,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="CreateTimeDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ManualDivisionOfDowntime.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
