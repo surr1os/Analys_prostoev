@@ -2,7 +2,9 @@
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Windows;
@@ -29,6 +31,10 @@ namespace Analys_prostoev
 		IExportToExcel _excel;
 		INewColumnsNames _columnsNames;
 		ICancelMenuItemHendler _cancelMenuItemHendler;
+
+		public static string _currentSortColumn { get; set; }
+		public static ListSortDirection? _currentSortDirection { get; set; }
+
 		#endregion
 
 		#endregion
@@ -53,9 +59,14 @@ namespace Analys_prostoev
 			Delete_MenuItem.Visibility = Visibility.Collapsed;
 			Cancel_MenuItem.Visibility = Visibility.Collapsed;
 
+			Sorting.IsEnabled = false;
+
 			startDatePicker.Value = DateTime.Today.Date.AddHours(0);
 			GetRegionName();
 			CreateSelectRowCB();
+
+			AddSorting();
+			AddSortingColumns();
 		}
 
 		private void GetRegionName()
@@ -108,6 +119,20 @@ namespace Analys_prostoev
 			selectRowComboBox.Items.Add("Все строки");
 			selectRowComboBox.Items.Add("Классифицированные строки");
 			selectRowComboBox.Items.Add("Неклассифицированные строки");
+		}
+
+		private void AddSorting()
+		{
+			Sorting.Items.Add("Без сортировки");
+			Sorting.Items.Add("По возрастанию");
+			Sorting.Items.Add("По убыванию");
+		}
+
+		private void AddSortingColumns()
+		{
+			SortingColumn.Items.Add("Id простоя");
+			SortingColumn.Items.Add("Дата начала");
+			SortingColumn.Items.Add("Дата конца");
 		}
 
 		private void DeleteMenuItem_Click(object sender, RoutedEventArgs e)
@@ -279,6 +304,17 @@ namespace Analys_prostoev
 		private void DataGridTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
 
+			int selectedRowCount = DataGridTable.SelectedItems.Count;
+
+			if (selectedRowCount < 2)
+			{
+				Combining_Downtime.Visibility = Visibility.Collapsed;
+			}
+			else
+			{
+				Combining_Downtime.Visibility = Visibility.Visible;
+			}
+
 			DataRowView item = (DataRowView)DataGridTable.SelectedItem;
 			if (item != null)
 			{
@@ -437,7 +473,7 @@ namespace Analys_prostoev
 			if (item != null && Convert.ToInt32(item.Row.ItemArray[6]) > 10)
 			{
 				Analysis analysis = new Analysis
-				{  
+				{
 					Id = (long)item.Row.ItemArray[0],
 					DateStart = Convert.ToDateTime(item.Row.ItemArray[1]),
 					DateFinish = Convert.ToDateTime(item.Row.ItemArray[2]),
@@ -454,6 +490,184 @@ namespace Analys_prostoev
 			{
 				MessageBox.Show("Данный простой делению не подлежит.\nОдна из его половин будет меньше пяти минут.");
 				return;
+			}
+		}
+
+		private void Combining_Downtime_Click(object sender, RoutedEventArgs e)
+		{
+			List<Analysis> analyses = GetSelectedDowntimes();
+
+			var groupedAnalyses = analyses.GroupBy(a => new { a.DateStart.Date, a.Shifts, a.Region });
+
+			List<Analysis> validGroup = GetValidGroup(groupedAnalyses);
+
+			if (validGroup != null && validGroup.Count > 1)
+			{
+				CombiningDowntime combiningDowntime = new CombiningDowntime(validGroup);
+				combiningDowntime.ShowDialog();
+			}
+			else
+			{
+				MessageBox.Show("Выделенные простои не подходят под условия объединения.");
+				return;
+			}
+		}
+
+		private List<Analysis> GetSelectedDowntimes()
+		{
+			List<Analysis> analyses = new List<Analysis>();
+
+			foreach (DataRowView item in DataGridTable.SelectedItems)
+			{
+				Analysis downtime = new Analysis
+				{
+					Id = (long)item.Row.ItemArray[0],
+					DateStart = Convert.ToDateTime(item.Row.ItemArray[1]),
+					DateFinish = Convert.ToDateTime(item.Row.ItemArray[2]),
+					Region = Convert.ToString(item.Row.ItemArray[5]),
+					Period = Convert.ToInt32(item.Row.ItemArray[6]),
+					Shifts = Convert.ToString(item.Row.ItemArray[3])
+				};
+
+				if (item.Row.ItemArray[7] != null
+					&& item.Row.ItemArray[8] != null
+					&& item.Row.ItemArray[9] != null
+					&& item.Row.ItemArray[10] != null)
+				{
+					downtime.CategoryOne = item.Row.ItemArray[7].ToString();
+					downtime.CategoryTwo = item.Row.ItemArray[8].ToString();
+					downtime.CategoryThird = item.Row.ItemArray[9].ToString();
+					downtime.CategoryFourth = item.Row.ItemArray[10].ToString();
+				}
+
+				analyses.Add(downtime);
+			}
+
+			return analyses;
+		}
+
+		private static List<Analysis> GetValidGroup(IEnumerable<IGrouping<object, Analysis>> groupedAnalyses)
+		{
+			List<Analysis> validGroup = null;
+
+			foreach (var group in groupedAnalyses)
+			{
+				if (group.Sum(a => a.Period) <= 720)
+				{
+					var categories = group.Select(a => new
+					{
+						categoryOne = a.CategoryOne,
+						categoryTwo = a.CategoryTwo,
+						categoryThird = a.CategoryThird,
+						categoryFourth = a.CategoryFourth
+
+					}).ToList();
+
+					if (categories.All(c => c.categoryOne == categories[0].categoryOne) &&
+						categories.All(c => c.categoryTwo == categories[0].categoryTwo) &&
+						categories.All(c => c.categoryThird == categories[0].categoryThird) &&
+						categories.All(c => c.categoryFourth == categories[0].categoryFourth))
+					{
+						validGroup = group.ToList();
+						break;
+					}
+
+					if (categories.Count(c => !string.IsNullOrEmpty(c.categoryOne)) == 1 ||
+						categories.Count(c => !string.IsNullOrEmpty(c.categoryTwo)) == 1 ||
+						categories.Count(c => !string.IsNullOrEmpty(c.categoryThird)) == 1 ||
+						categories.Count(c => !string.IsNullOrEmpty(c.categoryFourth)) == 1)
+					{
+						validGroup = group.ToList();
+						break;
+					}
+				}
+			}
+
+			return validGroup;
+		}
+
+		private void Sorting_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			if (_currentSortColumn == "Id")
+			{
+				GetSortingDirection();
+				if (!string.IsNullOrEmpty(_currentSortColumn) && _currentSortDirection.HasValue)
+				{
+					DataGridTable.Items.SortDescriptions.Clear(); // Очищаем старые сортировки
+					DataGridTable.Items.SortDescriptions.Add(new SortDescription(_currentSortColumn, _currentSortDirection.Value));
+				}
+			}
+			if (_currentSortColumn == "date_start")
+			{
+				GetSortingDirection();
+				if (!string.IsNullOrEmpty(_currentSortColumn) && _currentSortDirection.HasValue)
+				{
+					DataGridTable.Items.SortDescriptions.Clear(); // Очищаем старые сортировки
+					DataGridTable.Items.SortDescriptions.Add(new SortDescription(_currentSortColumn, _currentSortDirection.Value));
+				}
+			}
+			if ( _currentSortColumn == "date_finish")
+			{
+				GetSortingDirection();
+				if (!string.IsNullOrEmpty(_currentSortColumn) && _currentSortDirection.HasValue)
+				{
+					DataGridTable.Items.SortDescriptions.Clear(); // Очищаем старые сортировки
+					DataGridTable.Items.SortDescriptions.Add(new SortDescription(_currentSortColumn, _currentSortDirection.Value));
+				}
+			}
+
+		}
+
+		private void SortingColumn_SelectionChanged(object sender, SelectionChangedEventArgs e)
+		{
+			Sorting.IsEnabled = true;
+
+			_currentSortColumn = null;
+
+			switch (SortingColumn.SelectedItem)
+			{
+				case "Id простоя":
+					_currentSortColumn = "Id";
+					break;
+
+				case "Дата начала":
+					_currentSortColumn = "date_start";
+					break;
+
+				case "Дата конца":
+					_currentSortColumn = "date_finish";
+					break;
+
+				default:
+					_currentSortColumn = null;
+					break;
+			}
+
+			Sorting_SelectionChanged(sender, e);
+		}
+
+		private void GetSortingDirection()
+		{
+			_currentSortDirection = null;
+
+			switch (Sorting.SelectedItem)
+			{
+				case "Без сортировки":
+					_currentSortDirection = null;
+					DataGridTable.Items.SortDescriptions.Clear();
+					break;
+
+				case "По возрастанию":
+					_currentSortDirection = ListSortDirection.Ascending;
+					break;
+
+				case "По убыванию":
+					_currentSortDirection = ListSortDirection.Descending;
+					break;
+
+				default:
+					_currentSortDirection = null;
+					break;
 			}
 		}
 	}

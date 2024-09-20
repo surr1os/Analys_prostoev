@@ -1,6 +1,5 @@
 ﻿using Analys_prostoev.Tables;
 using Npgsql;
-using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
 

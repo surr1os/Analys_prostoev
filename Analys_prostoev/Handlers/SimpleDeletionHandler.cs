@@ -18,34 +18,45 @@ namespace Analys_prostoev
             if (main.DataGridTable.SelectedItems.Count == 1)
             {
                 DataRowView item = (DataRowView)main.DataGridTable.SelectedItem;
+
                 long id = (long)item.Row["Id"];
 
                 MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Удалить простой {id}?", "Удаление порстоя", MessageBoxButton.YesNo);
+
                 if (result == MessageBoxResult.Yes)
                 {
                     DeleteLogic(id);
                     MessageBox.Show($"Запись {id}");
                 }
                 else
+                {
                     return;
+                }
             }
             else if (main.DataGridTable.SelectedItems.Count > 1)
             {
                 List<long> listItem = new List<long>();
+
                 foreach (var selectedItem in main.DataGridTable.SelectedItems)
                 {
                     DataRowView oneItem = (DataRowView)selectedItem;
                     listItem.Add((long)oneItem.Row["Id"]);
                 }
+
                 MessageBoxResult result = MessageBox.Show($"Вы уверены, что хотите Удалить {main.DataGridTable.SelectedItems.Count} записей?", "удаление порстоя", MessageBoxButton.YesNo);
+
                 if (result == MessageBoxResult.Yes)
                 {
                     foreach (var id in listItem)
+                    {
                         DeleteLogic(id);
-                    MessageBox.Show($"Удалено записей {listItem.Count()}");
+                    }
+                    MessageBox.Show($"Удалено записей: {listItem.Count()}");
                 }
                 else
+                {
                     return;
+                }
             }
         }
         /// <summary>
@@ -58,19 +69,12 @@ namespace Analys_prostoev
             {
                 connection.Open();
 
-                DBContext.deleteQuery += $" \"Id\" = {id}";
-
-                using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.deleteQuery, connection))
+                using (NpgsqlCommand deleteCommand = new NpgsqlCommand(DBContext.RemovePaticipants(id), connection))
                 {
-                    int rowsAffected = deleteCommand.ExecuteNonQuery();
-                    if (rowsAffected > 0)
-                    {
-                        DBContext.deleteQuery = "";
-                        DBContext.deleteQuery = $"DELETE FROM analysis WHERE";
-                    }
-                }
+					deleteCommand.ExecuteNonQuery();
+				}
 
-                main.GetTable();
+				main.GetTable();
             }
         }
     }

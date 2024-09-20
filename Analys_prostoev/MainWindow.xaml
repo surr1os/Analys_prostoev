@@ -35,8 +35,7 @@
         <StackPanel  Width="228" Margin="492,11,0,0" HorizontalAlignment="Left" Height="61" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Тип выборки" HorizontalAlignment="Center" FontWeight="Bold" VerticalAlignment="Center"/>
             <ComboBox FontFamily="Brutal Type" x:Name="selectRowComboBox" IsEditable="True"
-			IsReadOnly="True" Text="Все строки" Margin="5" Background="White" Width="216" Height="30">
-            </ComboBox>
+			IsReadOnly="True" Text="Все строки" Margin="5" Background="White" Width="216" Height="30" VerticalContentAlignment="Center"/>
         </StackPanel>
 
         <Button FontFamily="Brutal Type" Background="#FFF046" Content="Загрузить" Click="GetTable" Margin="726,38,0,0" Width="92" Height="33" VerticalAlignment="Top" HorizontalAlignment="Left"/>
@@ -57,7 +56,7 @@
 
         <StackPanel Margin="866,9,0,0" Height="62" HorizontalAlignment="Left" Width="126" VerticalAlignment="Top">
             <Label Style="{DynamicResource LabelStyle}" Content="Авто загрузка" Width="96" FontFamily="Brutal Type" FontWeight="Bold" Height="28" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" RenderTransformOrigin="0.484,0.318"/>
-            <ComboBox IsReadOnly="True" Text="Выберите время" x:Name="TimerValue" Width="114" Height="34" FontFamily="Brutal Type">
+            <ComboBox IsReadOnly="True" Text="5 минут" x:Name="TimerValue" Width="114" Height="34" FontFamily="Brutal Type" IsEditable="True" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                 <ComboBoxItem Content="5 минут"/>
                 <ComboBoxItem Content="10 минут"/>
                 <ComboBoxItem Content="15 минут"/>
@@ -77,6 +76,7 @@
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Delete_MenuItem" Header="Удалить" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem x:Name="Manual_Division" Header="Разделить" Click="Manual_Division_Click" FontFamily="Brutal Type"/>
+                    <MenuItem x:Name="Combining_Downtime" Header="Объединить" Click="Combining_Downtime_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>
@@ -105,13 +105,16 @@
 
         <ListBox Style="{DynamicResource ListBoxStyle}" x:Name="RegionsLB" 
                  SelectionMode="Multiple"
-                 Margin="10,10,0,63" Grid.Row="1" 
+                 Margin="10,12,0,383" Grid.Row="1" 
                  HorizontalAlignment="Left" Width="130">
         </ListBox>
         <Image Margin="0,0,215,12" x:Name="Logo" Source="/cyberkot.png" HorizontalAlignment="Right" Width="83" Stretch="Fill" Grid.Row="1" Height="43" VerticalAlignment="Bottom"/>
         <Button Content="Добавить новую категорию" HorizontalAlignment="Left" Margin="152,0,0,19" Grid.Row="1" Width="177"  Background="#FFABADB3" Click="Button_Click" Height="30" VerticalAlignment="Bottom"/>
 
-        <Button FontFamily="Brutal Type" Background="#FFF046" Content="Очистить" HorizontalAlignment="Left" Height="33" Margin="14,40,0,0" VerticalAlignment="Top" Width="100" Click="Button_Click_1"/>
+        <Button FontFamily="Brutal Type" Background="#FFF046" Content="Очистить" HorizontalAlignment="Left" Height="33" Margin="10,40,0,0" VerticalAlignment="Top" Width="104" Click="Button_Click_1"/>
+        <ComboBox x:Name="SortingColumn" HorizontalAlignment="Left" Height="30" Margin="10,0,0,308" Grid.Row="1" VerticalAlignment="Bottom" Width="130" SelectionChanged="SortingColumn_SelectionChanged" VerticalContentAlignment="Center"/>
+        <ComboBox x:Name="Sorting" HorizontalAlignment="Left" Height="30" Margin="10,0,0,273" Grid.Row="1" VerticalAlignment="Bottom" Width="130" SelectionChanged="Sorting_SelectionChanged" VerticalContentAlignment="Center"/>
+        <Label FontWeight="Bold" FontFamily="Brutal Type" Style="{DynamicResource LabelStyle}" Content="Сортировка" HorizontalAlignment="Left" Height="35" Margin="10,0,0,343" Grid.Row="1" VerticalAlignment="Bottom" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
 
     </Grid>
 </Window>

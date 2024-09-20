@@ -20,7 +20,7 @@
     </NuGetPackageImportStamp>
     <TargetFrameworkProfile />
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>C:\Users\Vadim.Filippov\Desktop\Релизные версии Analys_prostoev\Analysis v1.3.0\</PublishUrl>
+    <PublishUrl>C:\Users\Vadim.Filippov\Desktop\Простои\Релизные версии Analys_prostoev\Analysis v.1.3.1\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -30,7 +30,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>26</ApplicationRevision>
+    <ApplicationRevision>27</ApplicationRevision>
     <ApplicationVersion>1.1.3.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -221,7 +221,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="CheckServerOperation.cs" />
+    <Compile Include="Data\OperationTypes.cs" />
+    <Compile Include="Handlers\CheckServerOperation.cs" />
+    <Compile Include="CombiningDowntime.xaml.cs">
+      <DependentUpon>CombiningDowntime.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Data\AnalysisSource.cs" />
     <Compile Include="Data\DowntimeForDivision.cs" />
     <Compile Include="Data\SubcategoryThird.cs" />
     <Compile Include="Handlers\CancelMenuItemHehdler.cs" />
@@ -263,6 +268,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="ChangeTimeDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="CombiningDowntime.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

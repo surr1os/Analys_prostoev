@@ -2,6 +2,7 @@
 using NpgsqlTypes;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -51,11 +52,8 @@ namespace Analys_prostoev
 			{
 				connection.Open();
 
-				//StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
-				//	" category_one, category_two, category_third, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
-
 				StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
-					" category_one, category_two, category_third, category_fourth, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5");
+					" category_one, category_two, category_third, category_fourth, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5 AND is_removed = false ");
 
 				string original = queryBuilder.ToString();
 
@@ -83,11 +81,17 @@ namespace Analys_prostoev
 					_source.ItemsSource = dataTable.DefaultView;
 					_source.Items.Refresh();
 
+					if (!string.IsNullOrEmpty(MainWindow._currentSortColumn) && MainWindow._currentSortDirection.HasValue)
+					{
+						_source.Items.SortDescriptions.Add(new SortDescription(MainWindow._currentSortColumn, MainWindow._currentSortDirection.Value));
+					}
+
 					_columnsNames.SetNewColumnNames(_source);
 				}
 				DBContext.queryString = conclusion;
 			}
 		}
+
 
 		private void RegionFilter(StringBuilder queryBuilder, List<NpgsqlParameter> parameters)
 		{
