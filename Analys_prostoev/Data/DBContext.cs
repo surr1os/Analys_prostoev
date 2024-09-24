@@ -118,16 +118,22 @@ namespace Analys_prostoev
 
 		static public string Search(Analysis downtime)
 		{
-			string searchString = $"select \"Id\" from analysis where date_start = \'{downtime.DateStart}\'::timestamp " +
-				$"and date_finish = \'{downtime.DateFinish}\'::timestamp and status is null and period = {downtime.Period} and shifts = \'{downtime.Shifts}\' and region = \'{downtime.Region}\'";
+			var start = downtime.DateStart.ToString("yyyy-MM-dd HH:mm:ss");
+			
+			var finish = downtime.DateFinish.ToString("yyyy-MM-dd HH:mm:ss");
+
+			string searchString = $"select id from analysis where date_start = \'{start}\'::timestamp " +
+				$"and date_finish = \'{finish}\'::timestamp and status is null and period = {downtime.Period} and shifts = \'{downtime.Shifts}\' and region = \'{downtime.Region}\'";
 
 			return searchString;
 		}
 
 		static public string SourceInsert(AnalysisSource sourse)
 		{
+			var addDate = sourse.OperationDate.ToString("yyyy-MM-dd HH:mm:ss");
+
 			string sourseInsert = $"Insert into analysis_source(record_id, operation_date, participant_id, participant_sourse_id, operation_type)" +
-				$" values(\'{sourse.RecordId}\',\'{sourse.OperationDate}\'::timestamp,{sourse.ParticipantId},{sourse.ParticipantSourseId},\'{sourse.OperationType}\')";
+				$" values(\'{sourse.RecordId}\',\'{addDate}\'::timestamp,{sourse.ParticipantId},{sourse.ParticipantSourseId},\'{sourse.OperationType}\')";
 
 			return sourseInsert;
 		}
@@ -135,6 +141,7 @@ namespace Analys_prostoev
 		static public string InsertCombiningDowntime(Analysis downtime)
 		{
 			var start = downtime.DateStart.ToString("yyyy-MM-dd HH:mm:ss");
+
 			var end = downtime.DateFinish.ToString("yyyy-MM-dd HH:mm:ss");
 
 			string insert = $"Insert into analysis(date_start, date_finish, status, period, region, is_manual, created_at, change_at, shifts, category_one, category_two, category_third, category_fourth) " +
