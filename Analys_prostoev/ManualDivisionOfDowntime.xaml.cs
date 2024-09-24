@@ -21,6 +21,8 @@ namespace Analys_prostoev
 		IGetHistory _changeHistory { get; set; }
 		Guid recordId { get; set; }
 
+		MainWindow main = Application.Current.MainWindow as MainWindow;
+
 		#endregion
 
 		public ManualDivisionOfDowntime(Analysis analysis)
@@ -44,6 +46,7 @@ namespace Analys_prostoev
 			Escape(sender, e);
 			MessageBox.Show("Деление произошло успешно!");
 
+			main.GetTable();
 		}
 
 		private void DivisionPoint_ValueChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -89,8 +92,8 @@ namespace Analys_prostoev
 				{
 					var downtime = new Analysis
 					{
-						DateStart = half.DateStart,
-						DateFinish = half.DateFinish,
+						DateStart = Convert.ToDateTime(half.DateStart),
+						DateFinish = Convert.ToDateTime(half.DateFinish),
 						Region = half.Region,
 						Period = half.Period,
 						Shifts = half.Shifts,
@@ -144,10 +147,16 @@ namespace Analys_prostoev
 				if (GetPeriodForDivision(Downtime.DateStart, PointOfDivision) >= 5 &&
 					GetPeriodForDivision(PointOfDivision, Downtime.DateFinish) >= 5)
 				{
+					var firstHalfStart = Downtime.DateStart.ToString("yyyy-MM-dd HH:mm:ss");
+					var firstHalfFinish = PointOfDivision.ToString("yyyy-MM-dd HH:mm:ss");
+
+					var lastHalfStart = PointOfDivision.ToString("yyyy-MM-dd HH:mm:ss");
+					var lastHalfFinish = Downtime.DateFinish.ToString("yyyy-MM-dd HH:mm:ss");
+
 					FirstHalf = new DowntimeForDivision
 					{
-						DateStart = Downtime.DateStart,
-						DateFinish = PointOfDivision,
+						DateStart = firstHalfStart,
+						DateFinish = firstHalfFinish,
 						Region = Downtime.Region,
 						Period = GetPeriodForDivision(Downtime.DateStart, PointOfDivision),
 						Shifts = Downtime.Shifts
@@ -155,8 +164,8 @@ namespace Analys_prostoev
 
 					LastHalf = new DowntimeForDivision
 					{
-						DateStart = PointOfDivision,
-						DateFinish = Downtime.DateFinish,
+						DateStart = lastHalfStart,
+						DateFinish = lastHalfFinish,
 						Region = Downtime.Region,
 						Period = GetPeriodForDivision(PointOfDivision, Downtime.DateFinish),
 						Shifts = Downtime.Shifts

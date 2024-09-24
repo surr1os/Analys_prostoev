@@ -497,7 +497,7 @@ namespace Analys_prostoev
 		{
 			List<Analysis> analyses = GetSelectedDowntimes();
 
-			var groupedAnalyses = analyses.GroupBy(a => new { a.DateStart.Date, a.Shifts, a.Region });
+			var groupedAnalyses = analyses.GroupBy(a => new { a.Shifts, a.Region });
 
 			List<Analysis> validGroup = GetValidGroup(groupedAnalyses);
 

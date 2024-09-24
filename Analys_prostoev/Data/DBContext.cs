@@ -1,5 +1,6 @@
 ﻿using Analys_prostoev.Data;
 using Analys_prostoev.Tables;
+using Npgsql;
 using System;
 
 namespace Analys_prostoev
@@ -9,15 +10,15 @@ namespace Analys_prostoev
 		static public string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
 		//static public string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=431Id008";
 
-		static public string cancellationQuery = "UPDATE public.analysis SET category_one = NULL, category_two = NULL, category_third = NULL, category_fourth = NULL, reason = NULL WHERE \"Id\" = @Id;";
+		static public string cancellationQuery = "UPDATE public.analysis SET category_one = NULL, category_two = NULL, category_third = NULL, category_fourth = NULL, reason = NULL WHERE id = @Id;";
 
 		static public string deleteQuery = $"DELETE FROM analysis WHERE";
 		static public string selectQuery = "SELECT region FROM hpt_select";
 		static public string queryString = "";
-		static public string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, category_fourth = @categoryFourth, reason = @reason_new WHERE \"Id\" = @Id";
-		static public string changeQuery = "UPDATE analysis SET date_start = @dateStart, date_finish = @dateFinish, \"period\" = @period, status = @status, change_at = @change_at, shifts = @shifts WHERE \"Id\" = @id";
+		static public string updateQuery = "UPDATE analysis SET category_one = @categoryOne, category_two = @categoryTwo,category_third = @categoryThird, category_fourth = @categoryFourth, reason = @reason_new WHERE id = @Id";
+		static public string changeQuery = "UPDATE analysis SET date_start = @dateStart, date_finish = @dateFinish, \"period\" = @period, status = @status, change_at = @change_at, shifts = @shifts WHERE id = @id";
 
-		static public string setChangeDateQuery = "UPDATE analysis SET change_at = @change_at WHERE \"Id\" = @id";
+		static public string setChangeDateQuery = "UPDATE analysis SET change_at = @change_at WHERE id = @id";
 
 		static public string insertQuery = "INSERT INTO analysis (date_start, date_finish, status, period, region, is_manual, created_at, change_at, shifts) VALUES (@dateStart, @dateFinish,@status, @period, @region,  @is_manual, @created_at, @change_at, @shift)";
 
@@ -99,25 +100,26 @@ namespace Analys_prostoev
 			return removeCommand;
 		}
 
-		static public string UpdateHalf(DateTime date_finish, int period, string shift, long id)
+		static public string UpdateHalf(string date_finish, int period, string shift, long id)
 		{
-			string updateHalf = $"update analysis SET date_finish = \'{date_finish}\', period = {period}, shifts = \'{shift}\', change_at = CURRENT_TIMESTAMP, processed = false WHERE \"Id\" = {id}";
+			string updateHalf = $"update analysis SET date_finish = \'{date_finish}\'::timestamp, " +
+				$"period = {period}, shifts = \'{shift}\', change_at = CURRENT_TIMESTAMP, processed = false WHERE id = {id}";
 
 			return updateHalf;
 		}
 
-		static public string InsertHalf(DateTime date_start, DateTime date_finish, int period, string region, string shift)
+		static public string InsertHalf(string date_start, string date_finish, int period, string region, string shift)
 		{
 			string inserthalf = $"INSERT INTO analysis (date_start, date_finish, status, period, region, is_manual, created_at, change_at, shifts) " +
-				$"VALUES (\'{date_start}\', \'{date_finish}\', null, {period}, \'{region}\',  true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, \'{shift}\')";
+				$"VALUES (\'{date_start}\'::timestamp, \'{date_finish}\'::timestamp, null, {period}, \'{region}\',  true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, \'{shift}\')";
 
 			return inserthalf;
 		}
 
 		static public string Search(Analysis downtime)
 		{
-			string searchString = $"select \"Id\" from analysis where date_start = \'{downtime.DateStart}\' " +
-				$"and date_finish = \'{downtime.DateFinish}\' and status is null and period = {downtime.Period} and shifts = \'{downtime.Shifts}\' and region = \'{downtime.Region}\'";
+			string searchString = $"select \"Id\" from analysis where date_start = \'{downtime.DateStart}\'::timestamp " +
+				$"and date_finish = \'{downtime.DateFinish}\'::timestamp and status is null and period = {downtime.Period} and shifts = \'{downtime.Shifts}\' and region = \'{downtime.Region}\'";
 
 			return searchString;
 		}
@@ -125,15 +127,18 @@ namespace Analys_prostoev
 		static public string SourceInsert(AnalysisSource sourse)
 		{
 			string sourseInsert = $"Insert into analysis_source(record_id, operation_date, participant_id, participant_sourse_id, operation_type)" +
-				$" values(\'{sourse.RecordId}\',\'{sourse.OperationDate}\',{sourse.ParticipantId},{sourse.ParticipantSourseId},\'{sourse.OperationType}\')";
+				$" values(\'{sourse.RecordId}\',\'{sourse.OperationDate}\'::timestamp,{sourse.ParticipantId},{sourse.ParticipantSourseId},\'{sourse.OperationType}\')";
 
 			return sourseInsert;
 		}
 
 		static public string InsertCombiningDowntime(Analysis downtime)
 		{
+			var start = downtime.DateStart.ToString("yyyy-MM-dd HH:mm:ss");
+			var end = downtime.DateFinish.ToString("yyyy-MM-dd HH:mm:ss");
+
 			string insert = $"Insert into analysis(date_start, date_finish, status, period, region, is_manual, created_at, change_at, shifts, category_one, category_two, category_third, category_fourth) " +
-				$"values(\'{downtime.DateStart}\', \'{downtime.DateFinish}\', null, {downtime.Period}, \'{downtime.Region}\',  true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, \'{downtime.Shifts}\', " +
+				$"values(\'{start}\'::timestamp, \'{end}\'::timestamp, null, {downtime.Period}, \'{downtime.Region}\',  true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, \'{downtime.Shifts}\', " +
 				$"\'{downtime.CategoryOne}\', \'{downtime.CategoryTwo}\', \'{downtime.CategoryThird}\', \'{downtime.CategoryFourth}\')";
 
 			return insert;
@@ -141,7 +146,7 @@ namespace Analys_prostoev
 
 		static public string RemovePaticipants(long id)
 		{
-			string remove = $"update analysis SET is_removed = true where \"Id\" = {id}";
+			string remove = $"update analysis SET is_removed = true where id = {id}";
 
 			return remove;
 		}

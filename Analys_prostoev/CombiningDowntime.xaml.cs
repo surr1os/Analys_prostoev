@@ -18,6 +18,8 @@ namespace Analys_prostoev
 		private Analysis validDowntime { get; set; }
 		private Analysis firstDowntime { get; set; }
 		private List<AnalysisSource> sources { get; set; }
+
+		MainWindow main = Application.Current.MainWindow as MainWindow;
 		#endregion
 
 		private long _resultId;
@@ -48,6 +50,8 @@ namespace Analys_prostoev
 			InsertCombiningDowntime();
 			Close();
 			MessageBox.Show($"Простои объединены.\nИдентификатор новой записи: {_resultId}");
+
+			main.GetTable();
 		}
 
 		#region Combining Logic

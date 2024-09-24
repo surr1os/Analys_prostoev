@@ -71,12 +71,12 @@
             <DataGrid.ContextMenu>
                 <ContextMenu>
                     <MenuItem Header="Добавить" Click="CreateMenuItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Edit_MenuItem" Header="Изменить" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Cancel_MenuItem" Header="Аннулировать" Click="CanselMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Изменить" x:Name="Edit_MenuItem" Click="ChangeMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Удалить" x:Name="Delete_MenuItem" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Аннулировать" x:Name="Cancel_MenuItem" Click="CanselMenuItem_Click" FontFamily="Brutal Type"/>
                     <MenuItem Header="История изменений" Click="ChangeHistoryItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Delete_MenuItem" Header="Удалить" Click="DeleteMenuItem_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Manual_Division" Header="Разделить" Click="Manual_Division_Click" FontFamily="Brutal Type"/>
-                    <MenuItem x:Name="Combining_Downtime" Header="Объединить" Click="Combining_Downtime_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Разделить" x:Name="Manual_Division" Click="Manual_Division_Click" FontFamily="Brutal Type"/>
+                    <MenuItem Header="Объединить" x:Name="Combining_Downtime" Click="Combining_Downtime_Click" FontFamily="Brutal Type"/>
                 </ContextMenu>
             </DataGrid.ContextMenu>
         </DataGrid>

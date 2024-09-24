@@ -52,7 +52,7 @@ namespace Analys_prostoev
 			{
 				connection.Open();
 
-				StringBuilder queryBuilder = new StringBuilder("SELECT \"Id\", date_start, date_finish, shifts, status, region, period," +
+				StringBuilder queryBuilder = new StringBuilder("SELECT id, date_start, date_finish, shifts, status, region, period," +
 					" category_one, category_two, category_third, category_fourth, reason, created_at, change_at, is_manual FROM analysis WHERE 1=1 AND period >= 5 AND is_removed = false ");
 
 				string original = queryBuilder.ToString();
@@ -67,7 +67,7 @@ namespace Analys_prostoev
 				queryBuilder.Append(" or date_finish IS NULL");
 
 				string conclusion = queryBuilder.ToString();
-				conclusion += " ORDER BY \"Id\" DESC";
+				conclusion += " ORDER BY id DESC";
 
 				using (NpgsqlCommand command = new NpgsqlCommand(conclusion, connection))
 				{
