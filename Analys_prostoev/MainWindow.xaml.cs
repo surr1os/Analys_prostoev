@@ -1,4 +1,5 @@
-﻿using Analys_prostoev.Tables;
+﻿using Analys_prostoev.Handlers;
+using Analys_prostoev.Tables;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -196,7 +197,37 @@ namespace Analys_prostoev
 		{
 			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
 			sortingTable.GetSortTable();
+
+			TotalSum.Text = $"{GetTotalSum()} мин.";
 		}
+
+		private int GetTotalSum()
+		{
+			var downtimes = new List<Analysis>();
+			var items = DataGridTable.Items;
+
+			foreach (DataRowView row in items)
+			{
+				var downtime = new Analysis
+				{
+					Id = (long)row.Row.ItemArray[0],
+					DateStart = Convert.ToDateTime(row.Row.ItemArray[1]),
+					DateFinish = Convert.ToDateTime(row.Row.ItemArray[2]),
+					Region = Convert.ToString(row.Row.ItemArray[5]),
+					Period = Convert.ToInt32(row.Row.ItemArray[6]),
+					Shifts = Convert.ToString(row.Row.ItemArray[3])
+				};
+
+				// Добавляем созданный объект в список
+				downtimes.Add(downtime);
+			}
+
+			PeriodSumHandler periodSumHandler = new PeriodSumHandler(downtimes);
+			int totalSum = periodSumHandler.GetPeriodsSum();
+
+			return totalSum;
+		}
+
 		public void GetTable()
 		{
 			SortingTable sortingTable = new SortingTable(startDatePicker, endDatePicker, RegionsLB, selectRowComboBox, DataGridTable);
@@ -451,14 +482,14 @@ namespace Analys_prostoev
 			sortingTable.GetSortTable();
 		}
 
-		private void Button_Click(object sender, RoutedEventArgs e)
+		private void CreateButton_Click(object sender, RoutedEventArgs e)
 		{
 			CreateCategory createCategory = new CreateCategory();
 
 			createCategory.ShowDialog();
 		}
 
-		private void Button_Click_1(object sender, RoutedEventArgs e)
+		private void ResetButton_Click(object sender, RoutedEventArgs e)
 		{
 			RegionsLB.SelectedItem = null;
 			selectRowComboBox.SelectedItem = selectRowComboBox.Items[0];

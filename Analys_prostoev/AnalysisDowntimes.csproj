@@ -240,6 +240,7 @@
     <Compile Include="Data\Shifts.cs" />
     <Compile Include="Handlers\ExportToExcel.cs" />
     <Compile Include="Handlers\GlobalChangeHistory.cs" />
+    <Compile Include="Handlers\PeriodSumHandler.cs" />
     <Compile Include="Interfaces\ICancelMenuItemHendler.cs" />
     <Compile Include="Interfaces\IExportToExcel.cs" />
     <Compile Include="Interfaces\IGetHistory.cs" />

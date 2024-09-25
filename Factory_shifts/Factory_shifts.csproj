@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Analys_prostoev\Analys_prostoev.csproj" />
+    <ProjectReference Include="..\Analys_prostoev\AnalysisDowntimes.csproj" />
   </ItemGroup>
 
 </Project>
