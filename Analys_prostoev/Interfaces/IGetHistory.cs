@@ -1,6 +1,6 @@
 ﻿using Npgsql;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
     public interface IGetHistory
     {

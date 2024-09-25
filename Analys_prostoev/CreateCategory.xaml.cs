@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	/// <summary>
 	/// Логика взаимодействия для CreateCategory.xaml

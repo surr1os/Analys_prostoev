@@ -1,9 +1,9 @@
 ﻿using Npgsql;
 using System;
 using System.Windows;
-using static Analys_prostoev.ChangeTimeDown;
+using static AnalysisDowntimes.ChangeTimeDown;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
     /// <summary>
     /// Логика взаимодействия для CreateTimeDown.xaml

@@ -1,6 +1,6 @@
 ﻿using System.Net.NetworkInformation;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public static class CheckServerOperation
 	{

@@ -1,7 +1,7 @@
 ﻿using Npgsql;
 using System;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
     /// <summary>
     /// Записывает историю изменений простоя.

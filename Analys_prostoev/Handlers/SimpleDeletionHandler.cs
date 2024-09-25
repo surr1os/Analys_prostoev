@@ -4,7 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
     /// <summary>
     /// Удаляет записи по выделению.

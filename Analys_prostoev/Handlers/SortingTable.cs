@@ -9,7 +9,7 @@ using System.Text;
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	internal class SortingTable
 	{

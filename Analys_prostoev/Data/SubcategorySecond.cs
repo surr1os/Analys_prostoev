@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using static Analys_prostoev.Data.CategoryHierarchy;
+using static AnalysisDowntimes.Data.CategoryHierarchy;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public partial class CategoryHierarchy
     {

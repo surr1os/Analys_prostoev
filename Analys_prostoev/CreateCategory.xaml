@@ -1,9 +1,9 @@
-﻿<Window x:Class="Analys_prostoev.CreateCategory"
+﻿<Window x:Class="AnalysisDowntimes.CreateCategory"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Analys_prostoev"
+        xmlns:local="clr-namespace:AnalysisDowntimes"
         mc:Ignorable="d"
         Style="{DynamicResource WindowStyle}"
         Title="Создание категорий" Height="545" Width="1185" Loaded="Window_Loaded" WindowStartupLocation ="CenterScreen" ResizeMode="NoResize">

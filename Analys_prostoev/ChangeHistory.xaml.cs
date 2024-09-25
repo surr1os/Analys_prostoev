@@ -6,7 +6,7 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Forms;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	/// <summary>
 	/// Логика взаимодействия для ChangeHistory.xaml

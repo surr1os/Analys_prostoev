@@ -8,7 +8,7 @@ using Control = System.Windows.Controls.Control;
 using DataGrid = System.Windows.Controls.DataGrid;
 using HorizontalAlignment = System.Windows.HorizontalAlignment;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	/// <summary>
 	/// Представляет собой класс для изменения названии столбцов таблицы Analysis.

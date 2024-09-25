@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Analys_prostoev.Tables
+namespace AnalysisDowntimes.Tables
 {
     public class CompletedShifts
     {

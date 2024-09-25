@@ -1,4 +1,4 @@
-﻿namespace Analys_prostoev.Data
+﻿namespace AnalysisDowntimes.Data
 {
 	public partial class CategoryHierarchy
 	{

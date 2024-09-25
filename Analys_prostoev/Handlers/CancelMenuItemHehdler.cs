@@ -4,7 +4,7 @@ using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	/// <summary>
 	/// Представляет собой класс для отмены категорий простоя.

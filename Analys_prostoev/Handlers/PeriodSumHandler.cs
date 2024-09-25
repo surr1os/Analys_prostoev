@@ -1,8 +1,8 @@
-﻿using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Tables;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Analys_prostoev.Handlers
+namespace AnalysisDowntimes.Handlers
 {
 	public class PeriodSumHandler
 	{

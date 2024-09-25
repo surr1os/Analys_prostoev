@@ -2,7 +2,7 @@
 using System;
 using System.Windows;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
     /// <summary>
     /// Логика добавления простоя через Desktop приложение.

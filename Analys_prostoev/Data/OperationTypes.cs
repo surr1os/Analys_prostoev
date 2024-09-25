@@ -1,4 +1,4 @@
-﻿namespace Analys_prostoev.Data
+﻿namespace AnalysisDowntimes.Data
 {
 	public class OperationTypes
 	{

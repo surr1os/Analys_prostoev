@@ -1,9 +1,9 @@
-﻿using Analys_prostoev.Data;
-using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Data;
+using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public class DBContext
 	{

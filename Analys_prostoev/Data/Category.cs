@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public partial class CategoryHierarchy
 	{

@@ -1,9 +1,9 @@
-﻿using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Tables;
 using System.Collections.Generic;
 using System.Windows.Controls;
 using Xceed.Wpf.Toolkit;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public interface IExportToExcel
 	{

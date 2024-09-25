@@ -1,6 +1,6 @@
 ﻿using System.Windows.Controls;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public interface ICancelMenuItemHendler
 	{

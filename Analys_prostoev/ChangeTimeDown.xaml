@@ -1,10 +1,10 @@
-﻿<Window x:Class="Analys_prostoev.ChangeTimeDown"
+﻿<Window x:Class="AnalysisDowntimes.ChangeTimeDown"
         Loaded="Window_Loaded"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Analys_prostoev"
+        xmlns:local="clr-namespace:AnalysisDowntimes"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Изменение записи" Height="433" Width="382" WindowStartupLocation="CenterScreen">

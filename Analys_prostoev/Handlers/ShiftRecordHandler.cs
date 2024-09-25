@@ -1,9 +1,9 @@
-﻿using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 
 

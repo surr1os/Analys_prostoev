@@ -1,11 +1,11 @@
-﻿using Analys_prostoev.Data;
-using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Data;
+using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Windows;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	/// <summary>
 	/// Логика взаимодействия для ManualDivisionOfDowntime.xaml

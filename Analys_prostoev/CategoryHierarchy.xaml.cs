@@ -1,12 +1,12 @@
-﻿using Analys_prostoev.Data;
+﻿using AnalysisDowntimes.Data;
 using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using static Analys_prostoev.Data.CategoryHierarchy;
+using static AnalysisDowntimes.Data.CategoryHierarchy;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public partial class CategoryHierarchy : Window
 	{

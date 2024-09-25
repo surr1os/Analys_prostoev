@@ -1,7 +1,7 @@
-﻿<Application x:Class="Analys_prostoev.App"
+﻿<Application x:Class="AnalysisDowntimes.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:Analys_prostoev"
+             xmlns:local="clr-namespace:AnalysisDowntimes"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
         <ResourceDictionary>

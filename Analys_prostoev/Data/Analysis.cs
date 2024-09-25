@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Analys_prostoev.Tables
+namespace AnalysisDowntimes.Tables
 {
     [Table("analysis")]
     public class Analysis

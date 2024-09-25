@@ -1,5 +1,5 @@
-﻿using Analys_prostoev.Handlers;
-using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Handlers;
+using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Windows.Input;
 using MessageBox = System.Windows.MessageBox;
 
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 
 	public partial class MainWindow : Window

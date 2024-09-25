@@ -1,4 +1,4 @@
-﻿using Analys_prostoev.Tables;
+﻿using AnalysisDowntimes.Tables;
 using Npgsql;
 using OfficeOpenXml;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Forms;
 
-namespace Analys_prostoev
+namespace AnalysisDowntimes
 {
 	public class ExportToExcel : IExportToExcel
 	{
