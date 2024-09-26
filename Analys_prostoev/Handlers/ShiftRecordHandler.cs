@@ -13,6 +13,13 @@ namespace AnalysisDowntimes
 
 		public static void InsertShiftRecord(DateTime start, DateTime? end, string region, int periodInMinutes, string status, NpgsqlConnection connection)
 		{
+			string ext_name;
+
+			using (NpgsqlCommand getExternalName = new NpgsqlCommand(DBContext.GetExternalName(region) ,connection))
+			{
+				ext_name = (string)getExternalName.ExecuteScalar();
+			}
+
 			using (NpgsqlCommand insertCommand = new NpgsqlCommand(DBContext.insertQuery, connection))
 			{
 				insertCommand.Parameters.AddWithValue("@dateStart", start);
@@ -23,19 +30,24 @@ namespace AnalysisDowntimes
 				insertCommand.Parameters.AddWithValue("@created_at", DateTime.Now);
 				insertCommand.Parameters.AddWithValue("@change_at", DateTime.Now);
 				insertCommand.Parameters.AddWithValue("@is_manual", true);
+				insertCommand.Parameters.AddWithValue("@external_name", ext_name);
 
 				string selectedShift = CalculateShiftForDateTime(start, (DateTime)end);
 				insertCommand.Parameters.AddWithValue("@shift", selectedShift);
-				
+
 				insertCommand.ExecuteNonQuery();
 			}
 		}
 
 		public static void InitializeShifts(NpgsqlConnection connection)
 		{
-			using (NpgsqlCommand command = new NpgsqlCommand("SELECT s.id AS s_id, s.day + ts.time_begin AS date_start_s, " +
-				"CASE WHEN ts.time_end = '08:00:00' THEN s.day + ts.time_end + INTERVAL '1 day' ELSE s.day + ts.time_end END AS date_end_s, " +
-				"s.letter AS shift_letter FROM public.shifts s JOIN public.time_shifts ts ON s.time_shift_id = ts.id " +
+			using (NpgsqlCommand command = new NpgsqlCommand(
+				"SELECT s.id AS s_id, s.day + ts.time_begin AS date_start_s, " +
+				"CASE WHEN ts.time_end = '08:00:00' THEN s.day + ts.time_end + INTERVAL '1 day' " +
+				"ELSE s.day + ts.time_end " +
+				"END AS date_end_s, " +
+				"s.letter AS shift_letter " +
+				"FROM public.shifts s JOIN public.time_shifts ts ON s.time_shift_id = ts.id " +
 				"where ts.time_end is not null and ts.time_begin is not null", connection))
 			{
 				using (var reader = command.ExecuteReader())

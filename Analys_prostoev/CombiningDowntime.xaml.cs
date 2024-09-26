@@ -147,12 +147,19 @@ namespace AnalysisDowntimes
 			{
 				connection.Open();
 
+				string ext_name = null;
+
+				using (NpgsqlCommand getExternalName = new NpgsqlCommand(DBContext.GetExternalName(firstDowntime.Region), connection))
+				{
+					ext_name = (string)getExternalName.ExecuteScalar();
+				}
+
 				using (NpgsqlCommand insertToAnalysis = new NpgsqlCommand(DBContext.InsertCombiningDowntime(validDowntime), connection))
 				{
 					insertToAnalysis.ExecuteNonQuery();
 				}
 
-				using (NpgsqlCommand search = new NpgsqlCommand(DBContext.Search(validDowntime), connection))
+				using (NpgsqlCommand search = new NpgsqlCommand(DBContext.SearchResultDowntime(validDowntime), connection))
 				{
 					 _resultId = (long)search.ExecuteScalar();
 

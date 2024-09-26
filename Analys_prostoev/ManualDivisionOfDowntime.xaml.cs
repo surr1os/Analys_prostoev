@@ -3,6 +3,7 @@ using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Windows;
 
 namespace AnalysisDowntimes
@@ -71,12 +72,30 @@ namespace AnalysisDowntimes
 
 		private void Division()
 		{
-			string updateCommand = DBContext.UpdateHalf(FirstHalf.DateFinish, FirstHalf.Period, FirstHalf.Shifts, Downtime.Id);
-			string insertCommand = DBContext.InsertHalf(LastHalf.DateStart, LastHalf.DateFinish, LastHalf.Period, LastHalf.Region, LastHalf.Shifts);
+			string getExtName = DBContext.GetExternalName(LastHalf.Region);
+
+			string ext_name = null;
 
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
 				connection.Open();
+
+				using (NpgsqlCommand getExternalName = new NpgsqlCommand(getExtName, connection))
+				{
+					ext_name = (string)getExternalName.ExecuteScalar();
+				}
+
+				string updateCommand = DBContext.UpdateHalf(FirstHalf.DateFinish,
+															FirstHalf.Period,
+															FirstHalf.Shifts,
+															Downtime.Id);
+
+				string insertCommand = DBContext.InsertHalf(LastHalf.DateStart,
+															LastHalf.DateFinish,
+															LastHalf.Period,
+															LastHalf.Region,
+															LastHalf.Shifts,
+															ext_name);
 
 				using (NpgsqlCommand update = new NpgsqlCommand(updateCommand, connection))
 				{
@@ -90,6 +109,7 @@ namespace AnalysisDowntimes
 
 				foreach (var half in GetHalfs(PointOfDivision))
 				{
+
 					var downtime = new Analysis
 					{
 						DateStart = Convert.ToDateTime(half.DateStart),
@@ -99,7 +119,7 @@ namespace AnalysisDowntimes
 						Shifts = half.Shifts,
 					};
 
-					using (NpgsqlCommand search = new NpgsqlCommand(DBContext.Search(downtime), connection))
+					using (NpgsqlCommand search = new NpgsqlCommand(DBContext.SearchResultDowntime(downtime), connection))
 					{
 						var _resultId = (long)search.ExecuteScalar();
 

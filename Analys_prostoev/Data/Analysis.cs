@@ -34,6 +34,8 @@ namespace AnalysisDowntimes.Tables
         public bool IsManual { get; set; }
         [Column("shifts")]
         public string Shifts { get; set; }
+        [Column("external_name")]
+        public string ExternalName { get; set; }
 
     }
 }

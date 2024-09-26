@@ -149,11 +149,16 @@ namespace AnalysisDowntimes
 				string rowSelect = selectedRow.SelectedItem.ToString();
 				if (rowSelect == "Классифицированные строки")
 				{
-					queryBuilder.Append(" AND category_one IS NOT NULL AND category_two IS NOT NULL AND category_third IS NOT NULL");
+					queryBuilder.Append(" AND category_one IS NOT NULL AND category_one <> '' " +
+						"AND category_two IS NOT NULL AND category_two <> '' " +
+						"AND category_third IS NOT NULL AND category_third <> ''");
 				}
 				else if (rowSelect == "Неклассифицированные строки")
 				{
-					queryBuilder.Append(" AND (category_one IS NULL OR category_two IS NULL OR category_third IS NULL)");
+					queryBuilder.Append(" AND (category_one IS NULL OR category_one = '' " +
+						"OR category_two IS NULL OR category_two = '' " +
+						"OR category_third IS NULL OR category_third = '')"
+					);
 				}
 			}
 		}
