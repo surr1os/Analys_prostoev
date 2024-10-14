@@ -5,8 +5,8 @@ namespace AnalysisDowntimes
 {
 	public class DBContext
 	{
-		static public string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-		//static public string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=20W22W20";
+		//public const string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
+		public const string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=20W22W20";
 
 		static public string cancellationQuery = "UPDATE public.analysis SET category_one = NULL, category_two = NULL, category_third = NULL, category_fourth = NULL, reason = NULL WHERE id = @Id;";
 
@@ -113,10 +113,10 @@ namespace AnalysisDowntimes
 
 		#region Division
 
-		static public string UpdateHalf(string date_finish, int period, string shift, long id)
+		static public string UpdateHalf(string date_finish, int period, string shift, long id, string ext_name)
 		{
 			string updateHalf = $"update analysis SET date_finish = \'{date_finish}\'::timestamp, " +
-				$"period = {period}, shifts = \'{shift}\', change_at = CURRENT_TIMESTAMP, processed = false WHERE id = {id}";
+				$"period = {period}, shifts = \'{shift}\', change_at = CURRENT_TIMESTAMP, processed = false, external_name = \'{ext_name}\' WHERE id = {id}";
 
 			return updateHalf;
 		}
@@ -189,7 +189,7 @@ namespace AnalysisDowntimes
 		{
 			string externalName = $"select region_fullname " +
 								  $"from public.variables " +
-								  $"where description = {region}";
+								  $"where description = \'{region}\'";
 
 			return externalName;
 		}

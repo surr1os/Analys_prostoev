@@ -88,7 +88,8 @@ namespace AnalysisDowntimes
 				string updateCommand = DBContext.UpdateHalf(FirstHalf.DateFinish,
 															FirstHalf.Period,
 															FirstHalf.Shifts,
-															Downtime.Id);
+															Downtime.Id,
+															ext_name);
 
 				string insertCommand = DBContext.InsertHalf(LastHalf.DateStart,
 															LastHalf.DateFinish,

@@ -154,7 +154,7 @@ namespace AnalysisDowntimes
 					ext_name = (string)getExternalName.ExecuteScalar();
 				}
 
-				using (NpgsqlCommand insertToAnalysis = new NpgsqlCommand(DBContext.InsertCombiningDowntime(validDowntime), connection))
+				using (NpgsqlCommand insertToAnalysis = new NpgsqlCommand(DBContext.InsertCombiningDowntime(validDowntime, ext_name), connection))
 				{
 					insertToAnalysis.ExecuteNonQuery();
 				}
