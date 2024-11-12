@@ -221,7 +221,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="CategoryHistory.xaml.cs">
+      <DependentUpon>CategoryHistory.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Data\CategoryChangeTypes.cs" />
+    <Compile Include="Data\CategorysHistory.cs" />
     <Compile Include="Data\OperationTypes.cs" />
+    <Compile Include="Handlers\AddCategorysHistoryHandler.cs" />
     <Compile Include="Handlers\CheckServerOperation.cs" />
     <Compile Include="CombiningDowntime.xaml.cs">
       <DependentUpon>CombiningDowntime.xaml</DependentUpon>
@@ -243,7 +249,7 @@
     <Compile Include="Handlers\PeriodSumHandler.cs" />
     <Compile Include="Interfaces\ICancelMenuItemHendler.cs" />
     <Compile Include="Interfaces\IExportToExcel.cs" />
-    <Compile Include="Interfaces\IGetHistory.cs" />
+    <Compile Include="Interfaces\IAddHistory.cs" />
     <Compile Include="Data\SubcategoryOne.cs" />
     <Compile Include="Data\SubcategorySecond.cs" />
     <Compile Include="Interfaces\INewColumnsNames.cs" />
@@ -264,6 +270,10 @@
     <Compile Include="CreateCategory.xaml.cs">
       <DependentUpon>CreateCategory.xaml</DependentUpon>
     </Compile>
+    <Page Include="CategoryHistory.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="ChangeHistory.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

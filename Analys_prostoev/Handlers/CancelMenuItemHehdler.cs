@@ -35,7 +35,7 @@ namespace AnalysisDowntimes
 
 			if (result == MessageBoxResult.Yes)
 			{
-				IGetHistory changeHistory = new GlobalChangeHistory(regionValue, id);
+				IAddHistory changeHistory = new GlobalChangeHistory(regionValue, id);
 
 				using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 				{

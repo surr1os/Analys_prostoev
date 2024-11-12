@@ -1,4 +1,7 @@
-﻿using Npgsql;
+﻿using Analys_prostoev.Data;
+using Analys_prostoev.Handlers;
+using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
@@ -326,6 +329,9 @@ namespace AnalysisDowntimes
 
 			MessageBox.Show("Успешно добавлена категория 3-го уровня!", "info");
 
+			//history CategoryThirdTB.Text
+			AddHistory(CategoryChangeTypes.Created, $"Создана категория \"{CategoryThirdTB.Text}\"");
+
 			CategoryThirdTB.Clear();
 
 			categoryThirdLB.Items.Clear();
@@ -365,6 +371,9 @@ namespace AnalysisDowntimes
 			}
 
 			MessageBox.Show("Успешно добавлена категория 4-го уровня!", "info");
+
+			//history CategotyFourthTB.Text
+			AddHistory(CategoryChangeTypes.Created, $"Создана категория \"{CategotyFourthTB.Text}\"");
 
 			CategoryThirdTB.Clear();
 			CategotyFourthTB.Clear();
@@ -483,6 +492,9 @@ namespace AnalysisDowntimes
 
 					MessageBox.Show("Категория успешно обновлена!", "info");
 
+					//history с selectedCategoryThird на CategoryThirdTB.Text
+					AddHistory(CategoryChangeTypes.Changed, $"Категория \"{selectedCategoryThird}\" изменена на \"{CategoryThirdTB.Text}\"");
+
 					categoryThirdLB.Items.Clear();
 					categoryTwoLB.SelectedItem = null;
 
@@ -514,6 +526,9 @@ namespace AnalysisDowntimes
 					}
 
 					MessageBox.Show("Категория успешно обновлена!", "info");
+
+					//history с selectedCategoryFourth на CategotyFourthTB.Text
+					AddHistory(CategoryChangeTypes.Changed, $"Категория \"{selectedCategoryFourth}\" изменена на \"{CategotyFourthTB.Text}\"");
 
 					categoryFourthLB.Items.Clear();
 					categoryThirdLB.SelectedItem = null;
@@ -571,7 +586,10 @@ namespace AnalysisDowntimes
 				}
 			
 				
-				MessageBox.Show($"Категория {selectedCategoryThird} удалена", "Info");
+				MessageBox.Show($"Категория \'{selectedCategoryThird}\' удалена", "Info");
+
+				//history selectedCategoryThird
+				AddHistory(CategoryChangeTypes.Removed, $"Категория 3-го уровня \"{selectedCategoryThird}\" удалена");
 
 				categoryThirdLB.Items.Clear();
 				categoryTwoLB.SelectedItem = null;
@@ -628,7 +646,10 @@ namespace AnalysisDowntimes
 					removeCommand.ExecuteNonQuery();
 				}
 
-				MessageBox.Show($"Категория {selectedCategoryFourth} удалена", "Info");
+				MessageBox.Show($"Категория \'{selectedCategoryFourth}\' удалена", "Info");
+
+				//history selectedCategoryFourth
+				AddHistory(CategoryChangeTypes.Removed, $"Категория 4-го уровня \"{selectedCategoryFourth}\" удалена");
 
 				categoryFourthLB.Items.Clear();
 				categoryThirdLB.SelectedItem = null;
@@ -712,6 +733,21 @@ namespace AnalysisDowntimes
 
 			categoryOneCB.IsEnabled = true;
 			categoryTwoCB.IsEnabled = true;
+		}
+
+		private void AddHistory(string type, string title)
+		{
+			CategorysHistory history = new CategorysHistory 
+			{
+				Id = Guid.NewGuid(),
+				Type = type,
+				Title = title,
+				CreatedDate = DateTime.Now,
+			};
+
+			var command = DBContext.AddHistoryOfCategory(history);
+			AddCategorysHistoryHandler historyHandler = new AddCategorysHistoryHandler(command);
+			historyHandler.AddHistory();
 		}
 
 		#endregion

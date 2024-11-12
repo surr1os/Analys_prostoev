@@ -19,7 +19,7 @@ namespace AnalysisDowntimes
 		private DowntimeForDivision LastHalf { get; set; }
 		private Analysis Downtime { get; set; }
 		private List<AnalysisSource> sources { get; set; }
-		IGetHistory _changeHistory { get; set; }
+		IAddHistory _changeHistory { get; set; }
 		Guid recordId { get; set; }
 
 		MainWindow main = Application.Current.MainWindow as MainWindow;

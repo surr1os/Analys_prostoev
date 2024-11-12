@@ -114,7 +114,7 @@ namespace AnalysisDowntimes
 
         private void ChangeDownTime(object sender, RoutedEventArgs e)
         {
-            IGetHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
+            IAddHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
 
             if (CB_Region.Text == string.Empty)
             {

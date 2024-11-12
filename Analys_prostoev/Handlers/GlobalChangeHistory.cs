@@ -6,7 +6,7 @@ namespace AnalysisDowntimes
     /// <summary>
     /// Записывает историю изменений простоя.
     /// </summary>
-    public class GlobalChangeHistory : IGetHistory
+    public class GlobalChangeHistory : IAddHistory
     {
         readonly long _id;
         public string RegionValue { get; set; }

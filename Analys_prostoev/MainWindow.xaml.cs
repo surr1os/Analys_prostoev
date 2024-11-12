@@ -1,4 +1,5 @@
-﻿using AnalysisDowntimes.Handlers;
+﻿using Analys_prostoev;
+using AnalysisDowntimes.Handlers;
 using AnalysisDowntimes.Tables;
 using Npgsql;
 using System;
@@ -700,6 +701,13 @@ namespace AnalysisDowntimes
 					_currentSortDirection = null;
 					break;
 			}
+		}
+
+		private void CheckHistory_Click(object sender, RoutedEventArgs e)
+		{
+			CategoryHistory categoryHistory = new CategoryHistory();
+
+			categoryHistory.ShowDialog();
 		}
 	}
 }

@@ -118,6 +118,7 @@
 
         <Label FontWeight="Bold" FontFamily="Brutal Type" Style="{DynamicResource LabelStyle}" Content="Сумма периодов" HorizontalAlignment="Left" Margin="10,0,0,112" Grid.Row="1" Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="30" VerticalAlignment="Bottom"/>
         <TextBox IsReadOnly="True" x:Name="TotalSum" HorizontalAlignment="Left" Margin="10,0,0,73" Grid.Row="1" TextWrapping="Wrap" Text="0 мин." Width="130" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Height="34" VerticalAlignment="Bottom"/>
+        <Button x:Name="CheckHistory" Content="История изменений категорий" HorizontalAlignment="Left" Margin="334,0,0,19" Grid.Row="1" Width="206"  Background="#FFABADB3" Height="30" VerticalAlignment="Bottom" Click="CheckHistory_Click"/>
 
     </Grid>
 </Window>

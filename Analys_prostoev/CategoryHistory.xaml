@@ -1,0 +1,43 @@
+﻿<Window x:Class="Analys_prostoev.CategoryHistory"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        mc:Ignorable="d"
+        Title="История изменений категорий" Height="450" Width="795"
+        Style="{DynamicResource WindowStyle}"
+        WindowStartupLocation="CenterScreen" FontFamily="Brutal Type"
+        MinWidth="490"
+        MinHeight="450" Loaded="Window_Loaded">
+
+    <Grid Style="{DynamicResource GridStyle}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="169*"/>
+            <RowDefinition Height="48*"/>
+        </Grid.RowDefinitions>
+        
+        <DataGrid Style="{DynamicResource DataGridStyle}" Margin="10,10,10,0" x:Name="HistoryTable" AutoGenerateColumns="False">
+
+            <DataGrid.Resources>
+                <Style TargetType="DataGridColumnHeader">
+                    <Setter Property="Foreground" Value="Black"/>
+                    <Setter Property="Height" Value="30"/>
+                </Style>
+            </DataGrid.Resources>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Width="200" Header="Дата" Binding="{Binding CreatedDate, StringFormat='{}{0:dd.MM.yyyy HH:mm}'}"/>
+                <DataGridTextColumn Width="150" Header="Тип изменений" Binding="{Binding Type}" />
+                <DataGridTextColumn Width="*" Header="Сообщение" Binding="{Binding Title}" />
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Content="Закрыть" HorizontalAlignment="Right" Margin="0,0,10,10" Width="132" Height="47" VerticalAlignment="Bottom"  Background="#FFF046" Grid.Row="1" Click="Button_Click"/>
+        <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Margin="10,0,0,10" Format="Custom" FormatString="dd.MM.yyyy HH:mm:ss" Height="47" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="160" Grid.Row="1"/>
+        <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="finishDatePicker" Margin="175,0,0,10" Format="Custom" FormatString="dd.MM.yyyy HH:mm:ss" Height="47" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="160" Grid.Row="1"/>
+        <Label Style="{DynamicResource LabelStyle}" Content="Дата от" HorizontalAlignment="Left" Margin="10,0,0,62" VerticalAlignment="Bottom" Width="160" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1"/>
+        <Label Style="{DynamicResource LabelStyle}" Content="Дата до" HorizontalAlignment="Left" Margin="175,0,0,62" Width="160" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1" Height="25" VerticalAlignment="Bottom"/>
+        <ComboBox x:Name="TypesComboBox" HorizontalAlignment="Left" Margin="340,0,0,10" Width="160" Grid.Row="1" Height="47" VerticalAlignment="Bottom" SelectionChanged="TypesComboBox_SelectionChanged"/>
+        <Label Style="{DynamicResource LabelStyle}" Content="Тип изменений" HorizontalAlignment="Left" Margin="340,0,0,62" Width="160" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" Grid.Row="1" Height="25" VerticalAlignment="Bottom"/>
+    </Grid>
+</Window>

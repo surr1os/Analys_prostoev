@@ -2,7 +2,7 @@
 
 namespace AnalysisDowntimes
 {
-    public interface IGetHistory
+    public interface IAddHistory
     {
         void AddHistory(NpgsqlCommand insertCommand, string modifiedElementegory);
     }

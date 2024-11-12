@@ -1,12 +1,14 @@
-﻿using AnalysisDowntimes.Data;
+﻿using Analys_prostoev.Data;
+using AnalysisDowntimes.Data;
 using AnalysisDowntimes.Tables;
+using System;
 
 namespace AnalysisDowntimes
 {
 	public class DBContext
 	{
-		public const string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
-		//public const string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=20W22W20";
+		//public const string connectionString = "Host=10.241.224.71;Port=5432;Database=analysis_user;Username=analysis_user;Password=71NfhRec";
+		public const string connectionString = "Host=localhost;Database=Prostoi_Test;Username=postgres;Password=20W22W20";
 
 		static public string cancellationQuery = "UPDATE public.analysis SET category_one = NULL, category_two = NULL, category_third = NULL, category_fourth = NULL, reason = NULL WHERE id = @Id;";
 
@@ -24,6 +26,54 @@ namespace AnalysisDowntimes
 
 		static public string getHistoryString = "SELECT date_change, modified_element FROM change_history WHERE id_pros = @id";
 		static public string insertHistory = "INSERT INTO change_history (region, date_change, id_pros, modified_element) VALUES (@region, @date_change, @id_pros, @modified_element)";
+
+		static public string AddHistoryOfCategory(CategorysHistory history)
+		{
+			var addDate = history.CreatedDate.ToString("yyyy-MM-dd HH:mm:ss");
+
+			string insertCommand = $"Insert into categorys_history(id, title, created_date, \"type\") " +
+				$"values(\'{history.Id}\', \'{history.Title}\', \'{addDate}\'::timestamp, \'{history.Type}\')";
+
+			return insertCommand;
+		}
+
+		static public string GetAllCategoryHistory(string type, DateTime? dateTo, DateTime? dateFrom = null)
+		{
+			var _dateTo = dateTo == null ? null : dateTo?.ToString("yyyy-MM-dd HH:mm:ss");
+			var _dateFrom = dateFrom == null ? null : dateFrom?.ToString("yyyy-MM-dd HH:mm:ss");
+
+			if (_dateTo != null && _dateFrom != null)
+			{
+				string command = $"select * from categorys_history where created_date between \'{_dateFrom}\'::timestamp and \'{_dateTo}\'::timestamp";
+				command = command + GetСonditionByType(type);
+				return command;
+			}
+			else if (_dateTo != null && _dateTo == null)
+			{
+				string command = $"select * from categorys_history where created_date >= \'{_dateFrom}\'::timestamp";
+				command = command + GetСonditionByType(type);
+				return command;
+			}
+			else 
+			{
+				return null;
+			}
+		}
+
+		static public string GetСonditionByType(string type)
+		{
+			string condition = "";
+
+			if (string.IsNullOrEmpty(type) || type == CategoryChangeTypes.All)
+			{
+				return condition;
+			}
+			else
+			{
+				condition = $" where \"type\" = \'{type}\'";
+				return condition;
+			}
+		}
 
 		#endregion
 

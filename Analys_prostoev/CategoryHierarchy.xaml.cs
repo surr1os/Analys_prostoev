@@ -45,7 +45,7 @@ namespace AnalysisDowntimes
 			bool isCategoryThirdChange = CategoryThird != originalCategoryThird;
 			bool isCategoryFourthChange = CategoryFourth != originalCategoryFourth;
 
-			IGetHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
+			IAddHistory changeHistory = new GlobalChangeHistory(RegionValue, _id);
 
 			using (NpgsqlConnection connection = new NpgsqlConnection(DBContext.connectionString))
 			{
