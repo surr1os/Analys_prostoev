@@ -8,32 +8,46 @@
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
         Title="Изменение записи" Height="433" Width="382" WindowStartupLocation="CenterScreen">
-    <Grid>
-
-
+    <Grid Style="{DynamicResource GridStyle}">
         <Border BorderThickness="0" 
                 HorizontalAlignment="Center" 
                 Margin="0,18,0,0" 
-                Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" />
+                Width="382" Background="#FFF046" Height="41" VerticalAlignment="Top" >
+            <Label FontFamily="Brutal Type" Margin="10,0,10,0" x:Name="info" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="Black"/>
+        </Border>
 
-        <Canvas HorizontalAlignment="Center" Height="252" Margin="0,64,0,0" VerticalAlignment="Top" Width="338">
-            <Label Height="37" Content="Дата начала" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label Height="37" Content="Дата финиша" Canvas.Top="86" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label Height="37" Content="Участок" Canvas.Top="129" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
-            <Label Height="37" Content="Состояние" Canvas.Top="170" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center" />
+        <Canvas HorizontalAlignment="Center" Height="278" VerticalAlignment="Top" Width="338" Margin="0,59,0,0">
 
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Дата начала" Canvas.Top="45" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Дата финиша" Canvas.Top="86" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Участок" Canvas.Top="129" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Состояние" Canvas.Top="170" VerticalAlignment="Top" Width="112" HorizontalAlignment="Center" />
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Height="37" Content="Смена" Canvas.Top="217" HorizontalAlignment="Center" VerticalAlignment="Top" Width="112"/>
+            <Label Style="{DynamicResource LabelStyle}" FontFamily="Brutal Type" Content="Период (мин.)" Height="28" Canvas.Left="189" Canvas.Top="217" VerticalAlignment="Center" Width="110" HorizontalAlignment="Left"/>
 
-            <ComboBox x:Name="CB_Status" Height="37" Width="210" HorizontalAlignment="Center" Canvas.Left="119" Canvas.Top="170" VerticalAlignment="Top">
+            <ComboBox FontFamily="Brutal Type" x:Name="CB_Status" Height="37" Width="210" HorizontalAlignment="Center" Canvas.Left="119" Canvas.Top="170" VerticalAlignment="Top">
                 <ComboBoxItem Name="Agreed" Content="Согласован"/>
                 <ComboBoxItem Name="NotAgreed" Content="Не согласован"/>
             </ComboBox>
-            <ComboBox x:Name="CB_Region" Height="37" Width="210" HorizontalAlignment="Left" Canvas.Left="119" Canvas.Top="128" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker x:Name="endDatePicker" Width="210" Height="37" HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="86" VerticalAlignment="Center"/>
-            <xctk:DateTimePicker x:Name="startDatePicker" Width="210" Height="37" HorizontalAlignment="Center" Canvas.Left="118" Canvas.Top="44" VerticalAlignment="Top"/>
+            <ComboBox FontFamily="Brutal Type" x:Name="CB_Region" Height="37" Width="210" HorizontalAlignment="Left" Canvas.Left="119" Canvas.Top="128" VerticalAlignment="Center"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="endDatePicker" Width="210" ValueChanged="GetPeriod"
+                                 Height="37" HorizontalAlignment="Left" Canvas.Left="118" Canvas.Top="86" VerticalAlignment="Center"/>
+            <xctk:DateTimePicker FontFamily="Brutal Type" x:Name="startDatePicker" Width="210" ValueChanged="GetPeriod"
+                                 Height="37" HorizontalAlignment="Center" Canvas.Left="118" Canvas.Top="44" VerticalAlignment="Top"/>
+
+            <ComboBox FontFamily="Brutal Type" x:Name="Letter" Height="28" Canvas.Left="119" Canvas.Top="217" Width="50" HorizontalAlignment="Center" VerticalAlignment="Top">
+                <ComboBoxItem Content=""/>
+                <ComboBoxItem Name="LetterA" Content="А"/>
+                <ComboBoxItem Name="LetterB" Content="В"/>
+                <ComboBoxItem Name="LetterC" Content="С"/>
+                <ComboBoxItem Name="LetterD" Content="Д"/>
+            </ComboBox>
+
+            <TextBox FontFamily="Brutal Type" x:Name="Period" Text="" Height="28" TextAlignment="Center" Canvas.Left="288" Canvas.Top="217" VerticalAlignment="Top" Width="41" HorizontalAlignment="Center"/>
+
         </Canvas>
-        <Button x:Name="Insert"  Content="Сохранить" Click="ChangeDownTime" Margin="172,0,22,50" Background="#FFF046" Height="28" VerticalAlignment="Bottom"/>
-        <Label Content="Период (мин.)" Margin="10,0,262,50" Height="28" VerticalAlignment="Bottom"/>
-        <TextBox x:Name="Period" Text="" Margin="109,0,232,50" Height="28" VerticalAlignment="Bottom" TextAlignment="Center"/>
+        <Button FontFamily="Brutal Type" x:Name="Insert"  Content="Сохранить" Click="ChangeDownTime" Margin="97,342,97,0" Background="#FFF046" Height="28" VerticalAlignment="Top"/>
+
 
 
     </Grid>

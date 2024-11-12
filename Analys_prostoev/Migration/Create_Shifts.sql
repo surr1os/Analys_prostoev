@@ -1,0 +1,9 @@
+CREATE TABLE IF NOT EXISTS public.shifts
+(
+id bigint NOT NULL GENERATED ALWAYS AS IDENTITY ( INCREMENT 1 START 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1 ),
+day DATE,
+letter VARCHAR(1),
+time_shift_id bigint,
+PRIMARY KEY (id),
+FOREIGN KEY (time_shift_id) REFERENCES public.time_shifts (id)
+);
